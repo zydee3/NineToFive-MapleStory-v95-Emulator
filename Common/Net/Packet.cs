@@ -37,7 +37,8 @@ namespace NineToFive.IO {
                 // import data, we are reading an array of bytes
                 Stream = new MemoryStream(data);
             } else {
-                // writing data
+                // writing data, it's important that this constructor is used
+                // so we can have an expandable capacity for our stream
                 Stream = new MemoryStream();
             }
 
