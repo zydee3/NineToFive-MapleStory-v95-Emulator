@@ -4,7 +4,8 @@ namespace NineToFive.Channels {
     class Program {
         static void Main(string[] args) {
             Console.WriteLine("Hello World, from Channel Server!");
-            _ = new ChannelServer(7575);
+            Server.Initialize();
+            
             string input;
             while ((input = Console.ReadLine()) != null) {
                 if (input == "exit") {

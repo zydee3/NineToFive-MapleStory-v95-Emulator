@@ -1,12 +1,11 @@
-﻿using NineToFive.IO;
+﻿using System;
 using NineToFive.Event;
+using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.ReceiveOps;
-using System;
 
 namespace NineToFive.Channels {
     class ChannelServer : ServerListener {
-
         private RecvOps Receive { get; }
 
         public ChannelServer(int port) : base(port) {
@@ -19,6 +18,7 @@ namespace NineToFive.Channels {
                 Console.WriteLine("[LoginServer] Unhandled operation {0}", operation);
                 return;
             }
+
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
                 Console.WriteLine("[LoginServer] {0} (0x{1}) {2}", operation, operation.ToString("X2"), p.ToArrayString(true));
@@ -31,6 +31,7 @@ namespace NineToFive.Channels {
                     handler.OnError(e);
                 }
             }
+
             Console.WriteLine();
         }
     }

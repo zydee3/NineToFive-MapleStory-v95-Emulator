@@ -1,74 +1,81 @@
-﻿using Destiny.Security;
-using NineToFive.IO;
-using System;
+﻿using System;
 using System.Net.Sockets;
+using Destiny.Security;
+using NineToFive.IO;
 
 namespace NineToFive.Net {
     public class ClientSession : IDisposable {
-        private Client Client { get; set; }
-        private Socket Socket { get; set; }
-        public MapleCryptoHandler Cipher { get; set; }
-        private Packet ByteBuffer { get; set; }
+        private Client _client;
+        private Socket _socket;
+        private readonly MapleCryptoHandler _cipher = new MapleCryptoHandler();
+        private byte[] _packetBuffer = new byte[512];
+        private int _packetSize;
 
         public ClientSession(Client client, Socket socket) {
-            Client = client;
-            Socket = socket;
-            Cipher = new MapleCryptoHandler();
-            ByteBuffer = new Packet() { PacketAccess = PacketAccess.Read };
+            _client = client;
+            _socket = socket;
 
-            Socket.Send(Cipher.Initialize()); // send raw data
-            BeginAccept(ByteBuffer.Capacity); // accept as much information possible at once 
+            _socket.Send(_cipher.Initialize()); // send raw data
+            BeginAccept();
         }
 
         public void Dispose() {
-            Cipher.Dispose();
-            Socket.Dispose();
-            ByteBuffer.Dispose();
+            _client = null;
+            _socket?.Dispose();
+            _socket = null;
+            _cipher.Dispose();
         }
 
-        private void BeginAccept(int size) {
-            // accept incoming data and store it inside ByteBuffer.Array
-            Socket.BeginReceive(ByteBuffer.Array, ByteBuffer.Position, size,
-                SocketFlags.None, new AsyncCallback(OnReceivePacket), null);
+        private void BeginAccept() {
+            lock (_cipher) {
+                _socket.BeginReceive(_packetBuffer, _packetSize, _packetBuffer.Length - _packetSize,
+                    SocketFlags.None, OnReceivePacket, null);
+            }
         }
 
         private void OnReceivePacket(IAsyncResult result) {
-            int count = Socket.EndReceive(result);
-            if (count == 0) return;
-
-            // while sufficient information is present
-            ByteBuffer.Size += count;
-            while (ByteBuffer.Size >= 6) {
-                byte[] header = ByteBuffer.ReadBytes(4);
-                ByteBuffer.Position -= 4; // we are only peeking information
-
-                int packetLength = AesCryptograph.RetrieveLength(header) + 4; // packet + header
-                ByteBuffer.TryGrow(packetLength); // make sure packet can fit in buffer
-
-                // sufficient information to process
-                if (ByteBuffer.Available >= packetLength) {
-                    // read bytes then move stream position back, to ready for new information
-                    byte[] packet = ByteBuffer.ReadBytes(packetLength);
-                    ByteBuffer.Position -= packetLength;
-                    // remove information from the buffer
-                    ByteBuffer.Size -= packetLength;
-
-                    using Packet p = new Packet(Cipher.Decrypt(packet));
-                    Client.Server.OnPacketReceived(Client, p);
-                } else {
-                    // insufficient information; re-accept data but only what's necessary
-                    BeginAccept(packetLength - ByteBuffer.Size);
+            lock (_cipher) {
+                int count;
+                try {
+                    count = _socket.EndReceive(result);
+                } catch {
+                    Dispose();
                     return;
                 }
+
+                // while sufficient information is present
+                _packetSize += count;
+                while (_packetSize >= 6) {
+                    int packetLength = AesCryptograph.RetrieveLength(_packetBuffer) + 4; // packet + header
+
+                    // expand the buffer because the full packet cannot fit
+                    if (packetLength >= _packetBuffer.Length) {
+                        byte[] buf = new byte[packetLength];
+                        Buffer.BlockCopy(_packetBuffer, 0, buf, 0, _packetBuffer.Length);
+                        _packetBuffer = buf;
+                        break;
+                    }
+
+                    if (_packetSize >= packetLength) {
+                        // sufficient information to process
+                        _packetSize -= packetLength;
+                        byte[] packet = new byte[packetLength];
+                        Buffer.BlockCopy(_packetBuffer, 0, packet, 0, packetLength);
+
+                        using Packet p = new Packet(_cipher.Decrypt(packet));
+                        _client.Server.OnPacketReceived(_client, p);
+                    } else break;
+                }
+
+                BeginAccept();
             }
-            BeginAccept(ByteBuffer.Capacity);
         }
 
         /// <summary>
         /// encrypts and sends the specified byte array to the socket
         /// </summary>
         public void Write(byte[] b) {
-            Socket.Send(Cipher.Encrypt(b));
+            _socket.Send(_cipher.Encrypt(b));
         }
     }
 }

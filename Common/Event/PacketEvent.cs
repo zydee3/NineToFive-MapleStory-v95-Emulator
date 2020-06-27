@@ -11,6 +11,7 @@ namespace NineToFive.Event {
         }
 
         public virtual void OnError(Exception e) {
+            Console.Write(e);
         }
 
         public virtual bool OnProcess(Packet p) {

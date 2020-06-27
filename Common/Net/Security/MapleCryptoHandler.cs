@@ -1,32 +1,32 @@
-﻿using NineToFive;
+﻿using System;
+using System.IO;
+using NineToFive;
 using NineToFive.IO;
 using NineToFive.Util;
-using System;
-using System.IO;
 
 namespace Destiny.Security {
     public class MapleCryptoHandler : ICryptograph {
-        public AesCryptograph En { get; private set; }
-        public AesCryptograph De { get; private set; }
+        private AesCryptograph En { get; set; }
+        private AesCryptograph De { get; set; }
 
         /// <summary>
         /// Generates Initialization Vector keys and returns the handshake packet
         /// </summary>
         public byte[] Initialize() {
-            byte[] receiveIV = BitConverter.GetBytes(RNG.GetUInt());
-            byte[] sendIV = BitConverter.GetBytes(RNG.GetUInt());
+            byte[] receiveIv = BitConverter.GetBytes(RNG.GetUInt());
+            byte[] sendIv = BitConverter.GetBytes(RNG.GetUInt());
 
-            En = new AesCryptograph(sendIV, unchecked((short)(0xFFFF - Constants.GameVersion)));
-            De = new AesCryptograph(receiveIV, Constants.GameVersion);
+            En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - Constants.GameVersion)));
+            De = new AesCryptograph(receiveIv, Constants.GameVersion);
 
-            using Packet packet = new Packet(16);
+            using Packet packet = new Packet();
             packet.WriteShort(14);
             packet.WriteShort(Constants.GameVersion);
             packet.WriteString("1");
-            packet.WriteBytes(receiveIV);
-            packet.WriteBytes(sendIV);
+            packet.WriteBytes(receiveIv);
+            packet.WriteBytes(sendIv);
             packet.WriteByte(8);
-            return packet.Array;
+            return packet.ToArray();
         }
 
         /// <summary>
@@ -35,19 +35,15 @@ namespace Destiny.Security {
         /// <returns>the encrypted packet with the generated header prepended</returns>
         public byte[] Encrypt(byte[] data) {
             lock (this) {
-                byte[] result = new byte[data.Length];
-                Buffer.BlockCopy(data, 0, result, 0, data.Length);
-
-                byte[] header = En.GenerateHeader(result.Length);
-
-                BlurCryptoHandler.Encrypt(result);
-                En.Crypt(result);
-
-                using Packet p = new Packet(data.Length + header.Length);
-                p.WriteBytes(header);
-                p.WriteBytes(result);
-
-                return p.Array;
+                byte[] header = En.GenerateHeader(data.Length);
+                byte[] packet = new byte[data.Length];
+                Buffer.BlockCopy(data, 0, packet, 0, data.Length);
+                BlurCryptoHandler.Encrypt(packet);
+                En.Crypt(packet);
+                byte[] result = new byte[header.Length + data.Length];
+                Buffer.BlockCopy(header, 0, result, 0, header.Length);
+                Buffer.BlockCopy(packet, 0, result, header.Length, packet.Length);
+                return result;
             }
         }
 
@@ -57,21 +53,20 @@ namespace Destiny.Security {
         /// <returns>the decrypted packet (excluding the header)</returns>
         public byte[] Decrypt(byte[] data) {
             lock (this) {
-                using Packet p = new Packet(data);
-                byte[] header = p.ReadBytes(4);
-
-                if (!De.IsValidPacket(header)) {
+                if (!De.IsValidPacket(data)) {
                     throw new InvalidDataException("invalid header");
                 }
-                int length = AesCryptograph.RetrieveLength(header);
-                byte[] content = p.ToArray();
-                if (content.Length == length) {
-                    De.Crypt(content);
-                    BlurCryptoHandler.Decrypt(content);
-                    return content;
-                } else {
-                    throw new CryptographyException(string.Format("Packet length not matching ({0} != {1}).", content.Length, length));
-                }
+
+                int length = AesCryptograph.RetrieveLength(data);
+
+                if ((data.Length - 4) != length)
+                    throw new CryptographyException($"Packet length not matching ({data.Length} != {length}).");
+
+                byte[] packet = new byte[data.Length - 4];
+                Buffer.BlockCopy(data, 4, packet, 0, packet.Length);
+                De.Crypt(packet);
+                BlurCryptoHandler.Decrypt(packet);
+                return packet;
             }
         }
 
