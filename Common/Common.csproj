@@ -15,4 +15,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Reference Include="MapleLib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\Wz\lib\MapleLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
