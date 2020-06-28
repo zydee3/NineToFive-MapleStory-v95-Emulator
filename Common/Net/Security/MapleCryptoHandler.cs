@@ -16,12 +16,12 @@ namespace NineToFive.Security {
             byte[] receiveIv = BitConverter.GetBytes(RNG.GetUInt());
             byte[] sendIv = BitConverter.GetBytes(RNG.GetUInt());
 
-            En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - Constants.Server.GameVersion)));
-            De = new AesCryptograph(receiveIv, Constants.Server.GameVersion);
+            En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - Constants.ServerConstants.GameVersion)));
+            De = new AesCryptograph(receiveIv, Constants.ServerConstants.GameVersion);
 
             using Packet packet = new Packet();
             packet.WriteShort(14);
-            packet.WriteShort(Constants.Server.GameVersion);
+            packet.WriteShort(Constants.ServerConstants.GameVersion);
             packet.WriteString("1");
             packet.WriteBytes(receiveIv);
             packet.WriteBytes(sendIv);

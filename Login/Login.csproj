@@ -6,10 +6,17 @@
     <StartupObject>NineToFive.Login.Program</StartupObject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RootNamespace>NineToFive</RootNamespace>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="login-logger.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

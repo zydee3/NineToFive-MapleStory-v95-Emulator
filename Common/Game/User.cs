@@ -17,6 +17,8 @@ namespace NineToFive.Game {
                 Inventories.Add(type, new Inventory(type));
             }
         }
+
+        public Client Client { get; set; }
     }
 
     public struct AvatarLook : IPacketSerializer<User> {

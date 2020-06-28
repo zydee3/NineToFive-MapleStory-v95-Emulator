@@ -64,7 +64,7 @@ namespace NineToFive.Net {
                         Buffer.BlockCopy(_packetBuffer, 0, packet, 0, packetLength);
 
                         using Packet p = new Packet(_cipher.Decrypt(packet));
-                        _client.Server.OnPacketReceived(_client, p);
+                        _client.ServerHandler.OnPacketReceived(_client, p);
                     } else break;
                 }
             }

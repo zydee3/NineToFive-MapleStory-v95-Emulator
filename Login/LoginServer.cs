@@ -6,10 +6,10 @@ using NineToFive.ReceiveOps;
 
 namespace NineToFive.Login {
     class LoginServer : ServerListener {
-        private RecvOps Receive { get; }
+        private readonly RecvOps _receive;
 
         public LoginServer(int port) : base(port) {
-            Receive = new RecvOps {
+            _receive = new RecvOps {
                 [(short) CLogin.OnSendBackupPacket] = typeof(BackupPacketEvent),
                 [(short) CLogin.OnCheckPasswordResult] = typeof(CheckPasswordEvent),
                 [(short) CLogin.OnCheckUserLimitPacket] = typeof(CheckUserLimitEvent),
@@ -24,7 +24,7 @@ namespace NineToFive.Login {
 
         public override void OnPacketReceived(Client c, Packet p) {
             short operation = p.ReadShort();
-            if (!Receive.Events.TryGetValue(operation, out Type t)) {
+            if (!_receive.Events.TryGetValue(operation, out Type t)) {
                 Console.WriteLine($"[unhandled] {operation} (0x{operation:X2}) : {p.ToArrayString(true)}");
                 Console.WriteLine($"[ascii-decode] {p}");
                 Console.WriteLine("-----------");

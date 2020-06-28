@@ -33,10 +33,10 @@ namespace NineToFive.Event {
             p.WriteByte((byte) world.Channels.Length);
             foreach (Channel channel in world.Channels) {
                 p.WriteString($"{world.Name}-{channel.Id + 1}");
-                p.WriteInt(); // load
+                p.WriteInt(); // load, 1000 = 100% population
                 p.WriteByte(); // unknown
-                p.WriteByte(); // world_id
-                p.WriteByte(); // channel_id
+                p.WriteByte();
+                p.WriteByte();
             }
 
             p.WriteShort(); // CLogin::BALLOON

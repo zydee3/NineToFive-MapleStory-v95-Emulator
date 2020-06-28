@@ -1,4 +1,5 @@
 ﻿using System;
+using log4net;
 using NineToFive.Event;
 using NineToFive.IO;
 using NineToFive.Net;
@@ -6,6 +7,7 @@ using NineToFive.ReceiveOps;
 
 namespace NineToFive.Channels {
     class ChannelServer : ServerListener {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ChannelServer));
         private RecvOps Receive { get; }
 
         public ChannelServer(int port) : base(port) {
@@ -15,14 +17,14 @@ namespace NineToFive.Channels {
         public override void OnPacketReceived(Client c, Packet p) {
             short operation = p.ReadShort();
             if (!Receive.Events.TryGetValue(operation, out Type t)) {
-                Console.WriteLine("[LoginServer] Unhandled operation {0}", operation);
+                Log.Info($"Unhandled operation {operation}");
                 return;
             }
 
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
-                Console.WriteLine("[LoginServer] {0} (0x{1}) {2}", operation, operation.ToString("X2"), p.ToArrayString(true));
-                Console.WriteLine(p.ToString());
+                Log.Info($"{operation} (0x{operation:X2}) {p.ToArrayString(true)}");
+                Log.Info(p.ToString());
                 try {
                     if (handler.OnProcess(p)) {
                         handler.OnHandle();

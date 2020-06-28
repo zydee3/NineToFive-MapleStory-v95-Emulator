@@ -5,12 +5,13 @@ using NineToFive.Net;
 
 namespace NineToFive {
     public class Client {
-        public readonly ServerListener Server;
+        public readonly ServerListener ServerHandler;
         public readonly ClientSession Session;
         public readonly List<User> Users = new List<User>();
+        private byte _worldId, _channelId;
 
         public Client(ServerListener server, Socket socket) {
-            Server = server;
+            ServerHandler = server;
             Session = new ClientSession(this, socket);
 
             Gender = 10;
@@ -21,6 +22,8 @@ namespace NineToFive {
         public byte Gender { get; set; }
         public bool Banned { get; set; }
         public byte[] MachineId { get; set; }
+        public World World => Server.Worlds[_worldId];
+        public Channel Channel => World.Channels[_channelId];
 
         public bool TryLogin(string password) {
             return true;
