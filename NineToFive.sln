@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Channels", "Channels\Channe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ezorsia", "ezorsia\ezorsia.vcxproj", "{0F213461-B82B-44EB-9585-761A2EDFC945}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wz", "Wz\Wz.csproj", "{033D632B-8DBE-4CC1-8D53-A36ED0946B3E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,10 +33,6 @@ Global
 		{0F213461-B82B-44EB-9585-761A2EDFC945}.Debug|Any CPU.Build.0 = Debug|Win32
 		{0F213461-B82B-44EB-9585-761A2EDFC945}.Release|Any CPU.ActiveCfg = Release|Win32
 		{0F213461-B82B-44EB-9585-761A2EDFC945}.Release|Any CPU.Build.0 = Release|Win32
-		{033D632B-8DBE-4CC1-8D53-A36ED0946B3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{033D632B-8DBE-4CC1-8D53-A36ED0946B3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{033D632B-8DBE-4CC1-8D53-A36ED0946B3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{033D632B-8DBE-4CC1-8D53-A36ED0946B3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
