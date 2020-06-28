@@ -1,5 +1,6 @@
 ﻿using System;
 using NineToFive.Game;
+using MapleLib.WzLib;
 
 namespace NineToFive {
     public class Server {
