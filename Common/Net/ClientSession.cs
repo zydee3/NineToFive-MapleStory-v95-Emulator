@@ -2,6 +2,7 @@
 using System.Net.Sockets;
 using Destiny.Security;
 using NineToFive.IO;
+using NineToFive.Security;
 
 namespace NineToFive.Net {
     public class ClientSession : IDisposable {
@@ -66,9 +67,9 @@ namespace NineToFive.Net {
                         _client.Server.OnPacketReceived(_client, p);
                     } else break;
                 }
-
-                BeginAccept();
             }
+
+            BeginAccept();
         }
 
         /// <summary>

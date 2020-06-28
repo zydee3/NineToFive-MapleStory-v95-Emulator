@@ -5,7 +5,7 @@ namespace NineToFive.Login {
         static void Main(string[] args) {
             Console.WriteLine("Hello World, from Login Server!");
             Server.Initialize();
-            _ = new LoginServer(8484);
+            _ = new LoginServer(Constants.Server.LoginPort);
             
             string input;
             while ((input = Console.ReadLine()) != null) {

@@ -149,11 +149,11 @@ namespace NineToFive.IO {
         }
 
         public Packet WriteStringFixed(string item, int length) {
+            if (item.Length > length) throw new ArgumentException($"input string exceeds ({item.Length}) the length limit ({length})");
             Writer.Write(item.ToCharArray());
             for (int i = item.Length; i < length; i++) {
                 Writer.Write((byte) 0);
             }
-
             if (Position > Size) Size = Position;
             return this;
         }

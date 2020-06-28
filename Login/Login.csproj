@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>NineToFive.Login.Program</StartupObject>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>NineToFive</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

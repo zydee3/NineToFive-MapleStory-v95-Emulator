@@ -7,21 +7,21 @@ namespace NineToFive.Event {
     /// </summary>
     class SetGenderEvent : PacketEvent {
 
-        private bool success;
-        private byte gender;
+        private bool _success;
+        private byte _gender;
 
         public SetGenderEvent(Client client) : base(client) {
         }
 
         public override void OnHandle() {
-            if (success) Client.Gender = gender;
-            Client.Session.Write(GetSetAccountResult(gender, success));
+            if (_success) Client.Gender = _gender;
+            Client.Session.Write(GetSetAccountResult(_gender, _success));
         }
 
         public override bool OnProcess(Packet p) {
-            success = p.ReadBool();
-            if (success) gender = p.ReadByte();
-            return gender == 0 || gender == 1;
+            _success = p.ReadBool();
+            if (_success) _gender = p.ReadByte();
+            return _gender == 0 || _gender == 1;
         }
 
         private static byte[] GetSetAccountResult(byte gender, bool success) {

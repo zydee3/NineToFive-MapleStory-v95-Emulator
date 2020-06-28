@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>NineToFive.Channels.Program</StartupObject>
+    <RootNamespace>NineToFive</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

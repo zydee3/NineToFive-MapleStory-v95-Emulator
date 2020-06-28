@@ -3,8 +3,9 @@ using System;
 
 namespace NineToFive.Event {
     class CheckPasswordEvent : PacketEvent {
-        private string username, pasword;
-        private byte[] MachineID;
+        private byte[] _machineId;
+        private string _username, _password;
+
         public CheckPasswordEvent(Client client) : base(client) {
         }
 
@@ -15,17 +16,15 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            Client.Username = username;
-            //Client.Password = Password;
-            Client.Session.Write(GetLoginSuccess(Client));
-
-            Console.WriteLine("[CheckPasswordEvent] \"{0}\" \"{1}\"", username, pasword);
+            Client.Username = _username;
+            Client.MachineId = _machineId;
+            Client.Session.Write(Client.TryLogin(_password) ? GetLoginSuccess(Client) : GetLoginFailed(4));
         }
 
         public override bool OnProcess(Packet packet) {
-            pasword = packet.ReadString();
-            username = packet.ReadString();
-            MachineID = packet.ReadBytes(16);
+            _password = packet.ReadString();
+            _username = packet.ReadString();
+            _machineId = packet.ReadBytes(16);
             packet.ReadInt(); // CSystemInfo::GetGameRoomClient
             packet.ReadByte(); // MEMORY[0x38]
             packet.ReadByte(); // 0

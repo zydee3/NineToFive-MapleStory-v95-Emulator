@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using NineToFive;
+using Destiny.Security;
 using NineToFive.IO;
 using NineToFive.Util;
 
-namespace Destiny.Security {
+namespace NineToFive.Security {
     public class MapleCryptoHandler : ICryptograph {
         private AesCryptograph En { get; set; }
         private AesCryptograph De { get; set; }
@@ -16,12 +16,12 @@ namespace Destiny.Security {
             byte[] receiveIv = BitConverter.GetBytes(RNG.GetUInt());
             byte[] sendIv = BitConverter.GetBytes(RNG.GetUInt());
 
-            En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - Constants.GameVersion)));
-            De = new AesCryptograph(receiveIv, Constants.GameVersion);
+            En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - Constants.Server.GameVersion)));
+            De = new AesCryptograph(receiveIv, Constants.Server.GameVersion);
 
             using Packet packet = new Packet();
             packet.WriteShort(14);
-            packet.WriteShort(Constants.GameVersion);
+            packet.WriteShort(Constants.Server.GameVersion);
             packet.WriteString("1");
             packet.WriteBytes(receiveIv);
             packet.WriteBytes(sendIv);

@@ -1,4 +1,5 @@
 ﻿using NineToFive.IO;
+using NineToFive.SendOps;
 
 namespace NineToFive.Event {
     class PinCodeResultEvent : PacketEvent {
@@ -6,24 +7,26 @@ namespace NineToFive.Event {
         /// typically, represents the value of CPinCodeDlg::EnterPinCode but mostly hard-coded as 1 due to Nexon
         /// no longer using this system
         /// </summary>
-        byte result;
+        private byte _result;
 
-        byte unk0;
-        string unk1;
+        private byte _unk0;
+        private string _unk1;
 
         public PinCodeResultEvent(Client client) : base(client) { }
 
         public override void OnHandle() {
-            Client.Session.Write(GetCheckPinCodeResult(result));
+            Client.Session.Write(GetCheckPinCodeResult(_result));
         }
 
         public override bool OnProcess(Packet p) {
-            result = p.ReadByte();
-            if (result == 1) { // create pin-code
-                result = 0;
+            _result = p.ReadByte();
+            if (_result == 1) {
+                // create pin-code
+                _result = 0;
             }
-            unk0 = p.ReadByte();
-            unk1 = p.ReadString();
+
+            _unk0 = p.ReadByte();
+            _unk1 = p.ReadString();
             return true;
         }
 
@@ -37,7 +40,7 @@ namespace NineToFive.Event {
         /// <param name="a">result of the pin code</param>
         private static byte[] GetCheckPinCodeResult(byte a) {
             using Packet p = new Packet();
-            p.WriteShort((short) SendOps.CLogin.OnCheckPinCodeResult);
+            p.WriteShort((short) CLogin.OnCheckPinCodeResult);
             p.WriteByte();
             return p.ToArray();
         }

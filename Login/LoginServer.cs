@@ -9,13 +9,17 @@ namespace NineToFive.Login {
         private RecvOps Receive { get; }
 
         public LoginServer(int port) : base(port) {
-            Receive = new RecvOps();
-            Receive.Events[(int) CLogin.OnSendBackupPacket] = typeof(BackupPacketEvent);
-            Receive.Events[(int) CLogin.OnCheckPasswordResult] = typeof(CheckPasswordEvent);
-            Receive.Events[(int) CLogin.OnLicenseResult] = typeof(LicenseResultEvent);
-            Receive.Events[(int) CLogin.OnSetGenderPacket] = typeof(SetGenderEvent);
-            Receive.Events[(int) CLogin.OnPinCodeResult] = typeof(PinCodeResultEvent);
-            Receive.Events[(int) CLogin.OnWorldListRequest] = typeof(WorldListEvent);
+            Receive = new RecvOps {
+                [(short) CLogin.OnSendBackupPacket] = typeof(BackupPacketEvent),
+                [(short) CLogin.OnCheckPasswordResult] = typeof(CheckPasswordEvent),
+                [(short) CLogin.OnCheckUserLimitPacket] = typeof(CheckUserLimitEvent),
+                [(short) CLogin.OnLicenseResult] = typeof(LicenseResultEvent),
+                [(short) CLogin.OnSetGenderPacket] = typeof(SetGenderEvent),
+                [(short) CLogin.OnPinCodeResult] = typeof(PinCodeResultEvent),
+                [(short) CLogin.OnWorldListRequest] = typeof(WorldListEvent),
+                [(short) CLogin.OnViewAllCharPacket] = typeof(ViewAllCharEvent),
+                [(short) CLogin.OnViewAllCharDlgResult] = typeof(ViewAllCharDlgEvent),
+            };
         }
 
         public override void OnPacketReceived(Client c, Packet p) {
