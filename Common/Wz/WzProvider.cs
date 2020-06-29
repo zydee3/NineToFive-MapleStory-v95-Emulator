@@ -6,11 +6,11 @@ using NineToFive.Game;
 
 namespace NineToFive.Wz {
     public class WzProvider {
-        /*
-         * Loads a target Wz file.
-         * @Param TargetWz<string> Name of File.wz to be loaded.
-         * @Return WzFile if found, else null.
-        */
+        /// <summary>
+        ///     Loads a target Wz file.
+        /// </summary>
+        /// <param name="TargetWz">Name of File.wz to be loaded.</param>
+        /// <returns>WzFile if found, else null.</returns>
         public static WzFile Load(string TargetWz) {
             string path = $"../../../../Wz/{TargetWz}.wz"; //wtf this is so troll
 
@@ -25,12 +25,12 @@ namespace NineToFive.Wz {
             return Wz;
         }
         
-        /*
-         * Parses Wz<WzFile> by traversing along TargetPath<string>
-         * @Param Wz<WzFile> Wz to parse.
-         * @Param TargetPath<string> Path to target property<WzImageProperty>
-         * @Return WzImageProperty at TargetPath<string> location, else null.
-        */
+        /// <summary>
+        ///     Parses Wz by traversing along TargetPath.
+        /// </summary>
+        /// <param name="Wz">Wz to parse.</param>
+        /// <param name="TargetPath">Path to target property</param>
+        /// <returns>WzImageProperty at TargetPath location, else null</returns>
         public static WzImageProperty GetWzProperty(WzFile Wz, string TargetPath) {
             string[] Directories = TargetPath.Split("/", 2);
 
