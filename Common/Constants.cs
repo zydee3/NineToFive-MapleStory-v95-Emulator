@@ -12,7 +12,8 @@
         public const int ChannelPort = 7575;
         
         public const int WorldCount = 1;
-        public const int ChannelCount = 1;
+        public const int ChannelCount = 3;
+        public const bool EnabledRanking = false;
 
         public static readonly string[] WorldNames = {
             "Scania", "Bera", "Broa", "Windia", "Khaini", "Bellocan", "Mardia", "kradia", "Yellonde", "Demethos",

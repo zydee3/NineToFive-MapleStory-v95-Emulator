@@ -12,13 +12,16 @@ namespace NineToFive.Login {
             _receive = new RecvOps {
                 [(short) CLogin.OnSendBackupPacket] = typeof(BackupPacketEvent),
                 [(short) CLogin.OnCheckPasswordResult] = typeof(CheckPasswordEvent),
+                [(short) CLogin.OnChannelSelectEnterChannel] = typeof(SelectEnterChannelEvent),
                 [(short) CLogin.OnCheckUserLimitPacket] = typeof(CheckUserLimitEvent),
                 [(short) CLogin.OnLicenseResult] = typeof(LicenseResultEvent),
                 [(short) CLogin.OnSetGenderPacket] = typeof(SetGenderEvent),
                 [(short) CLogin.OnPinCodeResult] = typeof(PinCodeResultEvent),
                 [(short) CLogin.OnWorldListRequest] = typeof(WorldListEvent),
                 [(short) CLogin.OnViewAllCharPacket] = typeof(ViewAllCharEvent),
+                [(short) CLogin.OnCheckDuplicateIdPacket] = typeof(CheckDuplicateUsernameEvent),
                 [(short) CLogin.OnViewAllCharDlgResult] = typeof(ViewAllCharDlgEvent),
+                
             };
         }
 

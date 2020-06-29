@@ -16,6 +16,7 @@ namespace NineToFive.ReceiveOps {
 
     public enum CLogin : short {
         OnCheckPasswordResult = 1,
+        OnChannelSelectEnterChannel = 5,
         OnCheckUserLimitPacket = 6,
 
         // CLogin::OnAcceptLicense
@@ -26,6 +27,7 @@ namespace NineToFive.ReceiveOps {
         OnWorldListRequest = 11,
         OnViewAllCharPacket = 13,
         OnViewAllCharDlgResult = 15,
+        OnCheckDuplicateIdPacket = 21,
         OnSendBackupPacket = 36,
     }
 }

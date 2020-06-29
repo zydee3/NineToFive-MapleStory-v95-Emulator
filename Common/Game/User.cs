@@ -21,7 +21,7 @@ namespace NineToFive.Game {
         public Client Client { get; set; }
     }
 
-    public struct AvatarLook : IPacketSerializer<User> {
+    public class AvatarLook : IPacketSerializer<User> {
         public byte Gender { get; set; }
         public byte Skin { get; set; }
         public int Face { get; set; }

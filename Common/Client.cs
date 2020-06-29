@@ -20,7 +20,7 @@ namespace NineToFive {
         public int Id { get; private set; }
         public string Username { get; set; }
         public byte Gender { get; set; }
-        public bool Banned { get; set; }
+        public User User { get; set; }
         public byte[] MachineId { get; set; }
         public World World => Server.Worlds[_worldId];
         public Channel Channel => World.Channels[_channelId];

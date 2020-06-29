@@ -8,6 +8,7 @@ using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.IO;
 using NineToFive.Net.Security;
+using NineToFive.ReceiveOps;
 
 namespace NineToFive.Net {
     public class Interoperability {
@@ -98,6 +99,11 @@ namespace NineToFive.Net {
 
                     byte response = client.TryLogin(password);
                     c.GetStream().Write(SimpleCrypto.Encrypt(new[] {response}));
+                    return;
+                }
+                case Interoperations.CheckDuplicateIdRequest: {
+                    string username = p.ReadString();
+                    c.GetStream().Write(SimpleCrypto.Encrypt(new byte[] {0}));
                     return;
                 }
             }
@@ -210,7 +216,13 @@ namespace NineToFive.Net {
         /// Login server request for world information (user count, message, events, etc.)
         /// </summary>
         WorldInformationRequest = 1,
+
+        /// <summary>
+        /// Login server request for <see cref="CLogin.OnCheckPasswordResult"/>
+        /// </summary>
         CheckPasswordRequest = 2,
+
+        CheckDuplicateIdRequest = 3,
         CheckConnectionTest = 255,
     }
 }
