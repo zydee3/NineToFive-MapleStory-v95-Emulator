@@ -16,8 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MapleLib.WzLib.Util;
 using MapleLib.WzLib.WzProperties;
 using System.IO;
@@ -25,8 +23,6 @@ using System.Drawing.Imaging;
 using System.Globalization;
 using System.Xml;
 using System.Drawing;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace MapleLib.WzLib.Serialization

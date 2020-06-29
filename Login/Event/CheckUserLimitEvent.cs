@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using NineToFive.Game;
+﻿using NineToFive.Game;
 using NineToFive.IO;
 
 namespace NineToFive.Event {

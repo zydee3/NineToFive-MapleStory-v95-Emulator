@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Net;
 using log4net;
-using log4net.Config;
 using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Net;
 using NineToFive.Net.Security;
-
-[assembly: XmlConfigurator(ConfigFile = "channel-logger.xml")]
 
 namespace NineToFive.Channels {
     class Program {

@@ -18,12 +18,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
 using MapleLib.WzLib.WzStructure.Data;
-using MapleLib.WzLib.WzStructure;
 using System.Drawing;
 using MapleLib.Helpers;
 

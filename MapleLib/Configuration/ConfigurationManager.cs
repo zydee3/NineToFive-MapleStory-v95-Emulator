@@ -18,7 +18,6 @@ using MapleLib.PacketLib;
 using Newtonsoft.Json;
 using System;
 using System.IO;
-using System.Text;
 
 namespace MapleLib.Configuration
 {

@@ -20,8 +20,6 @@ using System.Text.RegularExpressions;
 using System;
 using MapleLib.WzLib.Util;
 using MapleLib.WzLib.WzProperties;
-using System.Threading.Tasks;
-using MapleLib.PacketLib;
 
 namespace MapleLib.WzLib
 {

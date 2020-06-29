@@ -1,5 +1,4 @@
-﻿using System;
-using NineToFive.Game;
+﻿using NineToFive.Game;
 using NineToFive.IO;
 using NineToFive.SendOps;
 

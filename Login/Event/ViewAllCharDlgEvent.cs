@@ -1,5 +1,4 @@
-﻿using System.IO;
-using NineToFive.IO;
+﻿using NineToFive.IO;
 
 namespace NineToFive.Event {
     public class ViewAllCharDlgEvent : PacketEvent {

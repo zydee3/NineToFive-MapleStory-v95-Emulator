@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using log4net;
-using log4net.Config;
 using NineToFive.Constants;
-using NineToFive.Game;
-using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.Net.Security;
-
-[assembly: XmlConfigurator(ConfigFile = "login-logger.xml")]
 
 namespace NineToFive.Login {
     class Program {

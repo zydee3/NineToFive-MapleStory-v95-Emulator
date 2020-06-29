@@ -16,11 +16,9 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 using System.IO;
 using MapleLib.Configuration;
 using MapleLib.MapleCryptoLib;
-using MapleLib.PacketLib;
 
 namespace MapleLib.WzLib.Util
 {

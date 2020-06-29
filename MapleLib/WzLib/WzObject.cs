@@ -16,7 +16,6 @@
 
 using System;
 using System.Drawing;
-using MapleLib.WzLib.WzProperties;
 
 namespace MapleLib.WzLib
 {

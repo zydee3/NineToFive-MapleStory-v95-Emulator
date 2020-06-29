@@ -18,8 +18,6 @@ using System.Collections.Generic;
 using System.IO;
 using MapleLib.WzLib.Util;
 using System;
-using System.Diagnostics;
-using MapleLib.PacketLib;
 
 namespace MapleLib.WzLib
 {

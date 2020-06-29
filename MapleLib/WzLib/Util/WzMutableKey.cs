@@ -17,7 +17,6 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
-using MapleLib.MapleCryptoLib;
 
 namespace MapleLib.WzLib.Util
 {

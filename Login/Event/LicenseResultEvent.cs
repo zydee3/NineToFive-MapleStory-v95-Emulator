@@ -1,6 +1,4 @@
-﻿using NineToFive;
-using NineToFive.Event;
-using NineToFive.IO;
+﻿using NineToFive.IO;
 
 namespace NineToFive.Event {
     class LicenseResultEvent : PacketEvent {

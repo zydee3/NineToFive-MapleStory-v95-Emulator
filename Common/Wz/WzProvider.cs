@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using MapleLib.WzLib;
-using NineToFive.Game;
 
 namespace NineToFive.Wz {
     public class WzProvider {

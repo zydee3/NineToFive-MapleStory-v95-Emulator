@@ -15,15 +15,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 using System;
-using System.Drawing;
 using System.IO;
 using System.Collections.Generic;
 using MapleLib.WzLib.Util;
 using MapleLib.WzLib.WzProperties;
-using System.Diagnostics;
-using MapleLib.PacketLib;
-using System.Text;
-using MapleLib.MapleCryptoLib;
 
 namespace MapleLib.WzLib
 {
