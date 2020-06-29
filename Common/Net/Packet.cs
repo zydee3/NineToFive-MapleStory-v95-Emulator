@@ -142,8 +142,9 @@ namespace NineToFive.IO {
         }
 
         public Packet WriteString(string item = "") {
-            Writer.Write((short) item.Length);
-            Writer.Write(item.ToCharArray());
+            byte[] buffer = Encoding.ASCII.GetBytes(item);
+            Writer.Write((short) buffer.Length);
+            Writer.Write(buffer);
             if (Position > Size) Size = Position;
             return this;
         }

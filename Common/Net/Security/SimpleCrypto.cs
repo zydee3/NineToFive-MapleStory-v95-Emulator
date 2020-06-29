@@ -10,10 +10,10 @@ namespace NineToFive.Net.Security {
         /// </summary>
         /// <returns>buffer with length of the packet prepended</returns>
         public byte[] Encrypt(byte[] data) {
-            byte[] packet = new byte[data.Length + 4];
             byte[] length = BitConverter.GetBytes(data.Length);
+            byte[] packet = new byte[data.Length + length.Length];
             Buffer.BlockCopy(length, 0, packet, 0, length.Length);
-            Buffer.BlockCopy(data, 0, packet, 4, data.Length);
+            Buffer.BlockCopy(data, 0, packet, length.Length, data.Length);
             return packet;
         }
 

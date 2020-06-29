@@ -3,8 +3,11 @@
         public const int GameVersion = 95;
 
         public const string Address = "127.0.0.1";
+
+        public const int InterCentralPort = 8481;
         public const int InterChannelPort = 8482;
         public const int InterLoginPort = 8483;
+        
         public const int LoginPort = 8484;
         public const int ChannelPort = 7575;
         

@@ -13,22 +13,105 @@ namespace NineToFive.Net {
     public class Interoperability {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Interoperability));
         private static readonly SimpleCrypto SimpleCrypto = new SimpleCrypto();
+        private readonly TcpListener _server;
 
-        public Interoperability() { }
+        public Interoperability(int port) {
+            _server = new TcpListener(new IPEndPoint(IPAddress.Loopback, port));
+        }
 
         #region Server methods
 
-        public delegate void OnInteroperationReceived(TcpClient c, Packet p);
+        private void OnInteroperationReceived(TcpClient c, Packet p) {
+            Interoperations op = (Interoperations) p.ReadByte();
+#if DEBUG
+            Log.Info($"Interoperation received : {op}");
+#endif
+            switch (op) {
+                default:                                  throw new ArgumentOutOfRangeException();
+                case Interoperations.CheckConnectionTest: return;
+                case Interoperations.WorldInformationRequest: {
+                    using Packet w = new Packet();
+                    foreach (World world in Server.Worlds) {
+                        w.WriteByte(world.Id);
+                        // find only channels that have a listening socket on this server
+                        foreach (Channel channel in world.Channels.Where(ch => ch.ServerListener != null)) {
+                            w.WriteByte(channel.Id);
+                            w.WriteInt(world.Users.Values.Count(u => u.Client.Channel.Id == channel.Id));
+                        }
+
+                        w.WriteByte(255);
+                    }
+
+                    w.WriteByte(255);
+
+                    c.GetStream().Write(SimpleCrypto.Encrypt(w.ToArray()));
+                    return;
+                }
+                case Interoperations.ChannelHostPermission: {
+                    IPAddress address = new IPAddress(p.ReadBytes(4));
+                    World world = Server.Worlds[p.ReadByte()];
+                    byte min = p.ReadByte(), max = p.ReadByte();
+                    Log.Info($"Server {address} is asking to host channels {min} through {max} in world {world.Id}");
+
+                    byte[] response = new byte[1];
+                    if (max >= world.Channels.Length) {
+                        // index out of bounds
+                        c.GetStream().Write(SimpleCrypto.Encrypt(response));
+                        return;
+                    }
+
+                    foreach (Channel channel in world.Channels.Where(ch => ch.Snapshot.IsActive)) {
+                        // send a tiny packet to check the connection of the server
+                        if (!TestConnection(channel.Snapshot.HostAddress, channel.Port)) {
+                            // test failed so assume server is offline
+                            Log.Info($"Connection test to channel {channel.Id} in world {world.Id} failed. Channel is now available for hosting");
+                            channel.Snapshot.IsActive = false;
+                            channel.Snapshot.HostAddress = null;
+                        }
+                    }
+
+                    if (world.Channels.Any(ch => ch.Snapshot.IsActive && ch.Id >= min && ch.Id <= max)) {
+                        // channel is already being hosted
+                        c.GetStream().Write(SimpleCrypto.Encrypt(response));
+                        return;
+                    }
+
+                    response[0] = 1; // granted permission
+                    for (int i = min; i <= max; i++) {
+                        ChannelSnapshot snapshot = world.Channels[i].Snapshot;
+                        snapshot.IsActive = true;
+                        snapshot.HostAddress = address.ToString();
+                        Log.Info($"Channel {i} is now being hosted by server {snapshot.HostAddress}");
+                    }
+
+                    c.GetStream().Write(SimpleCrypto.Encrypt(response));
+                    return;
+                }
+                case Interoperations.CheckPasswordRequest: {
+                    string username = p.ReadString();
+                    string password = p.ReadString();
+                    CentralServer.Clients.TryGetValue(username, out Client client);
+                    if (client == null) {
+                        client = new Client(null, null) {Username = username};
+                        CentralServer.Clients.Add(username, client);
+                    }
+
+                    byte response = client.TryLogin(password);
+                    c.GetStream().Write(SimpleCrypto.Encrypt(new[] {response}));
+                    return;
+                }
+            }
+        }
 
         /// <summary>
-        /// Create a tcp listening socket on the <see cref="ServerConstants.InternalPort"/>
-        /// <para>Immediately accepts connections asynchronously</para>
+        /// Immediately accepts connections from a new thread
         /// </summary>
-        public static void ServerCreate(int port, OnInteroperationReceived handler) {
+        /// <param name="port">port to bind the socket</param>
+        public static void ServerCreate(int port) {
             void StartSocket() {
-                TcpListener server = new TcpListener(new IPEndPoint(IPAddress.Loopback, port));
-                server.Start();
-                while (true) ServerAcceptClients(server, ref handler);
+                Interoperability instance = new Interoperability(port);
+                instance._server.Start();
+                while (true) ServerAcceptClients(instance);
             }
 
             new Thread(StartSocket).Start();
@@ -37,17 +120,21 @@ namespace NineToFive.Net {
         /// <summary>
         /// Handles the incoming connection
         /// </summary>
-        private static void ServerAcceptClients(TcpListener server, ref OnInteroperationReceived handler) {
+        private static void ServerAcceptClients(Interoperability instance) {
             try {
-                using TcpClient client = server.AcceptTcpClient();
-                // the client may request data at any time, so be ready!
+                using TcpClient client = instance._server.AcceptTcpClient();
+                NetworkStream stream = client.GetStream();
+
+                // read packet length
                 byte[] buffer = new byte[4];
-                using NetworkStream stream = client.GetStream();
                 stream.Read(buffer, 0, buffer.Length);
+
+                // read packet body
                 buffer = new byte[BitConverter.ToInt32(buffer)];
                 stream.Read(buffer, 0, buffer.Length);
+
                 using Packet p = new Packet(buffer);
-                handler(client, p);
+                instance.OnInteroperationReceived(client, p);
             } catch (Exception e) {
                 Log.Error("Error while processing", e);
             }
@@ -56,48 +143,22 @@ namespace NineToFive.Net {
         #endregion
 
         /// <summary>
-        /// Sends a request for consent to host the specified channels
+        /// Sends a request for permission to host the specified channels
+        /// <para>Should always assume the <paramref name="address"/> parameter is IPv4</para>
         /// </summary>
-        /// <param name="port">interoperability server to ask</param>
-        /// <param name="address">remote address of the server requesting to host</param>
+        /// <param name="address">remote address of the asking server</param>
         /// <param name="worldId">id of world which the channels belong to</param>
         /// <param name="min">lower bound channel</param>
         /// <param name="max">upper bound channel</param>
         /// <returns></returns>
-        public static bool SendChannelHostPermission(int port, byte[] address, byte worldId, byte min, byte max) {
+        public static bool SendChannelHostPermission(byte[] address, byte worldId, byte min, byte max) {
             using Packet w = new Packet();
             w.WriteByte((byte) Interoperations.ChannelHostPermission);
             w.WriteBytes(address);
             w.WriteByte(worldId);
             w.WriteByte(min);
             w.WriteByte(max);
-            using Packet r = SendPacket(w.ToArray(), port);
-            return r?.ReadBool() == true;
-        }
-
-        public static void SendWorldInformationRequest() {
-            foreach (World world in Server.Worlds) {
-                // obtain channel servers group by HostAddress
-                var servers =
-                    from ch in world.Channels
-                    group ch by new {ch.Port, ch.Snapshot.HostAddress}
-                    into results
-                    select results;
-
-                foreach (var server in servers) {
-                    using Packet w = new Packet();
-                    w.WriteByte((byte) Interoperations.WorldInformationRequest);
-                    w.WriteByte(world.Id); // get user count for each server for this world 
-                    using Packet r = SendPacket(w.ToArray(), ServerConstants.InterChannelPort, server.Key.HostAddress);
-                    if (r == null) continue;
-                    byte channelId;
-                    do {
-                        channelId = r.ReadByte();
-                        if (channelId == 255) break;
-                        world.Channels[channelId].Snapshot.UserCount = r.ReadInt();
-                    } while (channelId != 255);
-                }
-            }
+            return GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort)?[0] == 1;
         }
 
         public static bool TestConnection(string address, int port) {
@@ -111,22 +172,30 @@ namespace NineToFive.Net {
             }
         }
 
-        private static Packet SendPacket(byte[] buffer, int port, string address = "127.0.0.1") {
-            try {
-                using TcpClient client = new TcpClient(address, port);
-                NetworkStream stream = client.GetStream();
-                byte[] request = SimpleCrypto.Encrypt(buffer);
-                stream.Write(request, 0, request.Length);
+        /// <summary>
+        /// sends a packet to the specified server in blocking mode, waiting for a packet response
+        /// </summary>
+        /// <param name="buffer">packet buffer to send</param>
+        /// <param name="port">destination port on the specified server</param>
+        /// <param name="address">ip address of the specified server</param>
+        /// <returns>response information in regard to the packet sent (no <see cref="Interoperations"/> header is provided)</returns>
+        public static byte[] GetPacketResponse(byte[] buffer, int port, string address = "127.0.0.1") {
+            using TcpClient client = new TcpClient(address, port);
+            NetworkStream stream = client.GetStream();
+            // send packet request
+            buffer = SimpleCrypto.Encrypt(buffer);
+            stream.Write(buffer, 0, buffer.Length);
 
-                byte[] response = new byte[4];
-                stream.Read(response, 0, response.Length);
-                response = new byte[BitConverter.ToInt32(response)];
-                stream.Read(response);
-                return new Packet(response);
-            } catch {
-                // connection failed or something
-                return null;
-            }
+            // get response length
+            buffer = new byte[4];
+            int count = stream.Read(buffer, 0, buffer.Length);
+            if (count == 0) throw new OperationCanceledException("Not enough data received");
+
+            // read response packet
+            buffer = new byte[BitConverter.ToInt32(buffer)];
+            count = stream.Read(buffer);
+            if (count == 0) throw new OperationCanceledException("Not enough data received");
+            return buffer;
         }
     }
 
@@ -136,10 +205,12 @@ namespace NineToFive.Net {
         /// to create sockets for specific channels in world 
         /// </summary>
         ChannelHostPermission = 0,
+
         /// <summary>
         /// Login server request for world information (user count, message, events, etc.)
         /// </summary>
         WorldInformationRequest = 1,
+        CheckPasswordRequest = 2,
         CheckConnectionTest = 255,
     }
 }

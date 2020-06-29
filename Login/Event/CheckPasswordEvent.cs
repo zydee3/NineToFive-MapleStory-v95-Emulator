@@ -1,4 +1,5 @@
 ﻿using System;
+using NineToFive.Constants;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.SendOps;
@@ -10,6 +11,17 @@ namespace NineToFive.Event {
 
         public CheckPasswordEvent(Client client) : base(client) { }
 
+        public byte GetAuthRequest() {
+            if (_username.Length < 4 || _password.Length < 4) {
+                return 5;
+            }
+            using Packet w = new Packet();
+            w.WriteByte((byte) Interoperations.CheckPasswordRequest);
+            w.WriteString(_username);
+            w.WriteString(_password);
+            return Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort)[0];
+        }
+
         public override void OnError(Exception e) {
             base.OnError(e);
             // send an error so the user doesn't get soft-locked
@@ -17,13 +29,13 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            Client.Username = _username;
-            Client.MachineId = _machineId;
-            if (Client.TryLogin(_password)) {
-                Interoperability.SendWorldInformationRequest();
+            byte loginResult = GetAuthRequest();
+            if (loginResult == 1) {
+                Client.Username = _username;
+                Client.MachineId = _machineId;
                 Client.Session.Write(GetLoginSuccess(Client));
             } else {
-                Client.Session.Write(GetLoginFailed(4));
+                Client.Session.Write(GetLoginFailed(loginResult));
             }
         }
 

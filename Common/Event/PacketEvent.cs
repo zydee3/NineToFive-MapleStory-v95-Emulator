@@ -3,12 +3,11 @@ using System;
 
 namespace NineToFive.Event {
     public class PacketEvent {
-
-        public Client Client { get; private set; }
-
         public PacketEvent(Client client) {
             Client = client;
         }
+
+        public Client Client { get; private set; }
 
         public virtual void OnError(Exception e) {
             Console.Write(e);

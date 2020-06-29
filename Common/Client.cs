@@ -10,7 +10,7 @@ namespace NineToFive {
         public readonly List<User> Users = new List<User>();
         private byte _worldId, _channelId;
 
-        public Client(ServerListener server, Socket socket) {
+        public Client(ServerListener server, TcpClient socket) {
             ServerHandler = server;
             Session = new ClientSession(this, socket);
 
@@ -25,8 +25,8 @@ namespace NineToFive {
         public World World => Server.Worlds[_worldId];
         public Channel Channel => World.Channels[_channelId];
 
-        public bool TryLogin(string password) {
-            return true;
+        public byte TryLogin(string password) {
+            return 1;
         }
     }
 }

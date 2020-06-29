@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using log4net;
 using log4net.Config;
 using NineToFive.Constants;
 using NineToFive.Game;
-using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.Net.Security;
 
@@ -20,8 +17,8 @@ namespace NineToFive.Channels {
         static void Main(string[] args) {
             Log.Info("Hello World, from Channel Server!");
             Server.Initialize();
-            Interoperability.ServerCreate(ServerConstants.InterChannelPort, OnInteroperationReceived);
-            Log.Info($"Interoperations listening on port {ServerConstants.InterLoginPort}");
+            Interoperability.ServerCreate(ServerConstants.InterChannelPort);
+            Log.Info($"Interoperations listening on port {ServerConstants.InterChannelPort}");
 
             foreach (string arg in args) {
                 if (arg.StartsWith("--channels")) {
@@ -34,29 +31,9 @@ namespace NineToFive.Channels {
 
             string input;
             while ((input = Console.ReadLine()) != null) {
-                if (input == "exit") {
-                    return;
-                }
-            }
-        }
-
-        private static void OnInteroperationReceived(TcpClient c, Packet p) {
-            Interoperations op = (Interoperations) p.ReadByte();
-            switch (op) {
-                case Interoperations.WorldInformationRequest: {
-                    Log.Info($"Received interoperation request for world information");
-                    World world = Server.Worlds[p.ReadByte()];
-                    using Packet w = new Packet();
-                    foreach (Channel channel in world.Channels) {
-                        if (channel.ServerListener == null) continue;
-                        w.WriteByte(channel.Id);
-                        w.WriteInt(world.Users.Values.Count(u => u.Client.Channel.Id == channel.Id));
-                    }
-
-                    w.WriteByte(255);
-                    c.GetStream().Write(SimpleCrypto.Encrypt(w.ToArray()));
-                    return;
-                }
+                if (input == "exit") return;
+                // no reason to log a console message
+                Console.WriteLine("I only know the command: \"exit\"");
             }
         }
 
@@ -68,7 +45,7 @@ namespace NineToFive.Channels {
             World world = Server.Worlds[World.ActiveWorld];
             Log.Info($"Asking for permission to host channels from {min} to {max} in world {world.Id}");
             byte[] address = IPAddress.Parse(ServerConstants.Address).GetAddressBytes();
-            if (!Interoperability.SendChannelHostPermission(ServerConstants.InterLoginPort, address, world.Id, min, max)) {
+            if (!Interoperability.SendChannelHostPermission(address, world.Id, min, max)) {
                 throw new OperationCanceledException($"Denied permission to host channels from {min} to {max}");
             }
 

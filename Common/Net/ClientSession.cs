@@ -7,16 +7,17 @@ using NineToFive.Security;
 namespace NineToFive.Net {
     public class ClientSession : IDisposable {
         private Client _client;
-        private Socket _socket;
+        private TcpClient _socket;
         private readonly MapleCryptoHandler _cipher = new MapleCryptoHandler();
         private byte[] _packetBuffer = new byte[512];
         private int _packetSize;
 
-        public ClientSession(Client client, Socket socket) {
+        public ClientSession(Client client, TcpClient socket) {
             _client = client;
             _socket = socket;
 
-            _socket.Send(_cipher.Initialize()); // send raw data
+            if (socket == null) return;
+            _socket.GetStream().Write(_cipher.Initialize()); // send raw data
             BeginAccept();
         }
 
@@ -28,17 +29,14 @@ namespace NineToFive.Net {
         }
 
         private void BeginAccept() {
-            lock (_cipher) {
-                _socket.BeginReceive(_packetBuffer, _packetSize, _packetBuffer.Length - _packetSize,
-                    SocketFlags.None, OnReceivePacket, null);
-            }
+            _socket.GetStream().BeginRead(_packetBuffer, _packetSize, _packetBuffer.Length - _packetSize, OnReceivePacket, null);
         }
 
         private void OnReceivePacket(IAsyncResult result) {
             lock (_cipher) {
                 int count;
                 try {
-                    count = _socket.EndReceive(result);
+                    count = _socket.GetStream().EndRead(result);
                 } catch {
                     Dispose();
                     return;
@@ -76,7 +74,7 @@ namespace NineToFive.Net {
         /// encrypts and sends the specified byte array to the socket
         /// </summary>
         public void Write(byte[] b) {
-            _socket.Send(_cipher.Encrypt(b));
+            _socket.GetStream().Write(_cipher.Encrypt(b));
         }
     }
 }
