@@ -21,6 +21,8 @@ namespace NineToFive {
                     world.Channels[channelId] = new Channel(worldId, channelId, channelPort);
                 }
 
+                Worlds[worldId] = world;
+                
                 world.Templates = new Dictionary<uint, object>[Enum.GetNames(typeof(TemplateType)).Length];
                 world.Fields = new Dictionary<uint, Field>[world.Channels.Length];
                 world.Entities = new Dictionary<uint, Entity>[Enum.GetNames(typeof(EntityType)).Length];
