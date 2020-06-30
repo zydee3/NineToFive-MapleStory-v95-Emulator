@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace NineToFive.Constants {
     public static class ServerConstants {
@@ -24,60 +25,15 @@ namespace NineToFive.Constants {
         };
     }
 
-    public static class Job {
-        public static bool IsExtendedSpJob(int jobId) => !(jobId / 1000 != 3 && jobId / 100 != 22 && jobId != 2001);
+    public static class Disabled {
+        public static readonly List<uint> Mobs = new List<uint> { };
+        public static readonly List<uint> Npcs = new List<uint> { };
+        public static readonly List<uint> Cash = new List<uint> { };
+        public static readonly List<uint> Fields = new List<uint> { };
     }
 
-    public enum SkillProperties {
-        acc,
-        asrR,
-        attackCount,
-        bulletCount,
-        cooltime,
-        cr,
-        criticaldamageMax,
-        criticaldamageMin,
-        damage,
-        damR,
-        dot,
-        dotInterval,
-        dotTime,
-        emdd,
-        epad,
-        epdd,
-        er,
-        eva,
-        expR,
-        hpCon,
-        ignoreMobpdpR,
-        jump,
-        mad,
-        mastery,
-        maxLevel,
-        mdd,
-        mhpR,
-        mobCount,
-        morph,
-        mp,
-        mpCon,
-        pad,
-        padX,
-        pdd,
-        pddR,
-        prop,
-        range,
-        speed,
-        subProp,
-        subTime,
-        t,
-        terR,
-        time,
-        u,
-        v,
-        w,
-        x,
-        y,
-        z
+    public static class Job {
+        public static bool IsExtendedSpJob(int jobId) => !(jobId / 1000 != 3 && jobId / 100 != 22 && jobId != 2001);
     }
 
     public static class ItemConstants {
@@ -164,6 +120,7 @@ namespace NineToFive.Constants {
                         break;
                     return 11;
             }
+
             throw new InvalidOperationException($"could not get body part for item {itemId}, category {category}");
         }
 
@@ -225,5 +182,118 @@ namespace NineToFive.Constants {
                     return bagIndex == 11;
             }
         }
+    }
+
+    public enum EntityType {
+        Npc,
+        Mob,
+        Player,
+        Reactor,
+        Summon
+    }
+
+    public enum TemplateType {
+        Mob,
+        Field
+    }
+
+    public enum SkillProperties {
+        acc,
+        asrR,
+        attackCount,
+        bulletCount,
+        cooltime,
+        cr,
+        criticaldamageMax,
+        criticaldamageMin,
+        damage,
+        damR,
+        dot,
+        dotInterval,
+        dotTime,
+        emdd,
+        epad,
+        epdd,
+        er,
+        eva,
+        expR,
+        hpCon,
+        ignoreMobpdpR,
+        jump,
+        mad,
+        mastery,
+        maxLevel,
+        mdd,
+        mhpR,
+        mobCount,
+        morph,
+        mp,
+        mpCon,
+        pad,
+        padX,
+        pdd,
+        pddR,
+        prop,
+        range,
+        speed,
+        subProp,
+        subTime,
+        t,
+        terR,
+        time,
+        u,
+        v,
+        w,
+        x,
+        y,
+        z,
+        selfDestruction,
+        itemCon,
+        itemConNo,
+        bulletConsume,
+        emmp,
+        emhp,
+        action,
+        mesoR,
+        madX,
+        mmpR,
+        hp,
+        moneyCon,
+        itemConsume,
+        mddR
+    }
+
+    public enum FieldLimits {
+        CanJump,
+        CanUseSkill,
+        CanUseSummonItem,
+        CanUseMysticDoor,
+        CanMigrate,
+        CanUsePortalScroll,
+        CanUseTeleportItem,
+        CanOpenMiniGame,
+        CanUseSpecificPortalScroll,
+        CanUseTamingMob,
+        CanConsumeStatChangeItem,
+        CanChangePartyBoss,
+        HasMonsterCapacityLimit,
+        CanUseWeddingInvitationItem,
+        CanUseCashWeather,
+        CanUsePet,
+        CanUseAntiMacroItem,
+        CanFallDown,
+        CanSummonNPC,
+        HasExpDecrease,
+        HasDamageOnFall,
+        HasParacelOpenLimit,
+        HasDropLimit,
+        CanUseRocketBoost,
+        HasItemOptionLimit,
+        HasQuestAlert,
+        CanUseAndroid,
+        AutoExpandMiniMap,
+        CanUseNonMoveSkill,
+        DisableMiniMap,
+        HasSwim
     }
 }

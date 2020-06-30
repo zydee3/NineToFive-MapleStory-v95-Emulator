@@ -12,8 +12,6 @@ namespace ServerTests.Wz {
             Stopwatch Watch = new Stopwatch();
 
             
-
-            
             var fake = new Skill(SkillID);
             
             Watch.Start();
@@ -26,7 +24,16 @@ namespace ServerTests.Wz {
             Watch.Start();
             var SS = SkillWz.GetFromJob(JobID);
             Watch.Stop();
-            Console.WriteLine($"Time Elapsed Loading Skills From Job({JobID}): {Watch.Elapsed}s");    
+            Console.WriteLine($"Time Elapsed Loading Skills From Job({JobID}): {Watch.Elapsed}s");
+            
+            Watch.Reset();
+            
+            Watch.Start();
+            var SSS = SkillWz.GetSkills(SkillID => (SkillID > 0));
+          
+            Watch.Stop();
+            Console.WriteLine($"Time Elapsed Loading Skills Using Predicate: {Watch.Elapsed}");
+            
         }
     }
 }
