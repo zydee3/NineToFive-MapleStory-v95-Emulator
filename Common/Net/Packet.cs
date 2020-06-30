@@ -135,10 +135,10 @@ namespace NineToFive.IO {
             return this;
         }
 
-        public Packet WriteBool(bool item) {
+        public bool WriteBool(bool item) {
             Writer.Write(item);
             if (Position > Size) Size = Position;
-            return this;
+            return item;
         }
 
         public Packet WriteString(string item = "") {

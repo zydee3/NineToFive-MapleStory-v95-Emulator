@@ -36,7 +36,7 @@ namespace NineToFive.Event {
         private byte[] GetSelectWorldResult() {
             using Packet p = new Packet();
             p.WriteShort((short) SendOps.CLogin.OnSelectWorldResult);
-            p.WriteByte();
+            p.WriteByte(); // failure result
             p.WriteByte((byte) Client.Users.Count); // up to 15 characters
             foreach (User user in Client.Users) {
                 user.CharacterStat.Encode(user, p);
@@ -51,9 +51,9 @@ namespace NineToFive.Event {
                 }
             }
 
-            p.WriteByte();
-            p.WriteInt();
-            p.WriteInt();
+            p.WriteByte(); // m_bLoginOpt
+            p.WriteInt(Client.Users.Capacity - Client.Users.Count);
+            p.WriteInt(); // m_nBuyCharCount
             return p.ToArray();
         }
     }

@@ -37,7 +37,7 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            Client.User ??= new User();
+            Client.User = new User();
 
             Client.User.CharacterStat.Username = _username;
             Client.Session.Write(GetCheckDuplicatedIdResult(_username, _result));

@@ -7,7 +7,7 @@ namespace NineToFive {
     public class Client {
         public readonly ServerListener ServerHandler;
         public readonly ClientSession Session;
-        public readonly List<User> Users = new List<User>();
+        public readonly List<User> Users = new List<User>(15);
         private byte _worldId, _channelId;
 
         public Client(ServerListener server, TcpClient socket) {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NineToFive.Constants;
 
 namespace NineToFive.Game.Storage {
     public enum InventoryType {
@@ -11,7 +12,7 @@ namespace NineToFive.Game.Storage {
     }
 
     public class Inventory {
-        private Dictionary<ushort, Item> _items = new Dictionary<ushort, Item>();
+        private Dictionary<short, Item> _items = new Dictionary<short, Item>();
 
         public Inventory(InventoryType type, int size = 32) {
             Type = type;
@@ -20,8 +21,21 @@ namespace NineToFive.Game.Storage {
 
         public InventoryType Type { get; }
         public int Size { get; }
-        public Dictionary<ushort, Item>.ValueCollection Items => _items.Values;
+        public Dictionary<short, Item>.ValueCollection Items => _items.Values;
 
-        public Item this[ushort i] => _items[i];
+        public bool EquipItem(Equip equip, bool replace = false) {
+            equip.BagIndex = (short) -ItemConstants.GetBodyPartFromId(equip.Id);
+            if (replace) _items.Remove(equip.BagIndex);
+            return _items.TryAdd(equip.BagIndex, equip);
+        }
+
+        public Item this[short bagIndex] {
+            get {
+                _items.TryGetValue(bagIndex, out Item item);
+                return item;
+            }
+        }
     }
+
+    enum EntityType { }
 }

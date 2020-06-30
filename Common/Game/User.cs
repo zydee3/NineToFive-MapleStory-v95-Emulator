@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using NineToFive.Game.Storage;
 using NineToFive.IO;
 using NineToFive.Util;
@@ -33,20 +32,20 @@ namespace NineToFive.Game {
             p.WriteInt(Face);
             p.WriteByte();
             p.WriteInt(Hair);
-            var items = user.Inventories[InventoryType.Equipped].Items;
-            foreach (Item item in items) {
+            var inventory = user.Inventories[InventoryType.Equipped];
+            foreach (Item item in inventory.Items) {
+                p.WriteByte((byte) Math.Abs(item.BagIndex));
+                p.WriteInt(item.Id);
+            }
+
+            p.WriteByte(255);
+            foreach (Item item in inventory.Items) {
                 p.WriteByte((byte) item.BagIndex);
                 p.WriteInt(item.Id);
             }
 
             p.WriteByte(255);
-            foreach (Item item in items) {
-                p.WriteByte((byte) item.BagIndex);
-                p.WriteInt(item.Id);
-            }
-
-            p.WriteByte(255);
-            p.WriteInt(items.First(item => item.BagIndex == (int) EquipType.WEAPON)?.Id ?? 0);
+            p.WriteInt(inventory[-11]?.Id ?? 0);
             p.WriteBytes(new byte[12]); // pets
         }
 
@@ -67,7 +66,7 @@ namespace NineToFive.Game {
         public int MP { get; set; }
         public int MaxMP { get; set; }
         public short AP { get; set; }
-        public short[] SP { get; set; }
+        public short[] SP { get; set; } = new short[10];
         public int Exp { get; set; }
         public short Popularity { get; set; }
         public int FieldId { get; set; }
@@ -85,6 +84,7 @@ namespace NineToFive.Game {
             p.WriteLong();
             p.WriteLong();
             p.WriteLong();
+
             p.WriteSByte(Level);
             p.WriteShort(Job);
             p.WriteShort(Str);

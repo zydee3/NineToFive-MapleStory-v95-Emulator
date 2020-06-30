@@ -16,6 +16,7 @@ namespace NineToFive.ReceiveOps {
 
     public enum CLogin : short {
         OnCheckPasswordResult = 1,
+        OnWorldListReinitializeRequest = 4,
         OnChannelSelectEnterChannel = 5,
         OnCheckUserLimitPacket = 6,
 
@@ -25,9 +26,14 @@ namespace NineToFive.ReceiveOps {
         OnSetGenderPacket = 8,
         OnPinCodeResult = 9,
         OnWorldListRequest = 11,
+        OnResetViewAllCharPacket = 12,
         OnViewAllCharPacket = 13,
         OnViewAllCharDlgResult = 15,
         OnCheckDuplicateIdPacket = 21,
+        OnNewCharPacket22 = 22,
+        OnNewCharPacket23 = 23,
         OnSendBackupPacket = 36,
+        // CWvsContext::UI_Menu
+        OnUiMenu = 218,
     }
 }
