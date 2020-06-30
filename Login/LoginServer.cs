@@ -10,7 +10,6 @@ namespace NineToFive.Login {
 
         public LoginServer(int port) : base(port) {
             _receive = new RecvOps {
-                [(short) CLogin.OnSendBackupPacket] = typeof(BackupPacketEvent),
                 [(short) CLogin.OnCheckPasswordResult] = typeof(CheckPasswordEvent),
                 [(short) CLogin.OnWorldListReinitializeRequest] = typeof(WorldListEvent),
                 [(short) CLogin.OnChannelSelectEnterChannel] = typeof(SelectEnterChannelEvent),
@@ -20,10 +19,14 @@ namespace NineToFive.Login {
                 [(short) CLogin.OnPinCodeResult] = typeof(PinCodeResultEvent),
                 [(short) CLogin.OnWorldListRequest] = typeof(WorldListEvent),
                 [(short) CLogin.OnViewAllCharPacket] = typeof(ViewAllCharEvent),
+                [(short) CLogin.OnSelectCharPacket] = typeof(SelectCharEvent),
                 [(short) CLogin.OnViewAllCharDlgResult] = typeof(ViewAllCharDlgEvent),
                 [(short) CLogin.OnCheckDuplicateIdPacket] = typeof(CheckDuplicateUsernameEvent),
                 [(short) CLogin.OnNewCharPacket22] = typeof(NewCharEvent),
                 [(short) CLogin.OnNewCharPacket23] = typeof(NewCharEvent),
+                [(short) CLogin.OnSelectCharInitSPWPacket] = typeof(SelectCharEvent),
+                [(short) CLogin.OnSelectCharSPWPacket] = typeof(SelectCharEvent),
+                [(short) CLogin.OnSendBackupPacket] = typeof(BackupPacketEvent),
                 [(short) CLogin.OnUiMenu] = typeof(CWvsUiMenuEvent),
             };
         }

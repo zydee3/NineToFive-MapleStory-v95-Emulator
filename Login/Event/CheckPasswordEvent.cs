@@ -84,20 +84,20 @@ namespace NineToFive.Event {
 
         /// <summary>
         /// Rejects user login with a specified notice
-        /// <para>6,8,9    for "Trouble logging in? Try logging in again from maplestory.nexon.net."</para>
-        /// <para>2,3      for "This is an ID that has been deleted or blocked from the connection."</para>
-        /// <para>4        for "This is an incorrect password."</para>
-        /// <para>5        for "This is not a registered ID."</para>
-        /// <para>7        for "This is an ID that is already logged in, or the server is under inspection."</para>
-        /// <para>10       for "Could not be processed due to too many connection requests to the server."</para>
-        /// <para>11       for "Only those who are 20 years old or odler can use this."</para>
-        /// <para>13       for "Unable to log-on as a master at IP."</para>
-        /// <para>15       for "We're still processing your request at this time, so you don't have access to this game for now."</para>
-        /// <para>16,21    for "Please verify your account via email in order to play the game."</para>
-        /// <para>14,17    for "You have either selected the wrong gateway, or you have yet to chagne your personal information."</para>
-        /// <para>23       for CLicenseDlg::CLicenseDlg</para>
-        /// <para>25       for "You're logging in from outside of the service region."</para>
-        /// <para>27       for "Please download the full client to experience \r\nthe world of MapleStory. \r\nWould you like to download the full client\r\n from our website?"</para>
+        /// <code>6,8,9    for "Trouble logging in? Try logging in again from maplestory.nexon.net."</code>
+        /// <code>2,3      for "This is an ID that has been deleted or blocked from the connection."</code>
+        /// <code>4        for "This is an incorrect password."</code>
+        /// <code>5        for "This is not a registered ID."</code>
+        /// <code>7        for "This is an ID that is already logged in, or the server is under inspection."</code>
+        /// <code>10       for "Could not be processed due to too many connection requests to the server."</code>
+        /// <code>11       for "Only those who are 20 years old or odler can use this."</code>
+        /// <code>13       for "Unable to log-on as a master at IP."</code>
+        /// <code>15       for "We're still processing your request at this time, so you don't have access to this game for now."</code>
+        /// <code>16,21    for "Please verify your account via email in order to play the game."</code>
+        /// <code>14,17    for "You have either selected the wrong gateway, or you have yet to chagne your personal information."</code>
+        /// <code>23       for CLicenseDlg::CLicenseDlg</code>
+        /// <code>25       for "You're logging in from outside of the service region."</code>
+        /// <code>27       for "Please download the full client to experience \r\nthe world of MapleStory. \r\nWould you like to download the full client\r\n from our website?"</code>
         /// </summary>
         /// <param name="a">Represents a message popup image in the directory: <code>UI.wz/Login.img/Notice/text</code></param>
         private static byte[] GetLoginFailed(byte a) {

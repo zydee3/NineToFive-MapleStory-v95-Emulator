@@ -63,11 +63,11 @@ namespace NineToFive.Net {
 
                     foreach (Channel channel in world.Channels.Where(ch => ch.Snapshot.IsActive)) {
                         // send a tiny packet to check the connection of the server
-                        if (!TestConnection(channel.Snapshot.HostAddress, channel.Port)) {
+                        if (!TestConnection(channel.HostAddress, channel.Port)) {
                             // test failed so assume server is offline
                             Log.Info($"Connection test to channel {channel.Id} in world {world.Id} failed. Channel is now available for hosting");
                             channel.Snapshot.IsActive = false;
-                            channel.Snapshot.HostAddress = null;
+                            channel.HostAddress = null;
                         }
                     }
 
@@ -79,10 +79,11 @@ namespace NineToFive.Net {
 
                     response[0] = 1; // granted permission
                     for (int i = min; i <= max; i++) {
-                        ChannelSnapshot snapshot = world.Channels[i].Snapshot;
+                        Channel channel = world.Channels[i];
+                        ChannelSnapshot snapshot = channel.Snapshot;
                         snapshot.IsActive = true;
-                        snapshot.HostAddress = address.ToString();
-                        Log.Info($"Channel {i} is now being hosted by server {snapshot.HostAddress}");
+                        channel.HostAddress = address;
+                        Log.Info($"Channel {i} is now being hosted by server {channel.HostAddress}");
                     }
 
                     c.GetStream().Write(SimpleCrypto.Encrypt(response));
@@ -167,11 +168,9 @@ namespace NineToFive.Net {
             return GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort)?[0] == 1;
         }
 
-        public static bool TestConnection(string address, int port) {
+        public static bool TestConnection(IPAddress address, int port) {
             try {
-                using TcpClient client = new TcpClient(address, port);
-                NetworkStream stream = client.GetStream();
-                stream.WriteByte(255);
+                using TcpClient client = new TcpClient(new IPEndPoint(address, port));
                 return true;
             } catch {
                 return false;

@@ -1,4 +1,5 @@
-﻿using NineToFive.Net;
+﻿using System.Net;
+using NineToFive.Net;
 
 namespace NineToFive.Game {
     public class Channel {
@@ -14,6 +15,7 @@ namespace NineToFive.Game {
         public World World => Server.Worlds[_worldId];
         public byte Id { get; }
         public int Port { get; }
+        public IPAddress HostAddress { get; set; }
         public ServerListener ServerListener { get; set; }
     }
 
@@ -30,10 +32,5 @@ namespace NineToFive.Game {
         /// Last recorded value of user count 
         /// </summary>
         public int UserCount { get; set; }
-
-        /// <summary>
-        /// IP address of the server host
-        /// </summary>
-        public string HostAddress { get; set; }
     }
 }

@@ -29,9 +29,12 @@ namespace NineToFive.ReceiveOps {
         OnResetViewAllCharPacket = 12,
         OnViewAllCharPacket = 13,
         OnViewAllCharDlgResult = 15,
+        OnSelectCharPacket = 19,
         OnCheckDuplicateIdPacket = 21,
         OnNewCharPacket22 = 22,
         OnNewCharPacket23 = 23,
+        OnSelectCharInitSPWPacket = 28,
+        OnSelectCharSPWPacket = 29,
         OnSendBackupPacket = 36,
         // CWvsContext::UI_Menu
         OnUiMenu = 218,

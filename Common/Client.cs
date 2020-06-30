@@ -22,8 +22,20 @@ namespace NineToFive {
         public byte Gender { get; set; }
         public User User { get; set; }
         public byte[] MachineId { get; set; }
+
+        public byte LoginOption { get; set; }
+
         public World World => Server.Worlds[_worldId];
+
         public Channel Channel => World.Channels[_channelId];
+
+        public void SetWorld(byte worldId) {
+            _worldId = worldId;
+        }
+
+        public void SetChannel(byte channelId) {
+            _channelId = channelId;
+        }
 
         public byte TryLogin(string password) {
             return 1;
