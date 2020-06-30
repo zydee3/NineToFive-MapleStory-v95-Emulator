@@ -1,4 +1,7 @@
-﻿namespace NineToFive.Constants {
+﻿using System;
+using System.Collections.Generic;
+
+namespace NineToFive.Constants {
     public static class ServerConstants {
         public const int GameVersion = 95;
 
@@ -20,6 +23,13 @@
             "Nova", "Aster", "Cosmo", "Androa"
         };
     }
+    
+    public static class Disabled {
+        public static readonly List<uint> Mobs   = new List<uint>{  };
+        public static readonly List<uint> Npcs   = new List<uint>{  };
+        public static readonly List<uint> Cash   = new List<uint>{  };
+        public static readonly List<uint> Fields = new List<uint>{  };
+    }
 
     public static class Job {
         public static bool IsExtendedSpJob(int jobId) => !(jobId / 1000 != 3 && jobId / 100 != 22 && jobId != 2001);
@@ -27,6 +37,10 @@
 
     public enum EntityType {
         Npc, Mob, Player, Reactor, Summon
+    }
+
+    public enum TemplateType {
+        Mob, Field
     }
     
     public enum SkillProperties {

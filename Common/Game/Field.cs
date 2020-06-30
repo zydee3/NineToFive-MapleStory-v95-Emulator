@@ -5,8 +5,9 @@ using NineToFive.Wz;
 
 namespace NineToFive.Game {
     public class Field {
-        int FieldID { get; set; }
-        private TemplateField Properties { get; set; }
+        public uint ID { get; set; }
+        public uint ChannelID { get; set; }
+        public TemplateField Properties { get; set; }
         
         /// <summary>
         ///     This constructor is meant for when multiple fields are being loaded, we should reuse the loaded WzFile.
@@ -17,12 +18,13 @@ namespace NineToFive.Game {
         /// This constructor is meant for when only a single field is being loaded so the WzFile being used is a Singleton.
         /// </summary>
         /// <param name="FieldID">Id of the field being loaded</param>
-        public Field(int FieldID) {
-            MapWz.SetField(this, WzProvider.GetWzProperty(WzProvider.Load("Map"), $"Map/Map${FieldID/100000000}/{FieldID}.img"));
-            //todo cache Template 
-            Properties = (TemplateField) MapWz.GetTemplateField(FieldID).Clone();
+        public Field(uint ID, uint ChannelID) {
+            this.ID = ID;
+            this.ChannelID = ChannelID;
             
+            string PathToMapImage = $"Map/Map{ID/100000000}/{ID}.img";
+            WzImageProperty MapImage = WzProvider.GetWzProperty(WzProvider.Load("Map"), PathToMapImage);
+            MapWz.SetField(this, MapImage);
         }
-        
     }
 }

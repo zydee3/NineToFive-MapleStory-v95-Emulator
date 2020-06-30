@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using MapleLib.WzLib;
 using NineToFive.Constants;
+using NineToFive.Wz;
 
 
 namespace NineToFive.Game.Entity.Meta {
@@ -22,17 +23,10 @@ namespace NineToFive.Game.Entity.Meta {
         public int ReturnMap { get; set; }
         public double SpawnRate { get; set; }
         public string BackgroundMusic { get; set; }
-        
-        public TemplateField(WzImageProperty MapImage) {
-            
-        }
-        
-        public TemplateField(int FieldID) {
-            
-        }
 
-        private void Load(WzImageProperty MapImage) {
-            
+        public TemplateField() { }
+        public TemplateField(WzImageProperty MapImage) {
+            MapWz.SetTemplateField(this, MapImage);
         }
 
         public object Clone() {
