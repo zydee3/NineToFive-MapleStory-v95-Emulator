@@ -14,7 +14,7 @@ namespace NineToFive.Event {
 
         public override void OnHandle() {
             World world = Server.Worlds[_worldId];
-            Client.Session.Write(GetCheckUserLimitResult(0));
+            Client.Session.Write(GetCheckUserLimitResult((byte) (world.Users.Count > 60 ? 1 : 0)));
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using NineToFive.Constants;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.ReceiveOps;
@@ -9,6 +10,7 @@ namespace NineToFive.Event {
         private string[] _localMacAddress;          // CLogin::GetLocalMacAddress
         private string[] _localMacAddressWithHddSn; // CLogin::GetLocalMacAddressWithHDDSerialNo
         private string _secondaryPassword;
+        private byte[] _remoteAddress;
 
         public SelectCharEvent(Client client) : base(client) { }
 
@@ -26,23 +28,42 @@ namespace NineToFive.Event {
                 _localMacAddress = p.ReadString().Split(", ");
                 _localMacAddressWithHddSn = p.ReadString().Split("_");
                 _secondaryPassword = p.ReadString();
-            } else if (op == (int) CLogin.OnSelectCharSPWPacket) {
-                _secondaryPassword = p.ReadString();
-                _playerId = p.ReadInt();
-                _localMacAddress = p.ReadString().Split(", ");
-                _localMacAddressWithHddSn = p.ReadString().Split("_");
-            } else if (op == (int) CLogin.OnSelectCharPacket) {
+
+                using Packet w = new Packet();
+                w.WriteByte((byte) Interoperation.ClientInitializeSPWRequest);
+                w.WriteString(Client.Username);
+                w.WriteString(_secondaryPassword);
+                Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
+            } else {
+                if (op == (int) CLogin.OnSelectCharSPWPacket) {
+                    _secondaryPassword = p.ReadString();
+                    if (!_secondaryPassword.Equals(Client.SecondaryPassword, StringComparison.Ordinal)) {
+                        Client.Session.Write(GetSelectCharFailed(4));
+                        return false;
+                    }
+                }
+
                 _playerId = p.ReadInt();
                 _localMacAddress = p.ReadString().Split(", ");
                 _localMacAddressWithHddSn = p.ReadString().Split("_");
             }
 
             if (!Client.Users.Exists(u => u.CharacterStat.Id == _playerId)) {
-                Client.Session.Write(GetSelectCharFailed(6));
+                // playerId does not exist within account
+                Client.Session.Write(GetSelectCharFailed(5));
                 return false;
             }
 
-            if (!Interoperability.TestConnection(Client.Channel.HostAddress, Client.Channel.Port)) {
+            {
+                // hehe variable scopes
+                using Packet w = new Packet();
+                w.WriteByte((byte) Interoperation.ChannelAddressRequest);
+                w.WriteByte(Client.World.Id);
+                w.WriteByte(Client.Channel.Id);
+                _remoteAddress = Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
+            }
+            if (_remoteAddress == null) {
+                // server end-point not available
                 Client.Session.Write(GetSelectCharFailed(6));
                 return false;
             }
@@ -51,20 +72,20 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            Client.Session.Write(GetSelectChar(Client));
+            Client.Session.Write(GetSelectChar(Client, _remoteAddress));
         }
 
-        private static byte[] GetSelectChar(Client client) {
+        private static byte[] GetSelectChar(Client client, byte[] address) {
             using Packet p = new Packet();
             p.WriteShort((short) SendOps.CLogin.OnSelectCharacterResult);
             p.WriteByte();
             p.WriteByte();
 
-            p.WriteBytes(client.Channel.HostAddress.GetAddressBytes()); // uChatIp
-            p.WriteUShort((ushort) client.Channel.Port);                // uChatPort
-            p.WriteUInt(client.User.CharacterStat.Id);                  // dwCharacterId
-            p.WriteByte(69);                                            // bAuthenCode
-            p.WriteInt(1337);                                           // ulArgument
+            p.WriteBytes(address);                     // uChatIp
+            p.WriteShort((short) client.Channel.Port); // uChatPort
+            p.WriteUInt(client.User.CharacterStat.Id); // dwCharacterId
+            p.WriteByte(69);                           // bAuthenCode
+            p.WriteInt(1337);                          // ulArgument
             return p.ToArray();
         }
 

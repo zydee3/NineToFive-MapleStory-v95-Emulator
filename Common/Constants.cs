@@ -5,7 +5,8 @@ namespace NineToFive.Constants {
     public static class ServerConstants {
         public const int GameVersion = 95;
 
-        public const string Address = "127.0.0.1";
+        public const string HostServer = "127.0.0.1";
+        public const string CentralServer = "127.0.0.1";
 
         public const int InterCentralPort = 8481;
         public const int InterChannelPort = 8482;
@@ -17,6 +18,7 @@ namespace NineToFive.Constants {
         public const int WorldCount = 1;
         public const int ChannelCount = 3;
         public const bool EnabledRanking = false;
+        public const bool EnabledSecondaryPassword = true;
 
         public static readonly string[] WorldNames = {
             "Scania", "Bera", "Broa", "Windia", "Khaini", "Bellocan", "Mardia", "kradia", "Yellonde", "Demethos",

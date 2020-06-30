@@ -15,11 +15,23 @@ namespace NineToFive.Event {
             if (_username.Length < 4 || _password.Length < 4) {
                 return 5;
             }
+
             using Packet w = new Packet();
-            w.WriteByte((byte) Interoperations.CheckPasswordRequest);
+            w.WriteByte((byte) Interoperation.CheckPasswordRequest);
             w.WriteString(_username);
             w.WriteString(_password);
-            return Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort)[0];
+
+            using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
+            byte result = r.ReadByte();
+            if (result != 1) return result;
+
+            Client.Id = r.ReadInt();
+            Client.Gender = r.ReadByte();
+            if (r.ReadBool()) {
+                Client.SecondaryPassword = r.ReadString();
+            }
+
+            return result;
         }
 
         public override void OnError(Exception e) {
@@ -58,7 +70,7 @@ namespace NineToFive.Event {
             p.WriteByte(1); // success result
             p.WriteInt();   // unknown
 
-            p.WriteInt(client.Id + 1);
+            p.WriteInt(client.Id);
             p.WriteByte(client.Gender);
             p.WriteByte();
             p.WriteShort();
@@ -71,12 +83,9 @@ namespace NineToFive.Event {
             p.WriteInt();
 
             if (client.Gender != 10) {
-                byte v26 = 1;
-                p.WriteByte(v26);
-                p.WriteByte(1);
-                if (v26 == 0) {
-                    p.WriteLong();
-                }
+                p.WriteByte(2);
+                p.WriteByte(2);
+                p.WriteLong();
             }
 
             return p.ToArray();

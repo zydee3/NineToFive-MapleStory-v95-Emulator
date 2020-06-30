@@ -1,17 +1,26 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using log4net;
+using log4net.Config;
 using NineToFive.Constants;
 using NineToFive.Game;
+using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.Net.Security;
 
+[assembly: XmlConfigurator(ConfigFile = "channel-logger.xml")]
 namespace NineToFive.Channels {
     class Program {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
         private static readonly SimpleCrypto SimpleCrypto = new SimpleCrypto();
 
         static void Main(string[] args) {
+            if (!Interoperability.TestConnection(IPAddress.Parse(ServerConstants.CentralServer), ServerConstants.InterCentralPort)) {
+                Log.Info("Central server is not online. Channel server may not start.");
+                return;
+            }
+            
             Log.Info("Hello World, from Channel Server!");
             Server.Initialize();
             Interoperability.ServerCreate(ServerConstants.InterChannelPort);
@@ -26,11 +35,9 @@ namespace NineToFive.Channels {
                 }
             }
 
-            string input;
-            while ((input = Console.ReadLine()) != null) {
-                if (input == "exit") return;
-                // no reason to log a console message
-                Console.WriteLine("I only know the command: \"exit\"");
+            if (Server.Worlds[World.ActiveWorld].Channels.Count(ch => ch.ServerListener != null) == 0) {
+                Log.Warn("Invalid usage. Please specify a --channels and --world cmd-line argument");
+                Environment.Exit(0);
             }
         }
 
@@ -41,9 +48,14 @@ namespace NineToFive.Channels {
 
             World world = Server.Worlds[World.ActiveWorld];
             Log.Info($"Asking for permission to host channels from {min} to {max} in world {world.Id}");
-            byte[] address = IPAddress.Parse(ServerConstants.Address).GetAddressBytes();
-            if (!Interoperability.SendChannelHostPermission(address, world.Id, min, max)) {
-                throw new OperationCanceledException($"Denied permission to host channels from {min} to {max}");
+            using Packet w = new Packet();
+            w.WriteByte((byte) Interoperation.ChannelHostPermission);
+            w.WriteBytes(IPAddress.Parse(ServerConstants.HostServer).GetAddressBytes()); 
+            w.WriteByte(world.Id);
+            w.WriteByte(min);
+            w.WriteByte(max);
+            if (Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort)[0] != 1) {
+                throw new OperationCanceledException($"Denied permission to host channels from {min} to {max} in world {world.Id}");
             }
 
             Log.Info("Permission to host specified channels granted");
@@ -51,7 +63,6 @@ namespace NineToFive.Channels {
             for (int i = min; i <= max; i++) {
                 Channel channel = world.Channels[i];
                 (channel.ServerListener = new ChannelServer(channel.Port)).Start();
-                channel.Snapshot.IsActive = true;
                 Log.Info($"World {channel.World.Id} Channel {channel.Id} listening on port {channel.Port}");
             }
         }

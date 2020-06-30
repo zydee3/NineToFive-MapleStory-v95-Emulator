@@ -23,7 +23,7 @@ namespace NineToFive.Event {
 
         private static void RequestWorldInformation() {
             using Packet w = new Packet();
-            w.WriteByte((byte) Interoperations.WorldInformationRequest);
+            w.WriteByte((byte) Interoperation.WorldInformationRequest);
             byte[] response = Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
             using Packet r = new Packet(response);
             for (int worldId = r.ReadByte(); worldId != 255; worldId = r.ReadByte()) {

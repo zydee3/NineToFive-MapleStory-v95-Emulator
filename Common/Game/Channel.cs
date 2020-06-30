@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using NineToFive.Net;
 
 namespace NineToFive.Game {
@@ -23,11 +25,6 @@ namespace NineToFive.Game {
     /// container for data the login server requires from the channel servers
     /// </summary>
     public class ChannelSnapshot {
-        /// <summary>
-        /// If the channel already has a server host
-        /// </summary>
-        public bool IsActive { get; set; }
-
         /// <summary>
         /// Last recorded value of user count 
         /// </summary>

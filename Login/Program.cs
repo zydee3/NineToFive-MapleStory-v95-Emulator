@@ -1,13 +1,15 @@
 ﻿using System;
 using log4net;
+using log4net.Config;
 using NineToFive.Constants;
 using NineToFive.Net;
 using NineToFive.Net.Security;
 
+[assembly: XmlConfigurator(ConfigFile = "login-logger.xml")]
+
 namespace NineToFive.Login {
     class Program {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
-        private static readonly SimpleCrypto SimpleCrypto = new SimpleCrypto();
 
         static void Main(string[] args) {
             Log.Info("Hello World, from Login Server!");
@@ -19,13 +21,6 @@ namespace NineToFive.Login {
             LoginServer server = new LoginServer(ServerConstants.LoginPort);
             server.Start();
             Log.Info($"Login server listening on port {server.Port}");
-
-            string input;
-            while ((input = Console.ReadLine()) != null) {
-                if (input == "exit") {
-                    return;
-                }
-            }
         }
     }
 }

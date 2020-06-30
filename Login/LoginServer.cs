@@ -43,7 +43,6 @@ namespace NineToFive.Login {
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
                 try {
-                    Console.WriteLine($"[handled] {handler.GetType().Name}");
                     if (handler.OnProcess(p)) {
                         handler.OnHandle();
                     }

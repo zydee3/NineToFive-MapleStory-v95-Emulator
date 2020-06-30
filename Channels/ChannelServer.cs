@@ -8,23 +8,25 @@ using NineToFive.ReceiveOps;
 namespace NineToFive.Channels {
     class ChannelServer : ServerListener {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ChannelServer));
-        private RecvOps Receive { get; }
+        private readonly RecvOps _receive;
 
         public ChannelServer(int port) : base(port) {
-            Receive = new RecvOps();
+            _receive = new RecvOps() {
+                // [(short) CStage.OnSetField] = typeof(SetFieldEvent),
+            };
         }
 
         public override void OnPacketReceived(Client c, Packet p) {
             short operation = p.ReadShort();
-            if (!Receive.Events.TryGetValue(operation, out Type t)) {
-                Log.Info($"Unhandled operation {operation}");
+            if (!_receive.Events.TryGetValue(operation, out Type t)) {
+                Console.WriteLine($"[unhandled] {operation} (0x{operation:X2}) : {p.ToArrayString(true)}");
+                Console.WriteLine($"[ascii-decode] {p}");
+                Console.WriteLine("-----------");
                 return;
             }
 
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
-                Log.Info($"{operation} (0x{operation:X2}) {p.ToArrayString(true)}");
-                Log.Info(p.ToString());
                 try {
                     if (handler.OnProcess(p)) {
                         handler.OnHandle();
@@ -33,8 +35,6 @@ namespace NineToFive.Channels {
                     handler.OnError(e);
                 }
             }
-
-            Console.WriteLine();
         }
     }
 }

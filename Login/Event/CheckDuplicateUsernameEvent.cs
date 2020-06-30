@@ -30,7 +30,7 @@ namespace NineToFive.Event {
             }
 
             using Packet w = new Packet();
-            w.WriteByte((byte) Interoperations.CheckDuplicateIdRequest);
+            w.WriteByte((byte) Interoperation.CheckDuplicateIdRequest);
             w.WriteString(_username);
             _result = Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort)[0];
             return true;

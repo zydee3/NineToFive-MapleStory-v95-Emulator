@@ -18,7 +18,7 @@ namespace NineToFive.Net.Security {
         }
 
         public byte[] Decrypt(byte[] data) {
-            throw new NotImplementedException();
+            throw new InvalidOperationException();
         }
     }
 }

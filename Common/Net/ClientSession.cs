@@ -37,6 +37,7 @@ namespace NineToFive.Net {
                 int count;
                 try {
                     count = _socket.GetStream().EndRead(result);
+                    if (count == 0) return; 
                 } catch {
                     Dispose();
                     return;
