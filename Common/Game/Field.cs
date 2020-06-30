@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MapleLib.WzLib;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Wz;
@@ -23,8 +24,8 @@ namespace NineToFive.Game {
             this.ChannelID = ChannelID;
             
             string PathToMapImage = $"Map/Map{ID/100000000}/{ID}.img";
-            WzImageProperty MapImage = WzProvider.GetWzProperty(WzProvider.Load("Map"), PathToMapImage);
-            MapWz.SetField(this, MapImage);
+            List<WzImageProperty> FieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), PathToMapImage);
+            MapWz.SetField(this, ref FieldProperties);
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using log4net;
 using NineToFive.Game;
-using MapleLib.WzLib;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 
@@ -20,7 +19,7 @@ namespace NineToFive {
                     int channelPort = ServerConstants.ChannelPort + channelId + (worldId * 100);
                     world.Channels[channelId] = new Channel(worldId, channelId, channelPort);
                 }
-
+                
                 Worlds[worldId] = world;
                 
                 world.Templates = new Dictionary<uint, object>[Enum.GetNames(typeof(TemplateType)).Length];
