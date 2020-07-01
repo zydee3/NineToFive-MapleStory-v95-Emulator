@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
@@ -23,7 +24,8 @@ namespace NineToFive.Game {
         /// </summary>
         /// <param name="SkillID">Id of the skill being loaded.</param>
         public Skill(int SkillID) {
-            SkillWz.SetSkill(this, WzProvider.GetWzProperty(WzProvider.Load("Skill"), $"{(SkillID / 10000)}.img/skill/{SkillID}/common"));
+            List<WzImageProperty> SkillProperties = WzProvider.GetWzProperties(WzProvider.Load("Skill"), $"{(SkillID / 10000)}.img/skill/{SkillID}/common");
+            SkillWz.SetSkill(this, ref SkillProperties);
         }
     }
 }

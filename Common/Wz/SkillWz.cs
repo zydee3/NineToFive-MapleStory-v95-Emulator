@@ -11,7 +11,7 @@ namespace NineToFive.Wz {
         private const string WzName = "Skill";
 
         /// <summary>
-        ///     Parses skill properties data contained inside CommonImage
+        ///     Parses skill properties data contained inside skill properties list.
         /// </summary>
         /// <param name="Skill">Skill object being loaded</param>
         /// <param name="CommonImage">Image loaded from WzFile containing skill properties data.</param>
@@ -19,10 +19,10 @@ namespace NineToFive.Wz {
         ///     I had to store all Values as a string because some Values were stored as both a WzIntProperty or WzStringProperty
         ///     depending on the skill so I wasn't able to store the string in an integer variable sometimes.
         /// </note>
-        public static void SetSkill(Skill Skill, WzImageProperty CommonImage) {
-            if (Skill == null || CommonImage == null) return;
+        public static void SetSkill(Skill Skill, ref List<WzImageProperty> SkillProperties) {
+            if (Skill == null || SkillProperties == null || SkillProperties.Count == 0) return;
             
-            foreach (WzImageProperty ChildProperty in CommonImage.WzProperties) {
+            foreach (WzImageProperty ChildProperty in SkillProperties) {
                 string PropertyName = ChildProperty.Name;
                 switch (PropertyName) {
                     case "lt": {
@@ -36,7 +36,7 @@ namespace NineToFive.Wz {
                         break;
                     }
                     default: {
-                        if (SkillProperties.TryParse(PropertyName, out SkillProperties Property)) {
+                        if (Constants.SkillProperties.TryParse(PropertyName, out SkillProperties Property)) {
                             if (ChildProperty.GetType() == typeof(WzIntProperty)) {
                                 Skill.Values[(int)Property] = ((WzIntProperty) ChildProperty).Value.ToString();
                             } else {
@@ -75,11 +75,11 @@ namespace NineToFive.Wz {
                         if (int.TryParse(Skill.Name, out int SkillID)) { 
                             
                             // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
-                            WzImageProperty Common = Job.GetFromPath("common");
-                            if (Common == null) continue;
+                            List<WzImageProperty> SkillProperties = Job.GetFromPath("common").WzProperties;
+                            if (SkillProperties == null || SkillProperties.Count == 0) continue;
                             
                             Skill S = new Skill();
-                            SetSkill(S, Common);
+                            SetSkill(S, ref SkillProperties);
                             SkillsRetrieved.Add(SkillID, S);
                         }
                     }
@@ -118,11 +118,11 @@ namespace NineToFive.Wz {
                         if (!int.TryParse(Skill.Name, out int SkillID) || !Predicate(SkillID)) continue;
                         
                         // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
-                        WzImageProperty Common = Skill.GetFromPath("common");
-                        if (Common == null) continue;
+                        List<WzImageProperty> SkillProperties = Skill.GetFromPath("common").WzProperties;
+                        if (SkillProperties == null) continue;
                         
                         Skill S = new Skill();
-                        SetSkill(S, Common);
+                        SetSkill(S, ref SkillProperties);
                         SkillsRetrieved.Add(SkillID, S);
                     }
                 }
