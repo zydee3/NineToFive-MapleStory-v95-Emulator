@@ -25,7 +25,7 @@ namespace NineToFive.Event {
             byte result = r.ReadByte();
             if (result != 1) return result;
 
-            Client.Id = r.ReadInt();
+            Client.Id = r.ReadUInt();
             Client.Gender = r.ReadByte();
             if (r.ReadBool()) {
                 Client.SecondaryPassword = r.ReadString();
@@ -70,7 +70,7 @@ namespace NineToFive.Event {
             p.WriteByte(1); // success result
             p.WriteInt();   // unknown
 
-            p.WriteInt(client.Id);
+            p.WriteUInt(client.Id);
             p.WriteByte(client.Gender);
             p.WriteByte();
             p.WriteShort();

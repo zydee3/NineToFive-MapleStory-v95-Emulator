@@ -6,9 +6,6 @@ using NineToFive.Net;
 
 namespace NineToFive {
     public class Client {
-#if DEBUG // todo remove once a database system is implemented
-        private static int _clientUniqueId = 1;
-#endif
         public readonly ServerListener ServerHandler;
         public readonly ClientSession Session;
         public readonly List<User> Users = new List<User>(15);
@@ -17,13 +14,10 @@ namespace NineToFive {
         public Client(ServerListener server, TcpClient socket) {
             ServerHandler = server;
             Session = new ClientSession(this, socket);
-#if DEBUG
-            Id = _clientUniqueId++;
-#endif
             Gender = 10;
         }
 
-        public int Id { get; set; }
+        public uint Id { get; set; }
         public string Username { get; set; }
         private string Password { get; set; }
         public byte Gender { get; set; }
@@ -45,7 +39,12 @@ namespace NineToFive {
 
         public byte TryLogin(string password) {
             Password ??= password;
-            return (byte) (Password.Equals(password, StringComparison.Ordinal) ? 1 : 4);
+            byte result = 4;
+            if (Password.Equals(password, StringComparison.Ordinal)) {
+                result = 1;
+            }
+
+            return result;
         }
     }
 }

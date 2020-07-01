@@ -27,6 +27,7 @@ namespace NineToFive.Channels {
 
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
+                Log.Info($"Handled operation : {operation} | {operation:X2} : {handler.GetType().Name}");
                 try {
                     if (handler.OnProcess(p)) {
                         handler.OnHandle();

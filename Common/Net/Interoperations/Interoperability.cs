@@ -25,7 +25,7 @@ namespace NineToFive.Net {
             Log.Info($"{op}");
             switch (op) {
                 case Interoperation.ClientGenderUpdateRequest:
-                    CentralServer.Clients[r.ReadString()].Gender = r.ReadByte();
+                    CentralServer.AddUserIfAbsent(r.ReadString()).Gender = r.ReadByte();
                     return;
                 case Interoperation.WorldInformationRequest:
                     c.GetStream().Write(SimpleCrypto.Encrypt(
@@ -44,13 +44,17 @@ namespace NineToFive.Net {
                         CheckDuplicateIdRequest.OnHandle(r)));
                     return;
                 case Interoperation.ClientInitializeSPWRequest:
-                    CentralServer.Clients[r.ReadString()].SecondaryPassword = r.ReadString();
+                    CentralServer.AddUserIfAbsent(r.ReadString()).SecondaryPassword = r.ReadString();
                     return;
                 case Interoperation.ChannelAddressRequest: {
+                    World world = Server.Worlds[r.ReadByte()];
+                    Channel channel = world.Channels[r.ReadByte()];
                     using Packet w = new Packet();
-                    Channel channel = Server.Worlds[r.ReadByte()].Channels[r.ReadByte()];
                     if (w.WriteBool(channel.HostAddress != null)) {
+                        Log.Info($"Channel address found {channel.HostAddress}");
                         w.WriteBytes(channel.HostAddress.GetAddressBytes());
+                    } else {
+                        Log.Info($"No server is hosting channel {channel.Id} in world {world.Id}");
                     }
 
                     c.GetStream().Write(SimpleCrypto.Encrypt(w.ToArray()));
@@ -64,7 +68,12 @@ namespace NineToFive.Net {
                     w.WriteByte((byte) Interoperation.ChannelUserLimitResponse);
                     w.WriteByte(world.Id);
                     w.WriteByte(channel.Id);
-                    w.WriteBytes(GetPacketResponse(w.ToArray(), ServerConstants.InterChannelPort, channel.HostAddress.ToString()));
+                    if (channel.HostAddress != null) {
+                        w.WriteBytes(GetPacketResponse(w.ToArray(), ServerConstants.InterChannelPort, channel.HostAddress.ToString()));
+                    } else {
+                        // channel server not online?
+                        w.WriteInt();
+                    }
 
                     c.GetStream().Write(SimpleCrypto.Encrypt(w.ToArray()));
                     return;
@@ -139,9 +148,7 @@ namespace NineToFive.Net {
         /// <param name="address">ip address of the specified server</param>
         /// <returns>response information in regard to the packet sent, if no response</returns>
         public static byte[] GetPacketResponse(byte[] buffer, int port, string address = "127.0.0.1") {
-            using TcpClient client = new TcpClient(address, port) {
-                ReceiveTimeout = 15 // 15 second timeout is ok????
-            };
+            using TcpClient client = new TcpClient(address, port);
             NetworkStream stream = client.GetStream();
             // send packet request
             buffer = SimpleCrypto.Encrypt(buffer);

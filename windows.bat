@@ -14,12 +14,13 @@ if /I "%OPT%"=="all" goto start_central
 if /I "%OPT%"=="exit" goto exit
 
 echo invalid command "%OPT%"... try again
-ping 127.0.0.1 -n 1 > nul
+ping 127.0.0.1 -n 3 > nul
 goto start
 
 :start_central
 echo Starting Central server
 start /d "Common\bin\Release\netcoreapp3.1" cmd /k "title Central Server & Common.exe"
+ping 127.0.0.1 -n 2 > nul
 if /I "%OPT%"=="c" goto start
 
 :start_login
@@ -30,9 +31,10 @@ if /I "%OPT%"=="l" goto start
 
 :start_channel
 echo Starting Channel server
-start /d "Channels\bin\Release\netcoreapp3.1" cmd /k "title Channel Server & Channels.exe --world=0 --channels=0-0"
-ping 127.0.0.1 -n4 > nul
+start /d "Channels\bin\Release\netcoreapp3.1" cmd /k "title Channel Server & Channels.exe --world=0 --channels=0-2"
+ping 127.0.0.1 -n 2 > nul
 if /I "%OPT%"=="ch" goto start
 
 :exit
+if /I "%OPT%"=="all" goto start
 pause

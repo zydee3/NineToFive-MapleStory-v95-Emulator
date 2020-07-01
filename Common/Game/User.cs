@@ -74,6 +74,7 @@ namespace NineToFive.Game {
 
 
         public void Encode(User user, Packet p) {
+            if (Id == 0) throw new InvalidOperationException("cannot encode a character which id is 0");
             p.WriteUInt(Id);
             p.WriteStringFixed(Username, 13);
             p.WriteByte(user.AvatarLook.Gender);

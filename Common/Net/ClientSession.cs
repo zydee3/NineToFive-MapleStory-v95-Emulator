@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using Destiny.Security;
 using NineToFive.IO;
@@ -29,7 +30,11 @@ namespace NineToFive.Net {
         }
 
         private void BeginAccept() {
-            _socket.GetStream().BeginRead(_packetBuffer, _packetSize, _packetBuffer.Length - _packetSize, OnReceivePacket, null);
+            try {
+                _socket.GetStream().BeginRead(_packetBuffer, _packetSize, _packetBuffer.Length - _packetSize, OnReceivePacket, null);
+            } catch (IOException) {
+                Dispose();
+            }
         }
 
         private void OnReceivePacket(IAsyncResult result) {

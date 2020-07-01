@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Net;
+using System.Text;
+using log4net;
 using NineToFive.Constants;
 using NineToFive.IO;
 using NineToFive.Net;
@@ -6,6 +9,8 @@ using NineToFive.ReceiveOps;
 
 namespace NineToFive.Event {
     public class SelectCharEvent : PacketEvent {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(SelectCharEvent));
+        
         private int _playerId;
         private string[] _localMacAddress;          // CLogin::GetLocalMacAddress
         private string[] _localMacAddressWithHddSn; // CLogin::GetLocalMacAddressWithHDDSerialNo
@@ -60,9 +65,16 @@ namespace NineToFive.Event {
                 w.WriteByte((byte) Interoperation.ChannelAddressRequest);
                 w.WriteByte(Client.World.Id);
                 w.WriteByte(Client.Channel.Id);
-                _remoteAddress = Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
+                using Packet r =  new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
+                if (r.ReadBool()) {
+                    _remoteAddress = r.ReadBytes(4);
+                }
             }
-            if (_remoteAddress == null) {
+            if (_remoteAddress == null || !Interoperability.TestConnection(new IPAddress(_remoteAddress), Client.Channel.Port)) {
+                if (_remoteAddress != null) {
+                    Log.Warn($"Failed to connect to channel server {Client.Channel.Id}");
+                }
+
                 // server end-point not available
                 Client.Session.Write(GetSelectCharFailed(6));
                 return false;
@@ -72,6 +84,7 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
+            Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
             Client.Session.Write(GetSelectChar(Client, _remoteAddress));
         }
 
