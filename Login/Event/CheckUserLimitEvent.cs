@@ -1,7 +1,8 @@
-﻿using NineToFive.Game;
+﻿using NineToFive.Event;
+using NineToFive.Game;
 using NineToFive.IO;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     public class CheckUserLimitEvent : PacketEvent {
         private short _worldId;
         

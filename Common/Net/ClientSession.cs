@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using Destiny.Security;
 using NineToFive.IO;
@@ -22,6 +23,13 @@ namespace NineToFive.Net {
             BeginAccept();
         }
 
+        public IPAddress RemoteAddress {
+            get {
+                var ip = _socket?.Client.RemoteEndPoint as IPEndPoint;
+                return ip?.Address;
+            }
+        }
+
         public void Dispose() {
             _client = null;
             _socket?.Dispose();
@@ -42,7 +50,7 @@ namespace NineToFive.Net {
                 int count;
                 try {
                     count = _socket.GetStream().EndRead(result);
-                    if (count == 0) return; 
+                    if (count == 0) return;
                 } catch {
                     Dispose();
                     return;

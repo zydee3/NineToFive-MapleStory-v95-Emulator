@@ -1,9 +1,12 @@
 ﻿using System;
 using log4net;
+using NineToFive.Channels.Event;
 using NineToFive.Event;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.ReceiveOps;
+using NineToFive.SendOps;
+using CLogin = NineToFive.ReceiveOps.CLogin;
 
 namespace NineToFive.Channels {
     class ChannelServer : ServerListener {
@@ -12,7 +15,7 @@ namespace NineToFive.Channels {
 
         public ChannelServer(int port) : base(port) {
             _receive = new RecvOps() {
-                // [(short) CStage.OnSetField] = typeof(SetFieldEvent),
+                [(short) CLogin.OnEnterGamePacket] = typeof(CharEnterGameEvent),
             };
         }
 

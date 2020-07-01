@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Net;
 using log4net;
 using NineToFive.Constants;
+using NineToFive.Event;
 using NineToFive.Game;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.SendOps;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     public class SelectEnterChannelEvent : PacketEvent {
         private static readonly ILog Log = LogManager.GetLogger(typeof(SelectEnterChannelEvent));
         private byte _worldId, _channelId;
-        private byte[] _address; // not sure
+        private int _address;
+        private byte[] _machineId; // not sure
 
         public SelectEnterChannelEvent(Client client) : base(client) { }
 
@@ -20,11 +23,16 @@ namespace NineToFive.Event {
         }
 
         public override bool OnProcess(Packet p) {
-            byte b = p.ReadByte();
-            if (b != 2) Log.Info($"unknown byte, unexpected value ${b}");
+            if (p.ReadByte() == 1) {
+                p.ReadString(); // CNMCOClientObject::GetNexonPassport
+                _machineId = p.ReadBytes(16);
+                p.ReadInt();  // CSystemInfo::GetGameRoomClient
+                p.ReadByte(); // MEMORY[0x38]
+            }
+
             _worldId = p.ReadByte();
             _channelId = p.ReadByte();
-            _address = p.ReadBytes(4);
+            _address = p.ReadInt();
             if (_worldId >= Server.Worlds.Length) {
                 Log.Warn($"invalid world specified : {_worldId}");
                 return false;
@@ -71,8 +79,6 @@ namespace NineToFive.Event {
         /// <code>17 for    "You have either selected the wrong gateway, or you have yet to change your personal information."</code>
         /// <code>25 for    "You're logging in from outside of the service region."</code>
         /// </summary>
-        /// <param name="a"></param>
-        /// <returns></returns>
         private byte[] GetSelectWorldFailed(byte a) {
             using Packet p = new Packet();
             p.WriteShort((short) CLogin.OnSelectWorldResult);
@@ -102,9 +108,9 @@ namespace NineToFive.Event {
             // 1 for    CSoftKeyboardDlg::GetResult
             // 2,3 for    no secondary password
             // if (ServerConstants.EnabledSecondaryPassword) {
-                p.WriteByte((byte) (Client.SecondaryPassword == null ? 0 : 1));
+            p.WriteByte((byte) (Client.SecondaryPassword == null ? 0 : 1));
             // } else {
-                // p.WriteByte(2);
+            // p.WriteByte(2);
             // }
 
             p.WriteInt(Client.Users.Capacity - Client.Users.Count);

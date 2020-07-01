@@ -1,7 +1,8 @@
-﻿using NineToFive.IO;
+﻿using NineToFive.Event;
+using NineToFive.IO;
 using NineToFive.SendOps;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     class PinCodeResultEvent : PacketEvent {
         /// <summary>
         /// typically, represents the value of CPinCodeDlg::EnterPinCode but mostly hard-coded as 1 due to Nexon

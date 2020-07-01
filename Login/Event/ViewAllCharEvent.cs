@@ -1,8 +1,9 @@
-﻿using NineToFive.Game;
+﻿using NineToFive.Event;
+using NineToFive.Game;
 using NineToFive.IO;
 using NineToFive.SendOps;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     public class ViewAllCharEvent : PacketEvent {
         public ViewAllCharEvent(Client client) : base(client) { }
 

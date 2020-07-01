@@ -28,6 +28,7 @@ namespace NineToFive.ReceiveOps {
         OnWorldListRequest = 11,
         OnResetViewAllCharPacket = 12,
         OnViewAllCharPacket = 13,
+        OnEnterGamePacket = 14, // not the actual name
         OnViewAllCharDlgResult = 15,
         OnSelectCharPacket = 19,
         OnCheckDuplicateIdPacket = 21,

@@ -6,7 +6,7 @@ namespace NineToFive.Net {
         /// When the channel server is requesting the login server for permission
         /// to create sockets for specific channels in world 
         /// </summary>
-        ChannelHostPermission = 0,
+        ChannelHostRequest = 0,
 
         /// <summary>
         /// Login server request for world information (user count, message, events, etc.)
@@ -34,9 +34,9 @@ namespace NineToFive.Net {
         ClientInitializeSPWRequest = 5,
 
         /// <summary>
-        /// Request for obtaining the host address of a specified channel server
+        /// Request for migrating to a specified channel server
         /// </summary>
-        ChannelAddressRequest = 6,
+        MigrateClientRequest = 6,
 
         /// <summary>
         /// Request for updating the user count for a specified channel server

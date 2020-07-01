@@ -4,7 +4,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using log4net;
-using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Interopation.Event;
 using NineToFive.IO;
@@ -25,59 +24,29 @@ namespace NineToFive.Net {
             Log.Info($"{op}");
             switch (op) {
                 case Interoperation.ClientGenderUpdateRequest:
-                    CentralServer.AddUserIfAbsent(r.ReadString()).Gender = r.ReadByte();
+                    CentralServer.AddClientIfAbsent(r.ReadString()).Gender = r.ReadByte();
                     return;
                 case Interoperation.WorldInformationRequest:
-                    c.GetStream().Write(SimpleCrypto.Encrypt(
-                        WorldInformationRequest.OnHandle()));
+                    c.GetStream().Write(SimpleCrypto.Encrypt(WorldInformationRequest.OnHandle()));
                     return;
-                case Interoperation.ChannelHostPermission:
-                    c.GetStream().Write(SimpleCrypto.Encrypt(
-                        ChannelHostRequest.OnHandle(r)));
+                case Interoperation.ChannelHostRequest:
+                    c.GetStream().Write(SimpleCrypto.Encrypt(ChannelHostRequest.OnHandle(r)));
                     return;
                 case Interoperation.CheckPasswordRequest:
-                    c.GetStream().Write(SimpleCrypto.Encrypt(
-                        ClientAuthRequest.OnHandle(r)));
+                    c.GetStream().Write(SimpleCrypto.Encrypt(ClientAuthRequest.OnHandle(r)));
                     return;
                 case Interoperation.CheckDuplicateIdRequest:
-                    c.GetStream().Write(SimpleCrypto.Encrypt(
-                        CheckDuplicateIdRequest.OnHandle(r)));
+                    c.GetStream().Write(SimpleCrypto.Encrypt(CheckDuplicateIdRequest.OnHandle(r)));
                     return;
                 case Interoperation.ClientInitializeSPWRequest:
-                    CentralServer.AddUserIfAbsent(r.ReadString()).SecondaryPassword = r.ReadString();
+                    CentralServer.AddClientIfAbsent(r.ReadString()).SecondaryPassword = r.ReadString();
                     return;
-                case Interoperation.ChannelAddressRequest: {
-                    World world = Server.Worlds[r.ReadByte()];
-                    Channel channel = world.Channels[r.ReadByte()];
-                    using Packet w = new Packet();
-                    if (w.WriteBool(channel.HostAddress != null)) {
-                        Log.Info($"Channel address found {channel.HostAddress}");
-                        w.WriteBytes(channel.HostAddress.GetAddressBytes());
-                    } else {
-                        Log.Info($"No server is hosting channel {channel.Id} in world {world.Id}");
-                    }
-
-                    c.GetStream().Write(SimpleCrypto.Encrypt(w.ToArray()));
+                case Interoperation.MigrateClientRequest:
+                    c.GetStream().Write(SimpleCrypto.Encrypt(ClientMigrateSocketRequest.OnHandle(r)));
                     return;
-                }
-                case Interoperation.ChannelUserLimitRequest: {
-                    World world = Server.Worlds[r.ReadByte()];
-                    Channel channel = world.Channels[r.ReadByte()];
-                    // request user count from the specified channel server
-                    using Packet w = new Packet();
-                    w.WriteByte((byte) Interoperation.ChannelUserLimitResponse);
-                    w.WriteByte(world.Id);
-                    w.WriteByte(channel.Id);
-                    if (channel.HostAddress != null) {
-                        w.WriteBytes(GetPacketResponse(w.ToArray(), ServerConstants.InterChannelPort, channel.HostAddress.ToString()));
-                    } else {
-                        // channel server not online?
-                        w.WriteInt();
-                    }
-
-                    c.GetStream().Write(SimpleCrypto.Encrypt(w.ToArray()));
+                case Interoperation.ChannelUserLimitRequest:
+                    c.GetStream().Write(SimpleCrypto.Encrypt(ChannelUserLimitRequest.OnHandle(r)));
                     return;
-                }
                 case Interoperation.ChannelUserLimitResponse: {
                     World world = Server.Worlds[r.ReadByte()];
                     Channel channel = world.Channels[r.ReadByte()];

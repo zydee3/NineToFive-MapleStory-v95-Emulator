@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Sockets;
 using NineToFive.Game;
 using NineToFive.Net;
@@ -24,6 +25,7 @@ namespace NineToFive {
         public User User { get; set; }
         public byte[] MachineId { get; set; }
         public string SecondaryPassword { get; set; }
+        public IPAddress LastKnownIp { get; set; }
 
         public World World => Server.Worlds[_worldId];
 

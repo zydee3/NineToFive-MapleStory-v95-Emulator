@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Net;
 using NineToFive.Constants;
+using NineToFive.Event;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.SendOps;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     class CheckPasswordEvent : PacketEvent {
         private byte[] _machineId;
         private string _username, _password;
@@ -60,6 +62,10 @@ namespace NineToFive.Event {
             packet.ReadByte(); // 0
             packet.ReadByte(); // 0
             packet.ReadInt();  // partnerCode
+            if (!Interoperability.TestConnection(IPAddress.Parse(ServerConstants.CentralServer), ServerConstants.InterCentralPort)) {
+                Client.Session.Write(GetLoginFailed(6));
+                return false;
+            }
             return true;
         }
 
@@ -103,7 +109,7 @@ namespace NineToFive.Event {
         /// <code>13       for "Unable to log-on as a master at IP."</code>
         /// <code>15       for "We're still processing your request at this time, so you don't have access to this game for now."</code>
         /// <code>16,21    for "Please verify your account via email in order to play the game."</code>
-        /// <code>14,17    for "You have either selected the wrong gateway, or you have yet to chagne your personal information."</code>
+        /// <code>14,17    for "You have either selected the wrong gateway, or you have yet to change your personal information."</code>
         /// <code>23       for CLicenseDlg::CLicenseDlg</code>
         /// <code>25       for "You're logging in from outside of the service region."</code>
         /// <code>27       for "Please download the full client to experience \r\nthe world of MapleStory. \r\nWould you like to download the full client\r\n from our website?"</code>

@@ -1,5 +1,6 @@
 ﻿using System;
 using NineToFive.Event;
+using NineToFive.Login.Event;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.ReceiveOps;

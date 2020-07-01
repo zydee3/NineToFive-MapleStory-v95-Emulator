@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
-using System.Text;
 using log4net;
 using NineToFive.Constants;
+using NineToFive.Event;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.ReceiveOps;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     public class SelectCharEvent : PacketEvent {
         private static readonly ILog Log = LogManager.GetLogger(typeof(SelectCharEvent));
-        
+
         private int _playerId;
         private string[] _localMacAddress;          // CLogin::GetLocalMacAddress
         private string[] _localMacAddressWithHddSn; // CLogin::GetLocalMacAddressWithHDDSerialNo
@@ -53,7 +54,8 @@ namespace NineToFive.Event {
                 _localMacAddressWithHddSn = p.ReadString().Split("_");
             }
 
-            if (!Client.Users.Exists(u => u.CharacterStat.Id == _playerId)) {
+            Client.User = Client.Users.FirstOrDefault(u => u.CharacterStat.Id == _playerId);
+            if (Client.User == null) {
                 // playerId does not exist within account
                 Client.Session.Write(GetSelectCharFailed(5));
                 return false;
@@ -62,10 +64,13 @@ namespace NineToFive.Event {
             {
                 // hehe variable scopes
                 using Packet w = new Packet();
-                w.WriteByte((byte) Interoperation.ChannelAddressRequest);
+                w.WriteByte((byte) Interoperation.MigrateClientRequest);
+                w.WriteString(Client.Username);
+                w.WriteBytes(Client.Session.RemoteAddress.GetAddressBytes());
+
                 w.WriteByte(Client.World.Id);
                 w.WriteByte(Client.Channel.Id);
-                using Packet r =  new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
+                using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
                 if (r.ReadBool()) {
                     _remoteAddress = r.ReadBytes(4);
                 }
@@ -85,6 +90,7 @@ namespace NineToFive.Event {
 
         public override void OnHandle() {
             Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
+
             Client.Session.Write(GetSelectChar(Client, _remoteAddress));
         }
 

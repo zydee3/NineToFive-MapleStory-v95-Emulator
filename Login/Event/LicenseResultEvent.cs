@@ -1,6 +1,7 @@
-﻿using NineToFive.IO;
+﻿using NineToFive.Event;
+using NineToFive.IO;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     class LicenseResultEvent : PacketEvent {
 
         private bool _accept;

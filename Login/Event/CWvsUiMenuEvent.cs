@@ -1,6 +1,7 @@
-﻿using NineToFive.IO;
+﻿using NineToFive.Event;
+using NineToFive.IO;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     public class CWvsUiMenuEvent : PacketEvent {
         public CWvsUiMenuEvent(Client client) : base(client) { }
 

@@ -8,11 +8,11 @@ using NineToFive.Net;
 [assembly: XmlConfigurator(ConfigFile = "central-logger.xml")]
 
 namespace NineToFive {
-    public class CentralServer {
+    class CentralServer {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CentralServer));
         public static readonly Dictionary<string, Client> Clients = new Dictionary<string, Client>(StringComparer.OrdinalIgnoreCase);
 
-        public static Client AddUserIfAbsent(string username) {
+        public static Client AddClientIfAbsent(string username) {
             Clients.TryGetValue(username, out Client client);
             if (client != null) return client;
             

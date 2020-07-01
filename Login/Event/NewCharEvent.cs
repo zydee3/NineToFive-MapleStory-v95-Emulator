@@ -1,9 +1,10 @@
 ﻿using System;
+using NineToFive.Event;
 using NineToFive.Game.Storage;
 using NineToFive.IO;
 using NineToFive.ReceiveOps;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     public class NewCharEvent : PacketEvent {
         private string _username;
         private int _jobIndex;

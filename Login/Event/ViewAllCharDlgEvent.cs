@@ -1,6 +1,7 @@
-﻿using NineToFive.IO;
+﻿using NineToFive.Event;
+using NineToFive.IO;
 
-namespace NineToFive.Event {
+namespace NineToFive.Login.Event {
     public class ViewAllCharDlgEvent : PacketEvent {
         private bool _make;
 

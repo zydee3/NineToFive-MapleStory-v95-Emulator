@@ -49,7 +49,7 @@ namespace NineToFive.Channels {
             World world = Server.Worlds[World.ActiveWorld];
             Log.Info($"Asking for permission to host channels from {min} to {max} in world {world.Id}");
             using Packet w = new Packet();
-            w.WriteByte((byte) Interoperation.ChannelHostPermission);
+            w.WriteByte((byte) Interoperation.ChannelHostRequest);
             w.WriteBytes(IPAddress.Parse(ServerConstants.HostServer).GetAddressBytes()); 
             w.WriteByte(world.Id);
             w.WriteByte(min);
