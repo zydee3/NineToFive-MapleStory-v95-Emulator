@@ -38,7 +38,7 @@ namespace NineToFive.Game.Entity.Meta {
         public bool LoadPortals  { get; set; } = true;
         public bool LoadClock    { get; set; } = true;
         public bool LoadLife { get; set; } = true;
-        
+        public Foothold[] Footholds { get; set; }
 
         public TemplateField() { }
         

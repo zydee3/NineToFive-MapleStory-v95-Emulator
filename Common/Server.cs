@@ -10,6 +10,10 @@ namespace NineToFive {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Server));
         public static World[] Worlds { get; private set; }
 
+        static Server() {
+            Initialize();
+        }
+        
         public static void Initialize() {
             Worlds = new World[ServerConstants.WorldCount];
             for (byte worldId = 0; worldId < Worlds.Length; worldId++) {
@@ -23,6 +27,10 @@ namespace NineToFive {
                 Worlds[worldId] = world;
                 
                 world.Templates = new Dictionary<uint, object>[Enum.GetNames(typeof(TemplateType)).Length];
+                foreach (object? Type in Enum.GetValues(typeof(TemplateType))) {
+                    world.Templates[(int)Type] = new Dictionary<uint, object>();
+                }
+                
                 world.Fields = new Dictionary<uint, Field>[world.Channels.Length];
                 world.Entities = new Dictionary<uint, Entity>[Enum.GetNames(typeof(EntityType)).Length];
                 
