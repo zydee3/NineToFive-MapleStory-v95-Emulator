@@ -3,17 +3,63 @@ using System.Collections.Generic;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Constants;
+using NineToFive.Game;
+using NineToFive.Game.Storage;
 
 namespace NineToFive.Util {
     public static class Database {
         public static DatabaseQuery Table(string table) {
             return new DatabaseQuery(table);
         }
+
+        public static object[] CreateUserParameters(User user) {
+            return new object[] {
+                "username", user.CharacterStat.Username,
+                "gender", user.AvatarLook.Gender,
+                "skin", user.AvatarLook.Skin,
+                "face", user.AvatarLook.Face,
+                "hair", user.AvatarLook.Hair,
+                "level", user.CharacterStat.Level,
+                "job", user.CharacterStat.Job,
+                "str", user.CharacterStat.Str,
+                "dex", user.CharacterStat.Dex,
+                "int", user.CharacterStat.Int,
+                "luk", user.CharacterStat.Luk,
+                "hp", user.CharacterStat.HP,
+                "max_hp", user.CharacterStat.MaxHP,
+                "mp", user.CharacterStat.MP,
+                "max_mp", user.CharacterStat.MaxMP,
+                "ability_points", user.CharacterStat.AP,
+                "exp", user.CharacterStat.Exp,
+                "popularity", user.CharacterStat.Popularity,
+                "field_id", user.CharacterStat.FieldId,
+                "portal", user.CharacterStat.Portal
+            };
+        }
+
+        public static object[] CreateItemParameters(User user, Item item) {
+            return new object[] {
+                "account_id", 0,
+                "character_id", user.CharacterStat.Id,
+                "item_id", item.Id,
+                "bag_index", item.BagIndex,
+                "quantity", item.Quantity,
+                "cash_sn", item.CashItemSn,
+                "date_expire", item.DateExpire
+            };
+        }
+    }
+
+    enum QueryType {
+        Delete,
+        Select,
+        Insert,
+        Update,
     }
 
     public class DatabaseQuery : IDisposable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(DatabaseQuery));
-        public MySqlConnection Connection { get; set; }
+        private MySqlConnection Connection { get; set; }
         public MySqlCommand Command { get; set; }
 
         private readonly string _table;
@@ -26,19 +72,19 @@ namespace NineToFive.Util {
         /// <summary>
         /// behavior of the executing command (select, insert, delete or update)
         /// </summary>
-        private string _behavior;
+        private QueryType _behavior;
 
         /// <summary>
         /// keys (column) to update in the database with specified values
         /// </summary>
-        private List<object[]> _parameters;
+        protected internal List<object[]> _parameters;
 
         /// <summary>
         /// conditions that must be met for the executing command; a where statement
         /// </summary>
         private object[] _conditions;
 
-        public DatabaseQuery(string table) {
+        protected internal DatabaseQuery(string table) {
             _table = MySqlHelper.EscapeString(table);
         }
 
@@ -57,8 +103,8 @@ namespace NineToFive.Util {
         /// </summary>
         /// <exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         public DatabaseQuery Delete() {
-            if (_behavior?.Equals("delete") == false) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
-            _behavior ??= "delete";
+            if (_behavior != QueryType.Delete) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            _behavior = QueryType.Delete;
             return this;
         }
 
@@ -71,9 +117,9 @@ namespace NineToFive.Util {
         /// <param name="columns">columns to select separated by a comma</param>
         /// <exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         public DatabaseQuery Select(string columns = "*") {
-            if (_behavior?.Equals("select") == false) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            if (_behavior != QueryType.Select) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
 
-            _behavior ??= "select";
+            _behavior = QueryType.Select;
             _columns = columns;
             return this;
         }
@@ -89,10 +135,10 @@ namespace NineToFive.Util {
         /// <exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         /// <exception cref="InvalidOperationException">If specified parameters is empty or null</exception>
         public DatabaseQuery Insert(params object[] parameters) {
-            if (_behavior?.Equals("insert") == false) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            if (_behavior != QueryType.Insert) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
             if (parameters == null || parameters.Length == 0) throw new InvalidOperationException("cannot insert empty data");
 
-            _behavior ??= "insert";
+            _behavior = QueryType.Insert;
             if (_parameters == null) {
                 // initialize parameters container
                 _parameters = new List<object[]>(2);
@@ -115,10 +161,10 @@ namespace NineToFive.Util {
         ///<exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         /// <exception cref="InvalidOperationException">If specified parameters is empty or null</exception>
         public DatabaseQuery Update(params object[] parameters) {
-            if (_behavior?.Equals("update") == false) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            if (_behavior != QueryType.Update) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
             if (parameters == null || parameters.Length == 0) throw new InvalidOperationException("cannot update empty data");
 
-            _behavior ??= "update";
+            _behavior = QueryType.Update;
             _parameters ??= new List<object[]>(1);
             _parameters.Add(parameters);
             return this;
@@ -151,9 +197,9 @@ namespace NineToFive.Util {
             EscapeParameters();
 
             switch (_behavior) {
-                case "delete":
-                case "select": {
-                    bool isReader = _behavior == "select";
+                case QueryType.Delete:
+                case QueryType.Select: {
+                    bool isReader = _behavior == QueryType.Select;
                     // create where statement
                     string query = ProcessConditions();
                     // execution behavior
@@ -169,7 +215,7 @@ namespace NineToFive.Util {
                     reader = isReader ? Command.ExecuteReader() : null;
                     return isReader ? 0 : Command.ExecuteNonQuery();
                 }
-                case "insert": {
+                case QueryType.Insert: {
                     // get column names, all values share the same columns so we only need the first index
                     string columns = "(";
                     for (int i = 0; i < _parameters[0].Length; i += 2) {
@@ -209,7 +255,7 @@ namespace NineToFive.Util {
                     reader = null;
                     return Command.ExecuteNonQuery();
                 }
-                case "update": {
+                case QueryType.Update: {
                     if (_parameters.Count != 1) throw new InvalidOperationException("cannot update multiple parameters?");
                     string query = $"update {_table} set ";
                     object[] parameters = _parameters[0];

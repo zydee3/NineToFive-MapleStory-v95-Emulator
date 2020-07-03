@@ -24,7 +24,7 @@ namespace NineToFive.Net {
             Log.Info($"{op}");
             switch (op) {
                 case Interoperation.ClientGenderUpdateRequest:
-                    CentralServer.AddClientIfAbsent(r.ReadString()).Gender = r.ReadByte();
+                    Server.AddClientIfAbsent(r.ReadString()).Gender = r.ReadByte();
                     return;
                 case Interoperation.WorldInformationRequest:
                     c.GetStream().Write(SimpleCrypto.Encrypt(WorldInformationRequest.OnHandle()));
@@ -39,7 +39,7 @@ namespace NineToFive.Net {
                     c.GetStream().Write(SimpleCrypto.Encrypt(CheckDuplicateIdRequest.OnHandle(r)));
                     return;
                 case Interoperation.ClientInitializeSPWRequest:
-                    CentralServer.AddClientIfAbsent(r.ReadString()).SecondaryPassword = r.ReadString();
+                    Server.AddClientIfAbsent(r.ReadString()).SecondaryPassword = r.ReadString();
                     return;
                 case Interoperation.MigrateClientRequest:
                     c.GetStream().Write(SimpleCrypto.Encrypt(ClientMigrateSocketRequest.OnHandle(r)));

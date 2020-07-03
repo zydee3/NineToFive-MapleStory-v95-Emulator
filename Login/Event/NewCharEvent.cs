@@ -3,6 +3,7 @@ using NineToFive.Event;
 using NineToFive.Game.Storage;
 using NineToFive.IO;
 using NineToFive.ReceiveOps;
+using NineToFive.Util;
 
 namespace NineToFive.Login.Event {
     public class NewCharEvent : PacketEvent {
@@ -65,7 +66,17 @@ namespace NineToFive.Login.Event {
             inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Shoes], true));
             inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Weapon], true));
 
-            user.CharacterStat.Id = 1;
+            using DatabaseQuery insertChar = Database.Table("characters");
+            int count = insertChar.Insert(Database.CreateUserParameters(user)).ExecuteNonQuery();
+            user.CharacterStat.Id = (uint) insertChar.Command.LastInsertedId;
+            if (count == 0) throw new InvalidOperationException($"Failed to save character {_username}");
+            
+            using DatabaseQuery insertItems = Database.Table("items");
+            foreach (var item in inventory.Items) {
+                insertItems.Insert(Database.CreateItemParameters(user, item));
+            }
+
+            insertItems.ExecuteNonQuery();
 
             Client.Session.Write(GetCreateNewChar());
             Client.Users.Add(user);

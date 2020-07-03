@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using log4net;
 using NineToFive.Constants;
 using NineToFive.Event;
 using NineToFive.IO;
@@ -22,12 +23,13 @@ namespace NineToFive.Login.Event {
             w.WriteByte((byte) Interoperation.CheckPasswordRequest);
             w.WriteString(_username);
             w.WriteString(_password);
+            w.WriteBytes(_machineId);
 
             using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
             byte result = r.ReadByte();
             // un-successful login
             if (result != 1) return result;
-            
+
             Client.Decode(Client, r);
             return result;
         }
@@ -41,8 +43,7 @@ namespace NineToFive.Login.Event {
         public override void OnHandle() {
             byte loginResult = GetAuthRequest();
             if (loginResult == 1) {
-                Client.Username = _username;
-                Client.MachineId = _machineId;
+                Client.LoadCharacters();
                 Client.Session.Write(GetLoginSuccess(Client));
             } else {
                 Client.Session.Write(GetLoginFailed(loginResult));
@@ -58,6 +59,7 @@ namespace NineToFive.Login.Event {
             packet.ReadByte(); // 0
             packet.ReadByte(); // 0
             packet.ReadInt();  // partnerCode
+            Console.WriteLine($"{_username} / {_password}");
             if (!Interoperability.TestConnection(IPAddress.Parse(ServerConstants.CentralServer), ServerConstants.InterCentralPort)) {
                 Client.Session.Write(GetLoginFailed(6));
                 return false;
@@ -75,15 +77,15 @@ namespace NineToFive.Login.Event {
 
             p.WriteUInt(client.Id);
             p.WriteByte(client.Gender);
-            p.WriteByte();
-            p.WriteShort();
-            p.WriteByte();
+            p.WriteByte();  // nGradeCode
+            p.WriteShort(); // nPurchaseExp
+            p.WriteByte();  // bManager,bTester,bSubTester 
             p.WriteString(client.Username);
-            p.WriteByte();
-            p.WriteByte();
-            p.WriteLong();
-            p.WriteLong();
-            p.WriteInt();
+            p.WriteByte(); // nVIPGrade
+            p.WriteByte(); // nPurchaseExp
+            p.WriteLong(); // dtChatUnblockDate
+            p.WriteLong(); // 
+            p.WriteInt();  // 
 
             if (client.Gender != 10) {
                 p.WriteByte(2);

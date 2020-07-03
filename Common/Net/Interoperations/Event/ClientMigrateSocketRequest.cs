@@ -8,7 +8,7 @@ namespace NineToFive.Interopation.Event {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ClientMigrateSocketRequest));
 
         public static byte[] OnHandle(Packet r) {
-            Client client = CentralServer.AddClientIfAbsent(r.ReadString());
+            Client client = Server.AddClientIfAbsent(r.ReadString());
             client.LastKnownIp = new IPAddress(r.ReadBytes(4));
 
             World world = Server.Worlds[r.ReadByte()];

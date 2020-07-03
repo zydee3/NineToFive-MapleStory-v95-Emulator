@@ -8,6 +8,7 @@ using NineToFive.Game.Entity.Meta;
 namespace NineToFive {
     public static class Server {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Server));
+        public static readonly Dictionary<string, Client> Clients = new Dictionary<string, Client>(StringComparer.OrdinalIgnoreCase);
         public static World[] Worlds { get; }
 
         static Server() {
@@ -32,6 +33,15 @@ namespace NineToFive {
 
                 Log.Info($"Skeleton for world {(worldId + 1)} created with {world.Channels.Length} spooky channels");
             }
+        }
+        
+        public static Client AddClientIfAbsent(string username) {
+            Clients.TryGetValue(username, out Client client);
+            if (client != null) return client;
+
+            client = new Client(null, null);
+            Clients.Add(username, client);
+            return client;
         }
     }
 }

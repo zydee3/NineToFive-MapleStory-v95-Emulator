@@ -92,6 +92,7 @@ namespace NineToFive.Login.Event {
             Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
 
             Client.Session.Write(GetSelectChar(Client, _remoteAddress));
+            Server.Clients.Remove(Client.Username);
         }
 
         private static byte[] GetSelectChar(Client client, byte[] address) {

@@ -13,12 +13,9 @@ namespace NineToFive.Interopation.Event {
         public static byte[] OnHandle(Packet r) {
             string username = r.ReadString();
             string password = r.ReadString();
+            byte[] machineId = r.ReadBytes(16);
 
-            CentralServer.Clients.TryGetValue(username, out Client client);
-            client ??= new Client(null, null) {
-                Username = username
-            };
-
+            Server.Clients.TryGetValue(username, out Client client);
             byte loginResult = ClientTryLogin(ref client, ref password);
 
             using Packet w = new Packet();
@@ -27,30 +24,30 @@ namespace NineToFive.Interopation.Event {
                 // successful login, encode client data
                 client.Encode(client, w);
                 Log.Info($"{client.Username} has logged-in");
-                CentralServer.Clients.TryAdd(username, client);
+                Server.Clients.TryAdd(username, client);
             }
 
             return w.ToArray();
         }
 
         private static byte ClientTryLogin(ref Client client, ref string password) {
-            using DatabaseQuery c = Database.Table("accounts");
-            using MySqlDataReader r = c.Select().Where("username", "=", client.Username).ExecuteReader();
-            // account not found
-            if (!r.Read()) return 5;
-            string sPassword = r.GetString("password");
-            // incorrect password
-            if (!sPassword.Equals(password, StringComparison.Ordinal)) {
-                Log.Info($"Account '{client.Username}' does not exist");
-                return 4;
+            if (client == null) {
+                using DatabaseQuery c = Database.Table("accounts");
+                using MySqlDataReader r = c.Select().Where("username", "=", client.Username).ExecuteReader();
+                // account not found
+                if (!r.Read()) return 5;
+                client = new Client(null, null) {
+                    Id = r.GetUInt32("id"),
+                    Username = r.GetString("username"),
+                    Password = r.GetString("password"),
+                    Gender = r.GetByte("gender"),
+                    SecondaryPassword = r.GetString("second_password"),
+                    LastKnownIp = IPAddress.Parse(r.GetString("last_known_ip")),
+                };
             }
 
-            client.Id = r.GetUInt32("id");
-            client.Username = r.GetString("username");
-            client.Gender = r.GetByte("gender");
-            client.SecondaryPassword = r.GetString("second_password");
-            client.LastKnownIp = IPAddress.Parse(r.GetString("last_known_ip"));
-            return 1;
+            // incorrect password
+            return !password.Equals(client.Password, StringComparison.Ordinal) ? (byte) 4 : (byte) 1;
         }
     }
 }

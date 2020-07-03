@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NineToFive.Game.Storage;
 
 namespace NineToFive.Constants {
     public static class ServerConstants {
@@ -41,6 +42,13 @@ namespace NineToFive.Constants {
     }
 
     public static class ItemConstants {
+        public static InventoryType GetInventoryType(int itemId) {
+            int type = itemId / 1000000;
+            if (type < 1 || type > 5) {
+                throw new ArgumentException($"Unknown inventory type for item {itemId}");
+            }
+            return (InventoryType) type;
+        }
         public static byte GetGenderFromId(int itemId) {
             if (itemId / 1000000 != 1) return 2;
             return (byte) Math.Min(2, itemId / 1000 % 10);

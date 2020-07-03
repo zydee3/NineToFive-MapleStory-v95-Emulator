@@ -1,23 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
+using log4net;
+using MySql.Data.MySqlClient;
+using NineToFive.Constants;
 using NineToFive.Game.Storage;
 using NineToFive.IO;
 using NineToFive.Util;
 
 namespace NineToFive.Game {
     public class User {
-        public readonly AvatarLook AvatarLook = new AvatarLook();
-        public readonly GW_CharacterStat CharacterStat = new GW_CharacterStat();
+        private static readonly ILog Log = LogManager.GetLogger(typeof(User));
+        public readonly AvatarLook AvatarLook;
+        public readonly GW_CharacterStat CharacterStat;
         public readonly Dictionary<InventoryType, Inventory> Inventories;
 
-        public User() {
+        public User(MySqlDataReader reader = null) {
             Inventories = new Dictionary<InventoryType, Inventory>();
             foreach (InventoryType type in Enum.GetValues(typeof(InventoryType))) {
                 Inventories.Add(type, new Inventory(type));
             }
+
+            AvatarLook = new AvatarLook(reader);
+            CharacterStat = new GW_CharacterStat(reader);
+            if (reader == null) return;
+            using DatabaseQuery q = Database.Table("items");
+            using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
+            while (r.Read()) {
+                int itemId = r.GetInt32("item_id");
+                short bagIndex = r.GetInt16("bag_index");
+                InventoryType type = ItemConstants.GetInventoryType(itemId);
+                if (type == InventoryType.Equip && bagIndex < 0) {
+                    Inventories[type].EquipItem(new Equip(itemId, true));
+                } else {
+                    Item item = new Item(r.GetInt32("item_id")) {
+                        GeneratedId = r.GetUInt32("generated_id"),
+                        BagIndex = bagIndex,
+                        Quantity = r.GetUInt16("quantity"),
+                        CashItemSn = r.GetInt64("cash_sn"),
+                        DateExpire = r.GetInt64("date_expire")
+                    };
+                    Inventories[item.InventoryType][item.BagIndex] = item;
+                }
+            }
         }
 
         public Client Client { get; set; }
+
+        public void Save() {
+            using DatabaseQuery updateChars = Database.Table("characters");
+            int count = updateChars.Update(Database.CreateUserParameters(this))
+                .Where("id", "=", CharacterStat.Id)
+                .ExecuteNonQuery();
+            if (count == 0) throw new InvalidOperationException($"Failed to save character({CharacterStat.Username})");
+
+            using DatabaseQuery deleteItems = Database.Table("items");
+            count = deleteItems.Delete().ExecuteNonQuery();
+            Log.Info($"Deleted {count} items from {CharacterStat.Username}'s inventories");
+
+            using DatabaseQuery insertItems = Database.Table("items");
+            foreach (var inventory in Inventories.Values) {
+                foreach (var item in inventory.Items) {
+                    insertItems.Insert(Database.CreateItemParameters(this, item));
+                }
+            }
+
+            count = insertItems.ExecuteNonQuery();
+            Log.Info($"Successfully saved {count} items in {CharacterStat.Username}'s inventories");
+        }
     }
 
     public class AvatarLook : IPacketSerializer<User> {
@@ -25,6 +74,14 @@ namespace NineToFive.Game {
         public byte Skin { get; set; }
         public int Face { get; set; }
         public int Hair { get; set; }
+
+        public AvatarLook(MySqlDataReader r = null) {
+            if (r == null) return;
+            Gender = r.GetByte("gender");
+            Skin = r.GetByte("skin");
+            Face = r.GetInt32("face");
+            Hair = r.GetInt32("hair");
+        }
 
         public void Encode(User user, Packet p) {
             p.WriteByte(Gender);
@@ -72,6 +129,26 @@ namespace NineToFive.Game {
         public int FieldId { get; set; }
         public byte Portal { get; set; }
 
+        public GW_CharacterStat(MySqlDataReader r = null) {
+            if (r == null) return;
+            Id = r.GetUInt32("id");
+            Username = r.GetString("username");
+            Level = r.GetSByte("level");
+            Job = r.GetInt16("job");
+            Str = r.GetInt16("str");
+            Dex = r.GetInt16("dex");
+            Int = r.GetInt16("int");
+            Luk = r.GetInt16("luk");
+            HP = r.GetInt32("hp");
+            MaxHP = r.GetInt32("max_hp");
+            MP = r.GetInt32("mp");
+            MaxMP = r.GetInt32("max_mp");
+            AP = r.GetInt16("ability_points");
+            Exp = r.GetInt32("exp");
+            Popularity = r.GetInt16("popularity");
+            FieldId = r.GetInt32("field_id");
+            Portal = r.GetByte("portal");
+        }
 
         public void Encode(User user, Packet p) {
             if (Id == 0) throw new InvalidOperationException("cannot encode a character which id is 0");

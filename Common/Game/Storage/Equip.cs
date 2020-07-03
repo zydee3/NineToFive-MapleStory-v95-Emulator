@@ -7,7 +7,9 @@ namespace NineToFive.Game.Storage {
             if (autoBagIndex) BagIndex = ItemConstants.GetBodyPartFromId(id);
         }
 
-        public override byte Type => 2;
+        public override byte Type => 1;
+
+        public override ushort Quantity => 1;
 
         public override void Encode(Item item, Packet p) {
             base.Encode(item, p);

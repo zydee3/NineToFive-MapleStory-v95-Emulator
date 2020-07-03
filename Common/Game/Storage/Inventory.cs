@@ -34,8 +34,7 @@ namespace NineToFive.Game.Storage {
                 _items.TryGetValue(bagIndex, out Item item);
                 return item;
             }
+            set => _items.Add(bagIndex, value);
         }
     }
-
-    enum EntityType { }
 }
