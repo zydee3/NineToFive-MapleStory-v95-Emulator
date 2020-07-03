@@ -59,7 +59,6 @@ namespace NineToFive.Login.Event {
             packet.ReadByte(); // 0
             packet.ReadByte(); // 0
             packet.ReadInt();  // partnerCode
-            Console.WriteLine($"{_username} / {_password}");
             if (!Interoperability.TestConnection(IPAddress.Parse(ServerConstants.CentralServer), ServerConstants.InterCentralPort)) {
                 Client.Session.Write(GetLoginFailed(6));
                 return false;
