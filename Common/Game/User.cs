@@ -30,7 +30,7 @@ namespace NineToFive.Game {
                 short bagIndex = r.GetInt16("bag_index");
                 InventoryType type = ItemConstants.GetInventoryType(itemId);
                 if (type == InventoryType.Equip && bagIndex < 0) {
-                    Inventories[type].EquipItem(new Equip(itemId, true));
+                    Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true));
                 } else {
                     Item item = new Item(r.GetInt32("item_id")) {
                         GeneratedId = r.GetUInt32("generated_id"),
