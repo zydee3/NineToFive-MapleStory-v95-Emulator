@@ -7,7 +7,8 @@ namespace NineToFive.Util {
         public float Slope { get; }
 
         public SlopeEquation(Tuple<int, int> Point1, Tuple<int, int> Point2) {
-            Slope = (Point1.Item2 - Point2.Item2) / (Point1.Item1 - Point2.Item1);
+            float Denominator = (Point1.Item1 - Point2.Item1);
+            Slope = (Point1.Item2 - Point2.Item2) / (Denominator == 0 ? 1 : Denominator);
             B = -Point1.Item1 * Slope + Point1.Item2;
         }
 

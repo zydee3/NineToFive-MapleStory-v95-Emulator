@@ -1,28 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Intrinsics.X86;
-using log4net.Util;
 using MapleLib.WzLib;
+using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Wz;
 
+
 namespace NineToFive.Game {
+    /// <summary>
+    /// Properties contains the common properties that all instances of the same field should have so I didn't make a
+    /// full copy of them over because it would just be redundant data stored. Because it's immutable, all instances
+    /// of the same field can access it to get the properties.
+    ///
+    /// Life should only hold monsters that are alive / custom entities (ex: entities spawned specific to this instance)
+    /// </summary>
     public class Field {
         public uint ID { get; }
         public uint ChannelID { get; }
         public TemplateField Properties { get; set; }
-        
+        public List<SpawnPoint> SpawnPoints { get; } = new List<SpawnPoint>();
+        public Dictionary<EntityType, Dictionary<uint, Entity.Meta.Entity>> Life { get; } = new Dictionary<EntityType, Dictionary<uint, Entity.Meta.Entity>>();
         
         /// <summary>
-        ///     This constructor is meant for when multiple fields are being loaded, we should reuse the loaded WzFile.
+        /// Field Constructor
         /// </summary>
-        public Field() { }
-
-        /// <summary>
-        /// This constructor is meant for when only a single field is being loaded so the WzFile being used is a Singleton.
-        /// </summary>
-        /// <param name="FieldID">Id of the field being loaded</param>
+        /// <param name="ID"></param>
+        /// <param name="ChannelID"></param>
         public Field(uint ID, uint ChannelID) {
             this.ID = ID;
             this.ChannelID = ChannelID;
@@ -30,8 +33,29 @@ namespace NineToFive.Game {
             string PathToMapImage = $"Map/Map{ID/100000000}/{ID}.img";
             List<WzImageProperty> FieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), PathToMapImage);
             MapWz.SetField(this, ref FieldProperties);
+            
+            Life = new Dictionary<EntityType, Dictionary<uint, Entity.Meta.Entity>>();
+            foreach (EntityType Type in Enum.GetValues(typeof(EntityType))) {
+                Life.Add(Type, new Dictionary<uint, Entity.Meta.Entity>());
+            }
+
+            var MobEntries = Properties.Life[EntityType.Mob];
+            foreach (Foothold Foothold in Properties.Footholds) {
+                
+                // Create spawn points only where monsters exist.
+                if (MobEntries.TryGetValue((uint) Foothold.ID, out FieldLifeEntry Entry)) {
+                    SpawnPoints.Add(new SpawnPoint(this, (int)Entry.ID));
+                }
+            }
+            
+            //todo: load npcs and reactors
         }
 
+        /// <summary>
+        /// Calculates the projected position on a foothold directly under the provided argument.
+        /// </summary>
+        /// <param name="Position">Position reference to find point on ground underneath.</param>
+        /// <returns>Position as tuple(item1=x, item2=y)</returns>
         public Tuple<int, int> GetGroundBelow(Tuple<int, int> Position) {
             int SmallestYDistance = 999999;
             Foothold FoundFoothold = null;

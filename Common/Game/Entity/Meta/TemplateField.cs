@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using MapleLib.WzLib;
 using MapleLib.WzLib.WzStructure.Data;
 using NineToFive.Constants;
-using NineToFive.Wz;
 
 
 namespace NineToFive.Game.Entity.Meta {
@@ -14,10 +11,11 @@ namespace NineToFive.Game.Entity.Meta {
     ///     https://docs.microsoft.com/en-us/dotnet/api/system.threading.interlocked.increment?view=netcore-3.1
     /// </summary>
     
-    public class TemplateField : ICloneable {
+    public class TemplateField {
         public bool[] FieldLimits { get; set; } = new bool[Enum.GetNames(typeof(FieldLimitType)).Length];
-        public List<Mob> Life = new List<Mob>();
-        public SpawnPoint[] SpawnPoints;
+        public Dictionary<EntityType, Dictionary<uint, FieldLifeEntry>> Life { get; }
+        
+        public Foothold[] Footholds { get; set; }
         public Portal[] Portals;
         
         public string BackgroundMusic { get; set; }
@@ -34,20 +32,16 @@ namespace NineToFive.Game.Entity.Meta {
         public int MobCount  { get; set; }
         public float MobRate { get; set; }
 
-        public bool LoadReactors { get; set; } = true;
-        public bool LoadPortals  { get; set; } = true;
-        public bool LoadClock    { get; set; } = true;
         public bool LoadLife { get; set; } = true;
-        public Foothold[] Footholds { get; set; }
-
-        public TemplateField() { }
+        public bool LoadClock { get; set; } = true;
+        public bool LoadPortals { get; set; } = true;
+        public bool LoadReactors { get; set; } = true;
         
-        public TemplateField(ref List<WzImageProperty> FieldProperties) {
-            MapWz.SetTemplateField(this, ref FieldProperties);
-        }
-
-        public object Clone() {
-            return this.MemberwiseClone();
+        public TemplateField() {
+            Life = new Dictionary<EntityType, Dictionary<uint, FieldLifeEntry>>();
+            foreach (EntityType Type in Enum.GetValues(typeof(EntityType))) {
+                Life.Add(Type, new Dictionary<uint, FieldLifeEntry>());
+            }
         }
     }
 }

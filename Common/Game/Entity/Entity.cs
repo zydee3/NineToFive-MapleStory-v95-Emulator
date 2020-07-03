@@ -5,7 +5,10 @@ namespace NineToFive.Game.Entity.Meta {
         public int OID { get; set; }
         public EntityType EntityType { get; set; }
 
-        public Entity(int OID, EntityType EntityType) {
+        protected Entity(EntityType EntityType) {
+            this.EntityType = EntityType;
+        }
+        protected Entity(int OID, EntityType EntityType) {
             this.OID = OID;
             this.EntityType = EntityType;
         }

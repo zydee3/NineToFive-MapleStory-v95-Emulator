@@ -10,6 +10,7 @@ namespace NineToFive.Game {
         public int X2 { get; set; }
         public int Y1 { get; set; }
         public int Y2 { get; set; }
+        public int ID { get; set; }
         public Tuple<int, int> LeftEndPoint { get; set; }
         public Tuple<int, int> RightEndPoint { get; set; }
 
