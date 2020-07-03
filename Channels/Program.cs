@@ -22,7 +22,6 @@ namespace NineToFive.Channels {
             }
             
             Log.Info("Hello World, from Channel Server!");
-            Server.Initialize();
             Interoperability.ServerCreate(ServerConstants.InterChannelPort);
             Log.Info($"Interoperations listening on port {ServerConstants.InterChannelPort}");
 

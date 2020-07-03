@@ -1,5 +1,8 @@
-﻿using log4net;
+﻿using System;
+using log4net;
+using MySql.Data.MySqlClient;
 using NineToFive.IO;
+using NineToFive.Util;
 
 namespace NineToFive.Interopation.Event {
     public static class ClientAuthRequest {
@@ -12,11 +15,10 @@ namespace NineToFive.Interopation.Event {
 
             CentralServer.Clients.TryGetValue(username, out Client client);
             if (client == null) {
-                client = new Client(null, null) {Username = username};
-                client.Id = _clientIdIncrement++;
+                client = new Client(null, null) {Id = _clientIdIncrement++};
             }
 
-            byte loginResult = client.TryLogin(password);
+            byte loginResult = ClientTryLogin(username, password);
             using Packet w = new Packet();
             w.WriteByte(loginResult);
             if (loginResult == 1) {
@@ -31,6 +33,20 @@ namespace NineToFive.Interopation.Event {
             }
 
             return w.ToArray();
+        }
+        
+        private static byte ClientTryLogin(string username, string password) {
+            byte result = 4;
+            using DatabaseQuery c = Database.Table("accounts");
+            using MySqlDataReader r = c.Select("*").Where("username", "=", username).ExecuteReader();
+            if (r.Read()) {
+                string sPassword = r.GetString("password");
+                if (sPassword.Equals(password, StringComparison.Ordinal)) {
+                    result = 1;
+                }
+            }
+
+            return result;
         }
     }
 }

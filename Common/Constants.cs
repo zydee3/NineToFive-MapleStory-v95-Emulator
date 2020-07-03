@@ -19,6 +19,8 @@ namespace NineToFive.Constants {
         public const int ChannelCount = 3;
         public const bool EnabledRanking = false;
         public const bool EnabledSecondaryPassword = true;
+        
+        public const string DatabaseConString = "server=127.0.0.1;port=3306;userid=root;password=fireworks;database=ntf;charset=utf8;Allow User Variables=true;pooling=true";
 
         public static readonly string[] WorldNames = {
             "Scania", "Bera", "Broa", "Windia", "Khaini", "Bellocan", "Mardia", "kradia", "Yellonde", "Demethos",

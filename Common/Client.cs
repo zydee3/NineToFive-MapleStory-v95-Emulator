@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using MySql.Data.MySqlClient;
 using NineToFive.Game;
 using NineToFive.Net;
+using NineToFive.Util;
 
 namespace NineToFive {
     public class Client {
@@ -37,16 +39,6 @@ namespace NineToFive {
 
         public void SetChannel(byte channelId) {
             _channelId = channelId;
-        }
-
-        public byte TryLogin(string password) {
-            Password ??= password;
-            byte result = 4;
-            if (Password.Equals(password, StringComparison.Ordinal)) {
-                result = 1;
-            }
-
-            return result;
         }
     }
 }

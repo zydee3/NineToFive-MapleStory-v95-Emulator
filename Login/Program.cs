@@ -13,7 +13,6 @@ namespace NineToFive.Login {
 
         static void Main(string[] args) {
             Log.Info("Hello World, from Login Server!");
-            Server.Initialize();
             Interoperability.ServerCreate(ServerConstants.InterLoginPort);
             Log.Info($"Interoperations listening on port {ServerConstants.InterLoginPort}");
 
