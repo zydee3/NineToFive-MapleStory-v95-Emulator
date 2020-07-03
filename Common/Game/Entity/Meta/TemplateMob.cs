@@ -1,5 +1,5 @@
 ﻿namespace NineToFive.Game.Entity.Meta {
-    public class TemplateMobStat {
+    public class TemplateMob {
         
     }
 }

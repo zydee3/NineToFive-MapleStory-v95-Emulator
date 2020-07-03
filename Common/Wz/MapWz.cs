@@ -15,8 +15,8 @@ namespace NineToFive.Wz {
         /// <summary>
         /// Sets the the field variables of the field being passed in.
         /// </summary>
-        /// <param name="Field">Field to be initialized.</param>
-        /// <param name="MapImage">Image loaded from wz containing the field's data.</param>
+        /// <param name="Field">Field to be initialized</param>
+        /// <param name="MapProperties">List of WzImageProperty loaded from the Field's Image from Wz.</param>
         public static void SetField(Field Field, ref List<WzImageProperty> MapProperties) {
             if (Field == null || MapProperties == null) return;
             
@@ -28,21 +28,25 @@ namespace NineToFive.Wz {
             }
 
             if (Template == null) return;
-            Field.Properties = (TemplateField)((TemplateField) Template).Clone(); // this is so stupid
+            Field.Properties = (TemplateField) Template;
         }
 
+        /// <summary>
+        /// Sets the Template of the field.
+        /// </summary>
+        /// <param name="Field">Field to be initialized</param>
+        /// <param name="MapProperties">List of WzImageProperty loaded from the Field's Image from Wz.</param>
         public static void SetTemplateField(TemplateField Template, ref List<WzImageProperty> MapProperties) {
-            if (Template == null || MapProperties == null || MapProperties.Count == 0) return;
-            
             foreach (WzImageProperty Node in MapProperties) {
-                //PrintDirectory(Node);
+                if (Node == null) continue;
+                
                 switch (Node.Name) {
                     case "back": {}
                         break;
                     case "clock": {}
                         break;
                     case "foothold":
-                        LoadFootholds(Template, Node, true);
+                        LoadFootholds(Template, Node);
                         break;
                     case "info":
                         LoadInfo(Template, Node);
@@ -50,11 +54,12 @@ namespace NineToFive.Wz {
                     case "ladderRope": {}
                         break;
                     case "life":
-                        if (Template.LoadLife) LoadLife(Node);
+                        if (Template.LoadLife) LoadLife(Template, Node);
                         break;
-                    case "miniMap": {}
+                    case "miniMap": 
                         break;
-                    case "portal": {}
+                    case "portal":
+                        if (Template.LoadPortals) LoadPortals(Template, Node);
                         break;
                     case "reactor": {}
                         break;
@@ -67,7 +72,7 @@ namespace NineToFive.Wz {
             }
         }
 
-        public static void PrintDirectory(WzImageProperty Parent) {
+        private static void PrintDirectory(WzImageProperty Parent) {
             foreach(WzImageProperty InternalProperty in Parent.WzProperties) {
                 Console.WriteLine($"-- {InternalProperty.Name}({InternalProperty.GetType()})");
                 Console.WriteLine($"---- {InternalProperty.WzValue}");
@@ -79,7 +84,7 @@ namespace NineToFive.Wz {
             }
         }
         
-        public static void LoadFootholds(TemplateField Template, WzImageProperty FootholdsImage, bool ReduceFootholds) {
+        private static void LoadFootholds(TemplateField Template, WzImageProperty FootholdsImage) {
             Dictionary<uint, Foothold> Footholds = new Dictionary<uint, Foothold>();
             
             foreach (WzImageProperty Collection in FootholdsImage.WzProperties) {
@@ -94,10 +99,10 @@ namespace NineToFive.Wz {
                                     Foothold.Next = ((WzIntProperty) Property).Value;
                                     break;
                                 case "prev": 
-                                    Foothold.Prev = ((WzIntProperty) Property).Value;;
+                                    Foothold.Prev = ((WzIntProperty) Property).Value;
                                     break;
                                 case "x1":
-                                    Foothold.X1 = ((WzIntProperty) Property).Value;;
+                                    Foothold.X1 = ((WzIntProperty) Property).Value;
                                     break;
                                 case "x2":
                                     Foothold.X2 = ((WzIntProperty) Property).Value;
@@ -111,93 +116,106 @@ namespace NineToFive.Wz {
                                 case "piece":
                                     break;
                                 default:
-                                    Console.WriteLine($"Unhandled Foothold Property: {Property.Name, 10}({Property.PropertyType})");
+                                    Console.WriteLine($"Unhandled Field/Foothold Property: {Property.Name, 10}({Property.PropertyType})");
                                     break;
                             }
                         }
+
+                        Foothold.ID = ChildID;
                         Foothold.SetEndPoints();
                         Footholds.Add((uint) ChildID, Foothold);
                     } 
                 }
             }
 
-            if (!ReduceFootholds) {
-                Template.Footholds = Footholds.Select(Entry => Entry.Value).ToArray();
-                return;
-            }
-
-            //Console.WriteLine($"Initial Number of Footholds: {Footholds.Count}");
-            
-            IEnumerable<KeyValuePair<uint, Foothold>> FilteredHorizontal = Footholds.Where(Entry => Entry.Value.Y1 == Entry.Value.Y2).OrderBy(Entry => Entry.Value.LeftEndPoint.Item1);
-            Dictionary<float, Tuple<uint, uint>> Pairs = new Dictionary<float, Tuple<uint, uint>>();
-            List<uint> ToExclude = new List<uint>();
-            
-            foreach ((uint ID, Foothold Foothold) in FilteredHorizontal) {
-                if (Pairs.TryGetValue(Foothold.Y1, out Tuple<uint, uint> Pair)) {
-                    if (Foothold.LeftEndPoint.Item1 < Footholds[Pair.Item1].LeftEndPoint.Item1) {
-                        Pairs[Foothold.Y1] = new Tuple<uint, uint>(ID, Pair.Item2);
-                        ToExclude.Add(Pair.Item1);
-                    } else if (Foothold.RightEndPoint.Item1 > Footholds[Pair.Item2].RightEndPoint.Item1) {
-                        Pairs[Foothold.Y1] = new Tuple<uint, uint>(Pair.Item1, ID);
-                        ToExclude.Add(Pair.Item2);
-                    } else {
-                        ToExclude.Add(ID);
-                    }
-                } else {
-                    Pairs.Add(Foothold.Y1, new Tuple<uint, uint>(ID, ID));
-                }
-                
-                //Console.WriteLine($"ID: {ID,5}, Left Point: {Foothold.LeftEndPoint.Item1,5}, X1: {Foothold.X1,5}, X2: {Foothold.X2,5}, Y1: {Foothold.Y1,5}, Y2: {Foothold.Y2,5}, Next: {Foothold.Next,5}, Prev: {Foothold.Prev,5}");
-            }
-
-            //todo: finish this slope reduction set
-            /*
-            foreach ((uint ID, Foothold Foothold) in Footholds) {
-                if (ToExclude.Contains(ID) || Foothold.SlopeForm.Slope == 0) continue;
-                    
-                if (Pairs.TryGetValue(Foothold.SlopeForm.Slope, out Tuple<uint, uint> Pair)) {
-                    Foothold Next = null, Prev = null;
-                    if (Footholds.ContainsKey((uint)Foothold.Next)) {
-                        Next = Footholds[(uint) Foothold.Next];
-                    }
-
-                    if (Footholds.ContainsKey((uint) Foothold.Prev)) {
-                        Prev = Footholds[(uint) Foothold.Prev];
-                    }
-
-                    if (Next != null) {
-                        
-                    } else if (Prev != null) {
-                        
-                    } else {
-                        
-                    }
-                } else {
-                    Pairs.Add(Foothold.Y1, new Tuple<uint, uint>(ID, ID));
-                }
-            }
-            */
-            
-            foreach ((float Y1, (uint Left, uint Right)) in Pairs) {
-                Foothold Lf = Footholds[Left];
-                (int X, int Y) = Lf.RightEndPoint = Footholds[Right].RightEndPoint;
-                if (Lf.X1 == Lf.LeftEndPoint.Item1) {
-                    Lf.X2 = X;
-                    Lf.Y2 = Y;
-                } else {
-                    Lf.X1 = X;
-                    Lf.Y1 = Y;
-                }
-                ToExclude.Add(Right);
-                //Console.WriteLine($"Y1: {Y1, 10}, Footholds({Left}, {Right}), {"", 5}Pair({Footholds[Left].LeftEndPoint, 17}, {Footholds[Left].RightEndPoint})");
-            }
-            
-            //Console.WriteLine($"Final Number of Footholds: {Footholds.Count - ToExclude.Count}");
-            Template.Footholds = Footholds.Where(Entry => !ToExclude.Contains(Entry.Key)).Select(Entry => Entry.Value).ToArray();
+            Template.Footholds = Footholds.Select(Entry => Entry.Value).ToArray();
         }
 
-        public static void LoadLife(WzImageProperty LifeImage) {
-            
+        /*
+             id      =WzStringProperty
+             type    =WzStringProperty
+             mobTime =WzIntProperty
+             f       =WzIntProperty
+             hide    =WzIntProperty
+             fh      =WzIntProperty
+             cy      =WzIntProperty
+             rx0     =WzIntProperty
+             rx1     =WzIntProperty
+             x       =WzIntProperty
+             y       =WzIntProperty
+         */
+        private static void LoadLife(TemplateField Template, WzImageProperty LifeImage) {
+            foreach (WzImageProperty Life in LifeImage.WzProperties) {
+                if (!int.TryParse(Life.Name, out int ID)) continue;
+                
+                EntityType? Type = null;
+                FieldLifeEntry FieldLife = new FieldLifeEntry();
+
+                foreach (WzImageProperty Property in Life.WzProperties) {
+                    switch (Property.Name) {
+                        case "id":
+                            if (int.TryParse(((WzStringProperty) Property).Value, out int LifeID)) {
+                                FieldLife.ID = (uint) LifeID;
+                            } 
+                            break;
+                        case "type":
+                            string Value = ((WzStringProperty) Property).Value;
+                            switch (Value) {
+                                case "m":
+                                    Type = EntityType.Mob;
+                                    break;
+                                case "n":
+                                    Type = EntityType.Npc;
+                                    break;
+                                case "r":
+                                    Type = EntityType.Reactor;
+                                    break;
+                                default:
+                                    Console.WriteLine($"Unhandled Entity Type: {Value}");
+                                    break;
+                            }
+                            break;
+                        case "mobTime":
+                            FieldLife.MobTime = ((WzIntProperty) Property).Value;
+                            break;
+                        case "f":
+                            FieldLife.Flipped = ((WzIntProperty) Property).Value == 1;
+                            break;
+                        case "hide":
+                            FieldLife.Hidden = ((WzIntProperty) Property).Value == 1;
+                            break;
+                        case "fh":
+                            FieldLife.FootholdID = ((WzIntProperty) Property).Value;
+                            break;
+                        case "cy":
+                            FieldLife.Cy = ((WzIntProperty) Property).Value;
+                            break;
+                        case "rx0":
+                            FieldLife.Rx0 = ((WzIntProperty) Property).Value;
+                            break;
+                        case "rx1":
+                            FieldLife.Rx1 = ((WzIntProperty) Property).Value;
+                            break;
+                        case "x":
+                            FieldLife.X = ((WzIntProperty) Property).Value;
+                            break;
+                        case "y":
+                            FieldLife.Y = ((WzIntProperty) Property).Value;
+                            break;
+                        default: 
+                            Console.WriteLine($"Unhandled Field/Life Property: {Property.Name, 10}({Property.PropertyType})");
+                            break;
+                    }
+                }
+
+                if (Type.HasValue) {
+                    if (Template.Life.TryGetValue(Type.Value, out Dictionary<uint, FieldLifeEntry> FieldLifeEntries)) {
+                        FieldLifeEntries.Add((Type == EntityType.Mob ? (uint) FieldLife.FootholdID : FieldLife.ID), FieldLife);
+                    } else {
+                        Console.WriteLine($"Unable to add field life entry: id={ID}, type={Type}");
+                    }
+                }
+            }
         }
 
         /*
@@ -217,7 +235,7 @@ namespace NineToFive.Wz {
             VRRight      =WzIntProperty
             swim         =WzIntProperty
          */
-        public static void LoadInfo(TemplateField Template, WzImageProperty InfoImage) {
+        private static void LoadInfo(TemplateField Template, WzImageProperty InfoImage) {
             foreach (WzImageProperty Property in InfoImage.WzProperties) {
                 switch (Property.Name) {
                     case "bgm":
@@ -267,6 +285,48 @@ namespace NineToFive.Wz {
                 }
             }
         }
-        
+
+        /*
+            pn = WzStringProperty
+            pt = WzIntProperty
+            x =  WzIntProperty
+            y =  WzIntProperty
+            tm = WzIntProperty
+            tn = WzStringProperty
+         */
+        private static void LoadPortals(TemplateField Template, WzImageProperty PortalImage) {
+            List<Portal> Portals = new List<Portal>();
+            foreach(WzImageProperty PortalNode in PortalImage.WzProperties) {
+                Portal Portal = new Portal();
+                foreach (WzImageProperty Property in PortalNode.WzProperties) {
+                    switch (Property.Name) {
+                        case "pn":
+                            Portal.Name = ((WzStringProperty) Property).Value;
+                            break;
+                        case "pt":
+                            Portal.TargetPortalID = ((WzIntProperty) Property).Value;
+                            break; 
+                        case "tm":
+                            Portal.TargetMap = ((WzIntProperty) Property).Value;
+                            break;
+                        case "tn":
+                            Portal.TargetPortalName = ((WzStringProperty) Property).Value;
+                            break;
+                        case "x":
+                            Portal.X = ((WzIntProperty) Property).Value;
+                            break;
+                        case "y":
+                            Portal.Y = ((WzIntProperty) Property).Value;
+                            break;
+                        default:
+                            Console.WriteLine($"Unhandled Portal Property: {Property.Name}");
+                            break;
+                    }
+                }
+                Portals.Add(Portal);
+            }
+
+            Template.Portals = Portals.ToArray();
+        }
     }
 }
