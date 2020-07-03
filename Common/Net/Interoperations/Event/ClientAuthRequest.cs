@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.IO;
@@ -14,39 +15,42 @@ namespace NineToFive.Interopation.Event {
             string password = r.ReadString();
 
             CentralServer.Clients.TryGetValue(username, out Client client);
-            if (client == null) {
-                client = new Client(null, null) {Id = _clientIdIncrement++};
-            }
+            client ??= new Client(null, null) {
+                Username = username
+            };
 
-            byte loginResult = ClientTryLogin(username, password);
+            byte loginResult = ClientTryLogin(ref client, ref password);
+
             using Packet w = new Packet();
             w.WriteByte(loginResult);
             if (loginResult == 1) {
-                w.WriteUInt(client.Id);
-                w.WriteByte(client.Gender);
-                if (w.WriteBool(client.SecondaryPassword != null)) {
-                    w.WriteString(client.SecondaryPassword);
-                }
-
+                // successful login, encode client data
+                client.Encode(client, w);
                 Log.Info($"{client.Username} has logged-in");
                 CentralServer.Clients.TryAdd(username, client);
             }
 
             return w.ToArray();
         }
-        
-        private static byte ClientTryLogin(string username, string password) {
-            byte result = 4;
+
+        private static byte ClientTryLogin(ref Client client, ref string password) {
             using DatabaseQuery c = Database.Table("accounts");
-            using MySqlDataReader r = c.Select("*").Where("username", "=", username).ExecuteReader();
-            if (r.Read()) {
-                string sPassword = r.GetString("password");
-                if (sPassword.Equals(password, StringComparison.Ordinal)) {
-                    result = 1;
-                }
+            using MySqlDataReader r = c.Select().Where("username", "=", client.Username).ExecuteReader();
+            // account not found
+            if (!r.Read()) return 5;
+            string sPassword = r.GetString("password");
+            // incorrect password
+            if (!sPassword.Equals(password, StringComparison.Ordinal)) {
+                Log.Info($"Account '{client.Username}' does not exist");
+                return 4;
             }
 
-            return result;
+            client.Id = r.GetUInt32("id");
+            client.Username = r.GetString("username");
+            client.Gender = r.GetByte("gender");
+            client.SecondaryPassword = r.GetString("second_password");
+            client.LastKnownIp = IPAddress.Parse(r.GetString("last_known_ip"));
+            return 1;
         }
     }
 }

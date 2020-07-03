@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using MySql.Data.MySqlClient;
 using NineToFive.Game;
+using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.Util;
 
 namespace NineToFive {
-    public class Client {
+    public class Client : IPacketSerializer<Client> {
         public readonly ServerListener ServerHandler;
         public readonly ClientSession Session;
         public readonly List<User> Users = new List<User>(15);
@@ -20,9 +19,38 @@ namespace NineToFive {
             Gender = 10;
         }
 
+        public void Encode(Client t, Packet p) {
+            p.WriteUInt(t.Id);
+            p.WriteString(t.Username);
+            p.WriteByte(t.Gender);
+            if (p.WriteBool(t.MachineId != null)) {
+                p.WriteBytes(t.MachineId);
+            }
+
+            if (p.WriteBool(t.SecondaryPassword != null)) {
+                p.WriteString(SecondaryPassword);
+            }
+
+            p.WriteBytes(LastKnownIp.GetAddressBytes());
+        }
+
+        public void Decode(Client t, Packet p) {
+            t.Id = p.ReadUInt();
+            t.Username = p.ReadString();
+            t.Gender = p.ReadByte();
+            if (p.ReadBool()) {
+                t.MachineId = p.ReadBytes(16);
+            }
+
+            if (p.ReadBool()) {
+                t.SecondaryPassword = p.ReadString();
+            }
+
+            t.LastKnownIp = new IPAddress(p.ReadBytes(4));
+        }
+
         public uint Id { get; set; }
         public string Username { get; set; }
-        private string Password { get; set; }
         public byte Gender { get; set; }
         public User User { get; set; }
         public byte[] MachineId { get; set; }

@@ -25,14 +25,10 @@ namespace NineToFive.Login.Event {
 
             using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
             byte result = r.ReadByte();
+            // un-successful login
             if (result != 1) return result;
-
-            Client.Id = r.ReadUInt();
-            Client.Gender = r.ReadByte();
-            if (r.ReadBool()) {
-                Client.SecondaryPassword = r.ReadString();
-            }
-
+            
+            Client.Decode(Client, r);
             return result;
         }
 
@@ -66,6 +62,7 @@ namespace NineToFive.Login.Event {
                 Client.Session.Write(GetLoginFailed(6));
                 return false;
             }
+
             return true;
         }
 

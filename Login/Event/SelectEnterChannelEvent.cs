@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using log4net;
 using NineToFive.Constants;
 using NineToFive.Event;
@@ -107,11 +106,11 @@ namespace NineToFive.Login.Event {
             // 0 for    CSoftKeyboardDlg::InitializeSecondaryPassword
             // 1 for    CSoftKeyboardDlg::GetResult
             // 2,3 for    no secondary password
-            // if (ServerConstants.EnabledSecondaryPassword) {
-            p.WriteByte((byte) (Client.SecondaryPassword == null ? 0 : 1));
-            // } else {
-            // p.WriteByte(2);
-            // }
+            if (ServerConstants.EnabledSecondaryPassword) {
+                p.WriteByte((byte) (Client.SecondaryPassword == null ? 0 : 1));
+            } else {
+                p.WriteByte(2);
+            }
 
             p.WriteInt(Client.Users.Capacity - Client.Users.Count);
             p.WriteInt(); // m_nBuyCharCount
