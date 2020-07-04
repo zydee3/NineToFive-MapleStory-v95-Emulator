@@ -1,27 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using IniParser;
+using IniParser.Model;
+using log4net;
+using log4net.Core;
 using NineToFive.Game.Storage;
+using NineToFive.Util;
 
 namespace NineToFive.Constants {
     public static class ServerConstants {
-        public const int GameVersion = 95;
+        private const string FileName = "Resources/config.ini";
 
-        public const string HostServer = "127.0.0.1";
-        public const string CentralServer = "127.0.0.1";
+        static ServerConstants() {
+            FileIniDataParser parser = new FileIniDataParser();
+            IniData config = parser.ReadFile(FileName);
+            GameVersion = short.Parse(config["server"]["GameVersion"]);
+            WorldCount = int.Parse(config["server"]["WorldCount"]);
+            ChannelCount = int.Parse(config["server"]["ChannelCount"]);
+            EnabledRanking = bool.Parse(config["server"]["EnabledRanking"]);
+            EnabledSecondaryPassword = bool.Parse(config["server"]["EnabledSecondaryPassword"]);
 
-        public const int InterCentralPort = 8481;
+            HostServer = config["sockets"]["HostServer"];
+            CentralServer = config["sockets"]["CentralServer"];
+            LoginPort = int.Parse(config["sockets"]["LoginPort"]);
+            ChannelPort = int.Parse(config["sockets"]["ChannelPort"]);
+
+            DatabaseConString = config["database"]["url"];
+            LogManager.GetLogger(typeof(ServerConstants)).Info("Configurations loaded");
+        }
+
+        public static readonly short GameVersion = 95;
+
+        public static readonly string HostServer = "127.0.0.1";
+        public static readonly string CentralServer = "127.0.0.1";
+
+        public const short InterCentralPort = 8481;
         public const int InterChannelPort = 8482;
-        public const int InterLoginPort = 8483;
+        public const short InterLoginPort = 8483;
 
-        public const int LoginPort = 8484;
-        public const int ChannelPort = 7575;
+        public static readonly int LoginPort = 8484;
+        public static readonly int ChannelPort = 7575;
 
-        public const int WorldCount = 1;
-        public const int ChannelCount = 3;
-        public const bool EnabledRanking = false;
-        public const bool EnabledSecondaryPassword = true;
-        
-        public const string DatabaseConString = "server=127.0.0.1;port=3306;userid=root;password=fireworks;database=ntf;charset=utf8;Allow User Variables=true;pooling=true";
+        public static readonly int WorldCount = 1;
+        public static readonly int ChannelCount = 3;
+        public static readonly bool EnabledRanking = false;
+        public static readonly bool EnabledSecondaryPassword = true;
+
+        public static readonly string DatabaseConString = "server=127.0.0.1;port=3306;userid=root;password=fireworks;database=ntf;charset=utf8;Allow User Variables=true;pooling=true";
 
         public static readonly string[] WorldNames = {
             "Scania", "Bera", "Broa", "Windia", "Khaini", "Bellocan", "Mardia", "kradia", "Yellonde", "Demethos",
@@ -47,8 +72,10 @@ namespace NineToFive.Constants {
             if (type < 1 || type > 5) {
                 throw new ArgumentException($"Unknown inventory type for item {itemId}");
             }
+
             return (InventoryType) type;
         }
+
         public static byte GetGenderFromId(int itemId) {
             if (itemId / 1000000 != 1) return 2;
             return (byte) Math.Min(2, itemId / 1000 % 10);

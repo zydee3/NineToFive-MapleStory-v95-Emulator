@@ -3,7 +3,7 @@ using log4net.Config;
 using NineToFive.Constants;
 using NineToFive.Net;
 
-[assembly: XmlConfigurator(ConfigFile = "central-logger.xml")]
+[assembly: XmlConfigurator(ConfigFile = "Resources/central-logger.xml")]
 
 namespace NineToFive {
     class CentralServer {

@@ -16,13 +16,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ini-parser" Version="2.5.2" />
     <PackageReference Include="log4net" Version="2.0.8" />
     <PackageReference Include="MySqlConnector" Version="0.69.5" />
     <ProjectReference Include="..\MapleLib\MapleLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="central-logger.xml">
+    <None Update="Resources\config.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\central-logger.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

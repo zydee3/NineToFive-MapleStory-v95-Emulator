@@ -9,7 +9,7 @@ using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.Net.Security;
 
-[assembly: XmlConfigurator(ConfigFile = "channel-logger.xml")]
+[assembly: XmlConfigurator(ConfigFile = "Resources/channel-logger.xml")]
 namespace NineToFive.Channels {
     class Program {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));

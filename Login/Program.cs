@@ -5,7 +5,7 @@ using NineToFive.Constants;
 using NineToFive.Net;
 using NineToFive.Net.Security;
 
-[assembly: XmlConfigurator(ConfigFile = "login-logger.xml")]
+[assembly: XmlConfigurator(ConfigFile = "Resources/login-logger.xml")]
 
 namespace NineToFive.Login {
     class Program {

@@ -8,7 +8,6 @@ using NineToFive.Util;
 namespace NineToFive.Interopation.Event {
     public static class ClientAuthRequest {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ClientAuthRequest));
-        private static uint _clientIdIncrement = 1;
 
         public static byte[] OnHandle(Packet r) {
             string username = r.ReadString();
