@@ -14,7 +14,7 @@
         public bool Flipped { get; set; }
         public bool Hidden  { get; set; }
 
-        public uint ID { get; set; }
+        public int ID { get; set; }
         
         public FieldLifeEntry() { }
     }

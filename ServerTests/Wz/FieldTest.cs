@@ -8,7 +8,7 @@ using NineToFive.Game.Entity.Meta;
 namespace ServerTests.Wz {
     public class FieldTest {
         public static void Test() {
-            const uint FieldID = 610020005;
+            const int FieldID = 610020005;
             Stopwatch Watch = new Stopwatch();
 
             Watch.Start();
@@ -16,7 +16,7 @@ namespace ServerTests.Wz {
             Watch.Stop();
 
             foreach ((EntityType Type, var Entities) in Field.Life) {
-                foreach ((uint ID, Entity Entity) in Entities) {
+                foreach ((int ID, Entity Entity) in Entities) {
                     Console.WriteLine($"Loaded Entity: ID={ID}, Type={Type}.");
                 }
             }

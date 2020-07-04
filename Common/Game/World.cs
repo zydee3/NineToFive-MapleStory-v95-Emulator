@@ -16,8 +16,8 @@ namespace NineToFive.Game {
         public string Name => ServerConstants.WorldNames[Id];
         public Channel[] Channels { get; internal set; }
         public ConcurrentDictionary<uint, User> Users { get; } = new ConcurrentDictionary<uint, User>();
-        public Dictionary<uint, object>[] Templates;
-        public Dictionary<uint, Field>[] Fields;
-        public Dictionary<uint, Entity.Meta.Entity>[] Entities;
+        public Dictionary<int, object>[] Templates;
+        public Dictionary<int, Field>[] Fields;
+        public Dictionary<int, Entity.Meta.Entity>[] Entities;
     }
 }

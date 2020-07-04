@@ -15,35 +15,31 @@ namespace NineToFive.Game {
     /// Life should only hold monsters that are alive / custom entities (ex: entities spawned specific to this instance)
     /// </summary>
     public class Field {
-        public uint ID { get; }
         public uint ChannelID { get; }
         public TemplateField Properties { get; set; }
         public List<SpawnPoint> SpawnPoints { get; } = new List<SpawnPoint>();
-        public Dictionary<EntityType, Dictionary<uint, Entity.Meta.Entity>> Life { get; } = new Dictionary<EntityType, Dictionary<uint, Entity.Meta.Entity>>();
+        public Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>> Life { get; } = new Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>>();
         
         /// <summary>
         /// Field Constructor
         /// </summary>
         /// <param name="ID"></param>
         /// <param name="ChannelID"></param>
-        public Field(uint ID, uint ChannelID) {
-            this.ID = ID;
+        public Field(int ID, uint ChannelID) {
             this.ChannelID = ChannelID;
             
-            string PathToMapImage = $"Map/Map{ID/100000000}/{ID}.img";
-            List<WzImageProperty> FieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), PathToMapImage);
-            MapWz.SetField(this, ref FieldProperties);
+            MapWz.SetField(this, ID);
             
-            Life = new Dictionary<EntityType, Dictionary<uint, Entity.Meta.Entity>>();
+            Life = new Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>>();
             foreach (EntityType Type in Enum.GetValues(typeof(EntityType))) {
-                Life.Add(Type, new Dictionary<uint, Entity.Meta.Entity>());
+                Life.Add(Type, new Dictionary<int, Entity.Meta.Entity>());
             }
 
             var MobEntries = Properties.Life[EntityType.Mob];
             foreach (Foothold Foothold in Properties.Footholds) {
                 
                 // Create spawn points only where monsters exist.
-                if (MobEntries.TryGetValue((uint) Foothold.ID, out FieldLifeEntry Entry)) {
+                if (MobEntries.TryGetValue(Foothold.ID, out FieldLifeEntry Entry)) {
                     SpawnPoints.Add(new SpawnPoint(this, (int)Entry.ID));
                 }
             }

@@ -1,4 +1,5 @@
 using System;
+using NineToFive.Game.Entity;
 using ServerTests.Wz;
 
 namespace ServerTests {
@@ -8,6 +9,7 @@ namespace ServerTests {
             // the native executable machine code of whatever machine you're running the code on. All subsequent calls are re-using that already compiled code.
             // Each test case needs a fake execution or else the first measured execution time will be bloated significantly.
             //FieldTest.Test();
+            MobTest.Test();
             //SkillTest.Test();
         }
     }

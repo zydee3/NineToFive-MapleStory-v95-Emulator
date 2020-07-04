@@ -17,14 +17,17 @@ namespace NineToFive.Wz {
         /// </summary>
         /// <param name="Field">Field to be initialized</param>
         /// <param name="MapProperties">List of WzImageProperty loaded from the Field's Image from Wz.</param>
-        public static void SetField(Field Field, ref List<WzImageProperty> MapProperties) {
-            if (Field == null || MapProperties == null) return;
+        public static void SetField(Field Field, int FieldID) {
+            if (Field == null) return;
             
-            Dictionary<uint, object> TemplateFields = Server.Worlds[0].Templates[(int) TemplateType.Field];
-            if (!TemplateFields.TryGetValue(Field.ID, out object Template)) {
-                Template = new TemplateField();
-                SetTemplateField((TemplateField) Template, ref MapProperties);
-                TemplateFields.Add(Field.ID, Template);
+            Dictionary<int, object> TemplateFields = Server.Worlds[0].Templates[(int) TemplateType.Field];
+            if (!TemplateFields.TryGetValue(FieldID, out object Template)) {
+                string PathToMapImage = $"Map/Map{FieldID/100000000}/{FieldID}.img";
+                List<WzImageProperty> FieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), PathToMapImage);
+                
+                Template = new TemplateField(FieldID);
+                SetTemplateField((TemplateField) Template, ref FieldProperties);
+                TemplateFields.Add(FieldID, Template);
             }
 
             if (Template == null) return;
@@ -72,7 +75,7 @@ namespace NineToFive.Wz {
             }
         }
 
-        private static void PrintDirectory(WzImageProperty Parent) {
+        public static void PrintDirectory(WzImageProperty Parent) {
             foreach(WzImageProperty InternalProperty in Parent.WzProperties) {
                 Console.WriteLine($"-- {InternalProperty.Name}({InternalProperty.GetType()})");
                 Console.WriteLine($"---- {InternalProperty.WzValue}");
@@ -155,7 +158,7 @@ namespace NineToFive.Wz {
                     switch (Property.Name) {
                         case "id":
                             if (int.TryParse(((WzStringProperty) Property).Value, out int LifeID)) {
-                                FieldLife.ID = (uint) LifeID;
+                                FieldLife.ID = LifeID;
                             } 
                             break;
                         case "type":
@@ -209,8 +212,8 @@ namespace NineToFive.Wz {
                 }
 
                 if (Type.HasValue) {
-                    if (Template.Life.TryGetValue(Type.Value, out Dictionary<uint, FieldLifeEntry> FieldLifeEntries)) {
-                        FieldLifeEntries.Add((Type == EntityType.Mob ? (uint) FieldLife.FootholdID : FieldLife.ID), FieldLife);
+                    if (Template.Life.TryGetValue(Type.Value, out Dictionary<int, FieldLifeEntry> FieldLifeEntries)) {
+                        FieldLifeEntries.Add((Type == EntityType.Mob ? FieldLife.FootholdID : FieldLife.ID), FieldLife);
                     } else {
                         Console.WriteLine($"Unable to add field life entry: id={ID}, type={Type}");
                     }

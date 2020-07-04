@@ -12,8 +12,10 @@ namespace NineToFive.Game.Entity.Meta {
     /// </summary>
     
     public class TemplateField {
+        public int ID { get; set; }
+        
         public bool[] FieldLimits { get; set; } = new bool[Enum.GetNames(typeof(FieldLimitType)).Length];
-        public Dictionary<EntityType, Dictionary<uint, FieldLifeEntry>> Life { get; }
+        public Dictionary<EntityType, Dictionary<int, FieldLifeEntry>> Life { get; }
         
         public Foothold[] Footholds { get; set; }
         public Portal[] Portals;
@@ -37,10 +39,12 @@ namespace NineToFive.Game.Entity.Meta {
         public bool LoadPortals { get; set; } = true;
         public bool LoadReactors { get; set; } = true;
         
-        public TemplateField() {
-            Life = new Dictionary<EntityType, Dictionary<uint, FieldLifeEntry>>();
+        public TemplateField(int ID) {
+            this.ID = ID;
+            
+            Life = new Dictionary<EntityType, Dictionary<int, FieldLifeEntry>>();
             foreach (EntityType Type in Enum.GetValues(typeof(EntityType))) {
-                Life.Add(Type, new Dictionary<uint, FieldLifeEntry>());
+                Life.Add(Type, new Dictionary<int, FieldLifeEntry>());
             }
         }
     }

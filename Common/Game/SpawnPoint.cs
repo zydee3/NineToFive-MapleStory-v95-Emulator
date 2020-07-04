@@ -16,7 +16,7 @@ namespace NineToFive.Game {
             if (Mob != null) return;
 
             Mob = new Mob(MobID);
-            Field.Life[EntityType.Mob].Add((uint)MobID, Mob);
+            Field.Life[EntityType.Mob].Add(MobID, Mob);
             
             //todo: spawn
         }

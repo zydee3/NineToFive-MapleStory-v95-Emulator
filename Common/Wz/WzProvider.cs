@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using MapleLib.WzLib;
-using MapleLib.WzLib.WzProperties;
-using NineToFive.Game;
 
 namespace NineToFive.Wz {
     public class WzProvider {
@@ -17,7 +14,7 @@ namespace NineToFive.Wz {
             string path = $"../../../../Wz/{TargetWz}.wz"; //wtf this is so troll
 
             if (!File.Exists(path)) { 
-                Console.WriteLine("Could not locate file: {0}", TargetWz);
+                Console.WriteLine($"Could not locate file: {TargetWz}");
                 return null;
             }
 

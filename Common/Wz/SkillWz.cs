@@ -27,23 +27,217 @@ namespace NineToFive.Wz {
                 switch (PropertyName) {
                     case "lt": {
                         WzVectorProperty Vector = (WzVectorProperty) ChildProperty;
-                        Skill.lt = new Vector2(Vector.GetPoint().X, Vector.GetPoint().Y);
+                        Skill.Lt = new Vector2(Vector.GetPoint().X, Vector.GetPoint().Y);
                         break;
                     }
                     case "rb": {
                         WzVectorProperty Vector = (WzVectorProperty) ChildProperty;
-                        Skill.rb = new Vector2(Vector.GetPoint().X, Vector.GetPoint().Y);
+                        Skill.Rb = new Vector2(Vector.GetPoint().X, Vector.GetPoint().Y);
                         break;
                     }
                     default: {
-                        if (Constants.SkillProperties.TryParse(PropertyName, out SkillProperties Property)) {
-                            if (ChildProperty.GetType() == typeof(WzIntProperty)) {
-                                Skill.Values[(int)Property] = ((WzIntProperty) ChildProperty).Value.ToString();
-                            } else {
-                                Skill.Values[(int)Property] = ((WzStringProperty) ChildProperty).Value;
-                            }
+                        string PropertyStringValue = "";
+                        if (ChildProperty.GetType() == typeof(WzIntProperty)) {
+                            PropertyStringValue = ((WzIntProperty) ChildProperty).Value.ToString();
+                        } else if (ChildProperty.GetType() == typeof(WzStringProperty)) {
+                            PropertyStringValue = ((WzStringProperty) ChildProperty).Value;
                         } else {
-                            Console.WriteLine($"Unhandled Skill Property: {PropertyName}");
+                            Console.WriteLine($"Unhandled Property Type: {PropertyName}({PropertyName.GetType()})");
+                        }
+
+                        switch (PropertyName) {
+                            case "acc":
+                                Skill.Acc = PropertyStringValue;
+                                break;
+                            case "asrR": 
+                                Skill.AsrR = PropertyStringValue;
+                                break;
+                            case "attackCount": 
+                                Skill.AttackCount = PropertyStringValue;
+                                break;
+                            case "bulletCount": 
+                                Skill.BulletCount = PropertyStringValue;
+                                break;
+                            case "cooltime": 
+                                Skill.Cooltime = PropertyStringValue;
+                                break;
+                            case "cr": 
+                                Skill.Cr = PropertyStringValue;
+                                break;
+                            case "criticaldamageMax": 
+                                Skill.CriticaldamageMax = PropertyStringValue;
+                                break;
+                            case "criticaldamageMin": 
+                                Skill.CriticaldamageMin = PropertyStringValue;
+                                break;
+                            case "damage": 
+                                Skill.Damage = PropertyStringValue;
+                                break;
+                            case "damR":
+                                Skill.DamR = PropertyStringValue;
+                                break;
+                            case "dot": 
+                                Skill.Dot = PropertyStringValue;
+                                break;
+                            case "dotInterval": 
+                                Skill.DotInterval = PropertyStringValue;
+                                break;
+                            case "dotTime": 
+                                Skill.DotTime = PropertyStringValue;
+                                break;
+                            case "emdd": 
+                                Skill.Emdd = PropertyStringValue;
+                                break;
+                            case "epad": 
+                                Skill.Epad = PropertyStringValue;
+                                break;
+                            case "epdd": 
+                                Skill.Epdd = PropertyStringValue;
+                                break;
+                            case "er": 
+                                Skill.Er = PropertyStringValue;
+                                break;
+                            case "eva": 
+                                Skill.Eva = PropertyStringValue;
+                                break;
+                            case "expR": 
+                                Skill.ExpR = PropertyStringValue;
+                                break;
+                            case "hpCon": 
+                                Skill.HpCon = PropertyStringValue;
+                                break;
+                            case "ignoreMobpdpR": 
+                                Skill.IgnoreMobpdpR = PropertyStringValue;
+                                break;
+                            case "jump": 
+                                Skill.Jump = PropertyStringValue;
+                                break;
+                            case "mad": 
+                                Skill.Mad = PropertyStringValue;
+                                break;
+                            case "mastery": 
+                                Skill.Mastery = PropertyStringValue;
+                                break;
+                            case "maxLevel": 
+                                Skill.MaxLevel = PropertyStringValue;
+                                break;
+                            case "mdd": 
+                                Skill.Mdd = PropertyStringValue;
+                                break;
+                            case "mhpR": 
+                                Skill.MhpR = PropertyStringValue;
+                                break;
+                            case "mobCount": 
+                                Skill.MobCount = PropertyStringValue;
+                                break;
+                            case "morph": 
+                                Skill.Morph = PropertyStringValue;
+                                break;
+                            case "mp": 
+                                Skill.Mp = PropertyStringValue;
+                                break;
+                            case "mpCon": 
+                                Skill.MpCon = PropertyStringValue;
+                                break;
+                            case "pad": 
+                                Skill.Pad = PropertyStringValue;
+                                break;
+                            case "padX": 
+                                Skill.PadX = PropertyStringValue;
+                                break;
+                            case "pdd": 
+                                Skill.Pdd = PropertyStringValue;
+                                break;
+                            case "pddR": 
+                                Skill.PddR = PropertyStringValue;
+                                break;
+                            case "prop": 
+                                Skill.Prop = PropertyStringValue;
+                                break;
+                            case "range": 
+                                Skill.Range = PropertyStringValue;
+                                break;
+                            case "speed": 
+                                Skill.Speed = PropertyStringValue;
+                                break;
+                            case "subProp": 
+                                Skill.SubProp = PropertyStringValue;
+                                break;
+                            case "subTime": 
+                                Skill.SubTime = PropertyStringValue;
+                                break;
+                            case "t": 
+                                Skill.T = PropertyStringValue;
+                                break;
+                            case "terR": 
+                                Skill.TerR = PropertyStringValue;
+                                break;
+                            case "time": 
+                                Skill.Time = PropertyStringValue;
+                                break;
+                            case "u": 
+                                Skill.U = PropertyStringValue;
+                                break;
+                            case "v": 
+                                Skill.V = PropertyStringValue;
+                                break;
+                            case "w": 
+                                Skill.W = PropertyStringValue;
+                                break;
+                            case "x": 
+                                Skill.X = PropertyStringValue;
+                                break;
+                            case "y": 
+                                Skill.Y = PropertyStringValue;
+                                break;
+                            case "z":
+                                Skill.Z = PropertyStringValue;
+                                break;
+                            case "selfDestruction": 
+                                Skill.SelfDestruction = PropertyStringValue;
+                                break;
+                            case "itemCon":
+                                Skill.ItemCon = PropertyStringValue;
+                                break;
+                            case "itemConNo": 
+                                Skill.ItemCon = PropertyStringValue;
+                                break;
+                            case "bulletConsume": 
+                                Skill.BulletConsume = PropertyStringValue;
+                                break;
+                            case "emmp": 
+                                Skill.Emmp = PropertyStringValue;
+                                break;
+                            case "emhp": 
+                                Skill.Emhp = PropertyStringValue;
+                                break;
+                            case "action": 
+                                Skill.Action = PropertyStringValue;
+                                break;
+                            case "mesoR": 
+                                Skill.MesoR = PropertyStringValue;
+                                break;
+                            case "madX": 
+                                Skill.MadX = PropertyStringValue;
+                                break;
+                            case "mmpR": 
+                                Skill.MmpR = PropertyStringValue;
+                                break;
+                            case "hp": 
+                                Skill.Hp = PropertyStringValue;
+                                break;
+                            case "moneyCon": 
+                                Skill.MoneyCon = PropertyStringValue;
+                                break;
+                            case "itemConsume": 
+                                Skill.ItemConsume = PropertyStringValue;
+                                break;
+                            case "mddR": 
+                                Skill.MddR = PropertyStringValue;
+                                break;
+                            default:
+                                Console.WriteLine($"Unhandled Skill Property: {PropertyName}");
+                                break;
                         }
                         break;
                     }
