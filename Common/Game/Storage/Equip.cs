@@ -1,10 +1,15 @@
-﻿using NineToFive.Constants;
+﻿using System;
+using NineToFive.Constants;
 using NineToFive.IO;
 
 namespace NineToFive.Game.Storage {
     public class Equip : Item {
+        
+        /// <param name="id">the id if the equip</param>
+        /// <param name="autoBagIndex">should the BagIndex be automatically assigned to the associated body part</param>
         public Equip(int id, bool autoBagIndex = false) : base(id) {
-            if (autoBagIndex) BagIndex = ItemConstants.GetBodyPartFromId(id);
+            if (InventoryType != InventoryType.Equip) throw new InvalidOperationException("cannot create Equip of Item : " + id);
+            if (autoBagIndex) BagIndex = (short) -ItemConstants.GetBodyPartFromId(id);
         }
 
         public override byte Type => 1;
