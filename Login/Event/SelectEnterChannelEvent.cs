@@ -54,7 +54,6 @@ namespace NineToFive.Login.Event {
             w.WriteByte(_channelId);
             byte[] response = Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
             if (response != null) {
-                Log.Info($"Updating user count for channel {_channelId} in world {_worldId}");
                 Client.Channel.Snapshot.UserCount = BitConverter.ToInt32(response);
             }
 

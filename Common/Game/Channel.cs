@@ -37,6 +37,7 @@ namespace NineToFive.Game {
     /// container for data the login server requires from the channel servers
     /// </summary>
     public class ChannelSnapshot {
+        public DateTime Timestamp { get; set; }
         /// <summary>
         /// Last recorded value of user count 
         /// </summary>

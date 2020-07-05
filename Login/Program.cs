@@ -19,10 +19,6 @@ namespace NineToFive.Login {
             LoginServer server = new LoginServer(ServerConstants.LoginPort);
             server.Start();
             Log.Info($"Login server listening on port {server.Port}");
-
-            using var q = Database.Table("accounts");
-            int count = q.Update("login_status", 0).ExecuteNonQuery();
-            Log.Info($"Updated {count} accounts login status");
         }
     }
 }

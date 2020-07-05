@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Security.Cryptography;
 using MySql.Data.MySqlClient;
 using NineToFive.Event;
 using NineToFive.Game;
@@ -14,7 +15,10 @@ namespace NineToFive.Channels.Event {
 
         public CharEnterGameEvent(Client client) : base(client) { }
 
-        public override void OnError(Exception e) { }
+        public override void OnError(Exception e) {
+            base.OnError(e);
+            Client.Session.Dispose();
+        }
 
         public override bool OnProcess(Packet p) {
             _playerId = p.ReadUInt();
@@ -43,22 +47,22 @@ namespace NineToFive.Channels.Event {
             Client.Session.Write(SetField(Client.User));
         }
 
-        private static byte[] SetField(User user) {
+        private static byte[] SetField(User user, bool characterData = true) {
             Field field = user.Field;
 
             using Packet w = new Packet();
             w.WriteShort((short) CStage.OnSetField);
 
-            #region CClientOptMan::DecodeOpt
-
-            w.WriteShort();
-
-            #endregion
+            // CClientOptMan::DecodeOpt
+            for (int i = 0; i < w.WriteShort(); i++) {
+                w.WriteInt();
+                w.WriteInt();
+            }
 
             w.WriteInt(Math.Abs(field.VRRight) - Math.Abs(field.VRLeft)); // nFieldWidth
             w.WriteInt(Math.Abs(field.VRBottom) - Math.Abs(field.VRTop)); // nFieldHeight
-            w.WriteByte();                                                // unknown
-            bool characterData = w.WriteBool(true);
+            w.WriteByte(1);                                                // unknown
+            w.WriteBool(characterData);
             short notifierCheck = w.WriteShort();
             if (notifierCheck > 0) {
                 w.WriteString();
@@ -68,15 +72,17 @@ namespace NineToFive.Channels.Event {
             }
 
             if (characterData) {
-                #region CalcDamage::SetSeed
-
-                w.WriteInt();
-                w.WriteInt();
-                w.WriteInt();
-
-                #endregion
+                // CalcDamage::SetSeed
+                w.WriteInt(RNG.GetInt());
+                w.WriteInt(RNG.GetInt());
+                w.WriteInt(RNG.GetInt());
 
                 UserPackets.EncodeCharacterData(user, w, -1);
+                // CWvsContext::OnSetLogoutGiftConfig
+                w.WriteInt();
+                for (int i = 0; i < 3; i++) {
+                    w.WriteInt();
+                }
             } else {
                 w.WriteBool(false); // CWvsContext::OnRevive
                 w.WriteInt(user.CharacterStat.FieldId);
