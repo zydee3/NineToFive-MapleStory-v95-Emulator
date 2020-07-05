@@ -7,6 +7,7 @@ namespace NineToFive.Game {
         private Field Field;
         private int MobID { get; set; }
         public Mob Mob { get; set; }
+        
         public SpawnPoint(Field Field, int MobID) {
             this.Field = Field;
             this.MobID = MobID;

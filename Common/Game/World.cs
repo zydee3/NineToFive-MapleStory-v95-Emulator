@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using NineToFive.Constants;
+using Item = NineToFive.Game.Storage.Item;
+
 
 namespace NineToFive.Game {
     public class World {
@@ -17,7 +19,7 @@ namespace NineToFive.Game {
         public Channel[] Channels { get; internal set; }
         public ConcurrentDictionary<uint, User> Users { get; } = new ConcurrentDictionary<uint, User>();
         public Dictionary<int, object>[] Templates;
-        public Dictionary<int, Field>[] Fields;
-        public Dictionary<int, Entity.Meta.Entity>[] Entities;
+        public Dictionary<int, Item> Items { get; set; }
+        public Dictionary<int, Entity.Meta.Entity>[] Entities { get; set; }
     }
 }

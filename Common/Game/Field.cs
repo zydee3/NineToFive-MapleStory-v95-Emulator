@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MapleLib.WzLib;
+using MapleLib.WzLib.WzStructure.Data;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Wz;
@@ -15,36 +16,39 @@ namespace NineToFive.Game {
     /// Life should only hold monsters that are alive / custom entities (ex: entities spawned specific to this instance)
     /// </summary>
     public class Field {
-        public uint ChannelID { get; }
-        public TemplateField Properties { get; set; }
-        public List<SpawnPoint> SpawnPoints { get; } = new List<SpawnPoint>();
-        public Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>> Life { get; } = new Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>>();
+        public int Id { get; set; }
+        public uint ChannelId { get; }
+        
+        public Foothold[] Footholds { get; set; }
+        public Portal[] Portals;
+        
+        public string BackgroundMusic { get; set; }
+        public string OnFirstUserEnter { get; set; }
+        public string OnUserEnter { get; set; }
+        
+        public int ForcedReturn { get; set; }
+        public int ReturnMap { get; set; }
+        
+        public bool Town { get; set; }
+        public bool Swim { get; set; }
+        public bool Fly  { get; set; }
+        
+        public int MobCount  { get; set; }
+        public float MobRate { get; set; }
+
+        public List<SpawnPoint> SpawnPoints { get; set; } = new List<SpawnPoint>();
+        public Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>> Life { get; set; }
+        public bool[] FieldLimits { get; set; }
         
         /// <summary>
         /// Field Constructor
         /// </summary>
         /// <param name="ID"></param>
         /// <param name="ChannelID"></param>
-        public Field(int ID, uint ChannelID) {
-            this.ChannelID = ChannelID;
-            
-            MapWz.SetField(this, ID);
-            
-            Life = new Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>>();
-            foreach (EntityType Type in Enum.GetValues(typeof(EntityType))) {
-                Life.Add(Type, new Dictionary<int, Entity.Meta.Entity>());
-            }
-
-            var MobEntries = Properties.Life[EntityType.Mob];
-            foreach (Foothold Foothold in Properties.Footholds) {
-                
-                // Create spawn points only where monsters exist.
-                if (MobEntries.TryGetValue(Foothold.ID, out FieldLifeEntry Entry)) {
-                    SpawnPoints.Add(new SpawnPoint(this, (int)Entry.ID));
-                }
-            }
-            
-            //todo: load npcs and reactors
+        public Field(int id, uint channelId) {
+            Id = id;
+            ChannelId = channelId;
+            MapWz.SetField(this);
         }
 
         /// <summary>
@@ -55,7 +59,7 @@ namespace NineToFive.Game {
         public Tuple<int, int> GetGroundBelow(Tuple<int, int> Position) {
             int SmallestYDistance = 999999;
             Foothold FoundFoothold = null;
-            foreach (Foothold Foothold in Properties.Footholds) {
+            foreach (Foothold Foothold in Footholds) {
                 (int X, int Y) = Position;
                 if (Foothold.LeftEndPoint.Item1 <= X && Foothold.RightEndPoint.Item1 >= X) {
                     int DistanceFromUpperY = Y - Math.Max(Foothold.Y1, Foothold.Y2);

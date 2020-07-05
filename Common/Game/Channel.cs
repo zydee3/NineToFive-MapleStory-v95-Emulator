@@ -8,10 +8,13 @@ namespace NineToFive.Game {
         private readonly byte _worldId;
         public readonly ChannelSnapshot Snapshot = new ChannelSnapshot();
 
+        public Dictionary<int, Field> Fields { get; set; }
+        
         public Channel(byte worldId, byte id, int port) {
             _worldId = worldId;
             Id = id;
             Port = port;
+            Fields = new Dictionary<int, Field>();
         }
 
         public World World => Server.Worlds[_worldId];

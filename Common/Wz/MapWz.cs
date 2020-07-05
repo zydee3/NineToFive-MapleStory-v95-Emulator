@@ -17,21 +17,64 @@ namespace NineToFive.Wz {
         /// </summary>
         /// <param name="Field">Field to be initialized</param>
         /// <param name="MapProperties">List of WzImageProperty loaded from the Field's Image from Wz.</param>
-        public static void SetField(Field Field, int FieldID) {
-            if (Field == null) return;
-            
+        /// <param name="benchmark">Average time to create template and set: 00:00:00.2348726</param>
+        public static void SetField(Field field) {
+            if (field == null) return;
+
+            int fieldId = field.Id;
             Dictionary<int, object> TemplateFields = Server.Worlds[0].Templates[(int) TemplateType.Field];
-            if (!TemplateFields.TryGetValue(FieldID, out object Template)) {
-                string PathToMapImage = $"Map/Map{FieldID/100000000}/{FieldID}.img";
+            if (!TemplateFields.TryGetValue(fieldId, out object t)) {
+                string PathToMapImage = $"Map/Map{fieldId/100000000}/{fieldId}.img";
                 List<WzImageProperty> FieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), PathToMapImage);
-                
-                Template = new TemplateField(FieldID);
-                SetTemplateField((TemplateField) Template, ref FieldProperties);
-                TemplateFields.Add(FieldID, Template);
+                t = new TemplateField();
+                SetTemplateField((TemplateField) t, ref FieldProperties);
+                TemplateFields.Add(fieldId, (TemplateField) t);
             }
 
-            if (Template == null) return;
-            Field.Properties = (TemplateField) Template;
+            if (t == null) {
+                Console.WriteLine($"Unable to load map: {fieldId}");
+                return;
+            }
+
+            // t isn't null, so re-set so we don't have to keep typecasting.
+            TemplateField template = (TemplateField)t;
+            
+            // initialize caches
+            field.Life = new Dictionary<EntityType, Dictionary<int, Entity>>();
+            foreach (EntityType Type in Enum.GetValues(typeof(EntityType))) {
+                field.Life.Add(Type, new Dictionary<int, Entity>());
+            }
+
+            // Create spawn points only where monsters exist.
+            Dictionary<int, FieldLifeEntry> MobEntries = template.Life[EntityType.Mob];
+            foreach (Foothold Foothold in template.Footholds) {
+                if (MobEntries.TryGetValue(Foothold.ID, out FieldLifeEntry Entry)) {
+                    field.SpawnPoints.Add(new SpawnPoint(field, Entry.ID));
+                }
+            }
+            
+            //todo: load npcs and reactors from template.Life
+            field.FieldLimits = new bool[Enum.GetNames(typeof(FieldLimitType)).Length];
+            template.FieldLimits.CopyTo(field.FieldLimits, 0);
+            
+            field.Footholds = new Foothold[template.Footholds.Length];
+            template.Footholds.CopyTo(field.Footholds, 0);
+
+            field.Portals = new Portal[template.Portals.Length];
+            template.Portals.CopyTo(field.Portals, 0);
+
+            field.BackgroundMusic = template.BackgroundMusic;
+            field.OnFirstUserEnter = template.OnFirstUserEnter;
+            field.OnUserEnter = template.OnUserEnter;
+            field.ForcedReturn = template.ForcedReturn;
+            field.ReturnMap = template.ReturnMap;
+            field.Town = template.Town;
+            field.Swim = template.Swim;
+            field.Fly = template.Fly;
+            field.MobCount = template.MobCount;
+            field.MobRate = template.MobRate;
+            
+            Server.Worlds[0].Channels[field.ChannelId].Fields.Add(fieldId, field);
         }
 
         /// <summary>
@@ -133,20 +176,7 @@ namespace NineToFive.Wz {
 
             Template.Footholds = Footholds.Select(Entry => Entry.Value).ToArray();
         }
-
-        /*
-             id      =WzStringProperty
-             type    =WzStringProperty
-             mobTime =WzIntProperty
-             f       =WzIntProperty
-             hide    =WzIntProperty
-             fh      =WzIntProperty
-             cy      =WzIntProperty
-             rx0     =WzIntProperty
-             rx1     =WzIntProperty
-             x       =WzIntProperty
-             y       =WzIntProperty
-         */
+        
         private static void LoadLife(TemplateField Template, WzImageProperty LifeImage) {
             foreach (WzImageProperty Life in LifeImage.WzProperties) {
                 if (!int.TryParse(Life.Name, out int ID)) continue;
@@ -220,24 +250,7 @@ namespace NineToFive.Wz {
                 }
             }
         }
-
-        /*
-            version      =WzIntProperty
-            cloud        =WzIntProperty
-            town         =WzIntProperty
-            returnMap    =WzIntProperty
-            forcedReturn =WzIntProperty
-            mobRate      =WzFloatProperty
-            bgm          =WzStringProperty
-            mapMark      =WzStringProperty
-            hideMinimap  =WzIntProperty
-            fieldLimit   =WzIntProperty
-            VRTop        =WzIntProperty
-            VRLeft       =WzIntProperty
-            VRBottom     =WzIntProperty
-            VRRight      =WzIntProperty
-            swim         =WzIntProperty
-         */
+        
         private static void LoadInfo(TemplateField Template, WzImageProperty InfoImage) {
             foreach (WzImageProperty Property in InfoImage.WzProperties) {
                 switch (Property.Name) {
@@ -288,15 +301,7 @@ namespace NineToFive.Wz {
                 }
             }
         }
-
-        /*
-            pn = WzStringProperty
-            pt = WzIntProperty
-            x =  WzIntProperty
-            y =  WzIntProperty
-            tm = WzIntProperty
-            tn = WzStringProperty
-         */
+        
         private static void LoadPortals(TemplateField Template, WzImageProperty PortalImage) {
             List<Portal> Portals = new List<Portal>();
             foreach(WzImageProperty PortalNode in PortalImage.WzProperties) {

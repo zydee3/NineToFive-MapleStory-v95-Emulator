@@ -8,11 +8,11 @@ using NineToFive.Game.Entity.Meta;
 namespace ServerTests.Wz {
     public class FieldTest {
         public static void Test() {
-            const int FieldID = 610020005;
+            const int fieldId = 610020005;
             Stopwatch Watch = new Stopwatch();
 
             Watch.Start();
-            Field Field = new Field( FieldID,  1);
+            Field Field = new Field(fieldId,  1);
             Watch.Stop();
 
             foreach ((EntityType Type, var Entities) in Field.Life) {
@@ -22,8 +22,8 @@ namespace ServerTests.Wz {
             }
 
             Console.WriteLine($"Loaded {Field.SpawnPoints.Count} spawn points.");
-            Console.WriteLine($"Loaded {Field.Properties.Portals.Length} Portals");
-            Console.WriteLine($"Time Elpased Loading Field({FieldID}): {Watch.Elapsed}.");
+            Console.WriteLine($"Loaded {Field.Portals.Length} Portals");
+            Console.WriteLine($"Time Elpased Loading Field({fieldId}): {Watch.Elapsed}.");
         }
     }
 }

@@ -5,6 +5,7 @@ using MySql.Data.MySqlClient;
 using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Game.Storage;
+using Item = NineToFive.Game.Storage.Item;
 
 namespace NineToFive.Util {
     public static class Database {

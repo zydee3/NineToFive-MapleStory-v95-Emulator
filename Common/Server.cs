@@ -27,8 +27,7 @@ namespace NineToFive {
                 foreach (object? Type in Enum.GetValues(typeof(TemplateType))) {
                     world.Templates[(int) Type] = new Dictionary<int, object>();
                 }
-
-                world.Fields = new Dictionary<int, Field>[world.Channels.Length];
+                
                 world.Entities = new Dictionary<int, Entity>[Enum.GetNames(typeof(EntityType)).Length];
 
                 Log.Info($"Skeleton for world {(worldId + 1)} created with {world.Channels.Length} spooky channels");

@@ -6,6 +6,7 @@ using NineToFive.Constants;
 using NineToFive.Game.Storage;
 using NineToFive.IO;
 using NineToFive.Util;
+using Item = NineToFive.Game.Storage.Item;
 
 namespace NineToFive.Game {
     public class User {
