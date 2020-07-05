@@ -25,7 +25,7 @@ namespace NineToFive.Wz {
             int fieldId = field.Id;
             Dictionary<int, object> TemplateFields = Server.Worlds[0].Templates[(int) TemplateType.Field];
             if (!TemplateFields.TryGetValue(fieldId, out object t)) {
-                string PathToMapImage = $"Map/Map{fieldId/100000000}/{fieldId}.img";
+                string PathToMapImage = $"Map/Map{fieldId/100000000}/{fieldId.ToString().PadLeft(9, '0')}.img";
                 List<WzImageProperty> FieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), PathToMapImage);
                 t = new TemplateField();
                 SetTemplateField((TemplateField) t, ref FieldProperties);
