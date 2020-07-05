@@ -51,7 +51,10 @@ namespace NineToFive.Game {
 
         public Field Field {
             get => _field;
-            set => _field = value;
+            set {
+                _field = value;
+                CharacterStat.FieldId = value.Id;
+            }
         }
 
         public void Save() {
@@ -120,21 +123,21 @@ namespace NineToFive.Game {
     public class GW_CharacterStat : IPacketSerializer<User> {
         public uint Id { get; set; }
         public string Username { get; set; }
-        public sbyte Level { get; set; }
+        public sbyte Level { get; set; } = 1;
         public short Job { get; set; }
-        public short Str { get; set; }
-        public short Dex { get; set; }
-        public short Int { get; set; }
-        public short Luk { get; set; }
-        public int HP { get; set; }
-        public int MaxHP { get; set; }
-        public int MP { get; set; }
-        public int MaxMP { get; set; }
+        public short Str { get; set; } = 4;
+        public short Dex { get; set; } = 4;
+        public short Int { get; set; } = 4;
+        public short Luk { get; set; } = 4;
+        public int HP { get; set; } = 50;
+        public int MaxHP { get; set; } = 50;
+        public int MP { get; set; } = 5;
+        public int MaxMP { get; set; } = 5;
         public short AP { get; set; }
         public short[] SP { get; set; } = new short[10];
         public int Exp { get; set; }
         public short Popularity { get; set; }
-        public int FieldId { get; set; }
+        public int FieldId { get; set; } = 10000;
         public byte Portal { get; set; }
 
         public GW_CharacterStat(MySqlDataReader r = null) {
