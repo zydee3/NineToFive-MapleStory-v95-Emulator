@@ -33,6 +33,11 @@ namespace NineToFive.Game {
         public bool Swim { get; set; }
         public bool Fly  { get; set; }
         
+        public int VRTop { get; set; }
+        public int VRBottom { get; set; }
+        public int VRLeft { get; set; }
+        public int VRRight { get; set; }
+        
         public int MobCount  { get; set; }
         public float MobRate { get; set; }
 

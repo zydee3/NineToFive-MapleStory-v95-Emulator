@@ -32,6 +32,11 @@ namespace NineToFive.Game.Entity.Meta {
         
         public int MobCount  { get; set; }
         public float MobRate { get; set; }
+        
+        public int VRTop { get; set; }
+        public int VRBottom { get; set; }
+        public int VRLeft { get; set; }
+        public int VRRight { get; set; }
 
         public bool LoadLife { get; set; } = true;
         public bool LoadClock { get; set; } = true;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
@@ -73,6 +74,11 @@ namespace NineToFive.Wz {
             field.Fly = template.Fly;
             field.MobCount = template.MobCount;
             field.MobRate = template.MobRate;
+
+            field.VRBottom = template.VRBottom;
+            field.VRTop = template.VRTop;
+            field.VRLeft = template.VRLeft;
+            field.VRRight = template.VRRight;
             
             Server.Worlds[0].Channels[field.ChannelId].Fields.Add(fieldId, field);
         }
@@ -286,14 +292,22 @@ namespace NineToFive.Wz {
                     case "town":
                         Template.Town = ((WzIntProperty) Property).Value == 1;
                         break;
+                    case "VRBottom":
+                        Template.VRBottom = ((WzIntProperty) Property).Value;
+                        break;
+                    case "VRLeft":
+                        Template.VRLeft = ((WzIntProperty) Property).Value;
+                        break;
+                    case "VRRight":
+                        Template.VRRight = ((WzIntProperty) Property).Value;
+                        break;
+                    case "VRTop":
+                        Template.VRTop = ((WzIntProperty) Property).Value;
+                        break;
                     case "cloud": 
                     case "hideMinimap": 
                     case "mapMark":
                     case "version":
-                    case "VRBottom":
-                    case "VRLeft":
-                    case "VRRight":
-                    case "VRTop":
                         break;
                     default:
                         Console.WriteLine($"Unhandled Map/Info Property: {Property.Name, 10}({Property.GetType()})");
