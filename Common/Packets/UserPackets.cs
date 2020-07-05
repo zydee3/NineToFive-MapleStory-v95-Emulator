@@ -160,11 +160,11 @@ namespace NineToFive.Packets {
 
             if ((dwCharFlag & 0x1000) == 0x1000) {
                 for (int i = 0; i < 5; i++) {
-                    w.WriteInt(-1);
+                    w.WriteInt(999999999);
                 }
 
                 for (int i = 0; i < 10; i++) {
-                    w.WriteInt(-1);
+                    w.WriteInt(999999999);
                 }
             }
 
