@@ -3,24 +3,24 @@ using NineToFive.Constants;
 
 namespace NineToFive.Game.Storage {
     public enum InventoryType {
-        Equipped,
         Equip,
         Use,
         Setup,
         Etc,
-        Cash
+        Cash,
+        Equipped,
     }
 
     public class Inventory {
         private Dictionary<short, Item> _items = new Dictionary<short, Item>();
 
-        public Inventory(InventoryType type, int size = 32) {
+        public Inventory(InventoryType type, byte size = 32) {
             Type = type;
             Size = size;
         }
 
         public InventoryType Type { get; }
-        public int Size { get; }
+        public byte Size { get; }
         public Dictionary<short, Item>.ValueCollection Items => _items.Values;
 
         public bool EquipItem(Equip equip, bool replace = false) {

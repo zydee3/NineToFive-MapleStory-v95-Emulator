@@ -15,6 +15,7 @@ namespace NineToFive.Util {
 
         public static object[] CreateUserParameters(User user) {
             return new object[] {
+                "account_id", user.AccountId,
                 "username", user.CharacterStat.Username,
                 "gender", user.AvatarLook.Gender,
                 "skin", user.AvatarLook.Skin,
@@ -40,7 +41,7 @@ namespace NineToFive.Util {
 
         public static object[] CreateItemParameters(User user, Item item) {
             return new object[] {
-                "account_id", 0,
+                "account_id", user.AccountId,
                 "character_id", user.CharacterStat.Id,
                 "item_id", item.Id,
                 "bag_index", item.BagIndex,
@@ -52,6 +53,7 @@ namespace NineToFive.Util {
     }
 
     enum QueryType {
+        Undefined,
         Delete,
         Select,
         Insert,
@@ -73,12 +75,12 @@ namespace NineToFive.Util {
         /// <summary>
         /// behavior of the executing command (select, insert, delete or update)
         /// </summary>
-        private QueryType _behavior;
+        private QueryType _behavior = QueryType.Undefined;
 
         /// <summary>
         /// keys (column) to update in the database with specified values
         /// </summary>
-        protected internal List<object[]> _parameters;
+        private List<object[]> _parameters;
 
         /// <summary>
         /// conditions that must be met for the executing command; a where statement
@@ -104,7 +106,7 @@ namespace NineToFive.Util {
         /// </summary>
         /// <exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         public DatabaseQuery Delete() {
-            if (_behavior != QueryType.Delete) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            if (_behavior != QueryType.Undefined && _behavior != QueryType.Delete) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
             _behavior = QueryType.Delete;
             return this;
         }
@@ -118,7 +120,7 @@ namespace NineToFive.Util {
         /// <param name="columns">columns to select separated by a comma</param>
         /// <exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         public DatabaseQuery Select(string columns = "*") {
-            if (_behavior != QueryType.Select) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            if (_behavior != QueryType.Undefined) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
 
             _behavior = QueryType.Select;
             _columns = columns;
@@ -136,7 +138,7 @@ namespace NineToFive.Util {
         /// <exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         /// <exception cref="InvalidOperationException">If specified parameters is empty or null</exception>
         public DatabaseQuery Insert(params object[] parameters) {
-            if (_behavior != QueryType.Insert) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            if (_behavior != QueryType.Undefined && _behavior != QueryType.Insert) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
             if (parameters == null || parameters.Length == 0) throw new InvalidOperationException("cannot insert empty data");
 
             _behavior = QueryType.Insert;
@@ -162,7 +164,7 @@ namespace NineToFive.Util {
         ///<exception cref="InvalidOperationException">If method was called after another behavior call</exception>
         /// <exception cref="InvalidOperationException">If specified parameters is empty or null</exception>
         public DatabaseQuery Update(params object[] parameters) {
-            if (_behavior != QueryType.Update) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
+            if (_behavior != QueryType.Undefined && _behavior != QueryType.Update) throw new InvalidOperationException($"behavior is already: '{_behavior}'");
             if (parameters == null || parameters.Length == 0) throw new InvalidOperationException("cannot update empty data");
 
             _behavior = QueryType.Update;
@@ -198,6 +200,7 @@ namespace NineToFive.Util {
             EscapeParameters();
 
             switch (_behavior) {
+                default: throw new InvalidOperationException($"Cannot execute behavior {_behavior}");
                 case QueryType.Delete:
                 case QueryType.Select: {
                     bool isReader = _behavior == QueryType.Select;
@@ -227,7 +230,7 @@ namespace NineToFive.Util {
 
                     // the idea is to have the ability to insert any number of rows (but never none)
                     // ...values (@value_0), (@value_1), (@value_2) and can continue to an unknown amount of times
-                    int varCount = 0; // global variable count
+                    int varCount = 0, totalVars = (_parameters[0].Length / 2) * _parameters.Count; // global variable count
                     foreach (object[] parameters in _parameters) {
                         string values = "(";
                         // local variable count (parameter indexer)
@@ -238,7 +241,7 @@ namespace NineToFive.Util {
 
                         values = values.TrimEnd(',') + ")";
                         // append comma only if we are not inserting the last row
-                        if (varCount < _parameters.Count * 2) values += ",";
+                        if (varCount < totalVars) values += ",";
 
                         query += values;
                     }
@@ -276,14 +279,13 @@ namespace NineToFive.Util {
                     return Command.ExecuteNonQuery();
                 }
             }
-
-            throw new InvalidOperationException($"unknown behavior '{_behavior}'");
         }
 
         private void EscapeParameters() {
-            for (int i = 0; i < _conditions?.Length; i++) {
-                if (!(_conditions[i] is string input)) continue;
-                _conditions[i] = MySqlHelper.EscapeString(input);
+            for (int i = 0; i < _conditions?.Length; i += 3) {
+                if (_conditions[i + 2] is string input) {
+                    _conditions[i + 2] = "'" + MySqlHelper.EscapeString(input) + "'";
+                }
             }
 
             if (_columns != null) {
@@ -314,7 +316,7 @@ namespace NineToFive.Util {
                 if (i % 3 != 0) continue;
                 // [column] [operator] [variable]
                 // example: [`id` < 10]
-                where += $"`{_conditions[i]}` {_conditions[i + 1]} @{_conditions[i + 2]} and ";
+                where += $"`{_conditions[i]}` {_conditions[i + 1]} {_conditions[i + 2]} and ";
             }
 
             return where.TrimEnd(" and ".ToCharArray());

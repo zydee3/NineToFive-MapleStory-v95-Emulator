@@ -7,6 +7,7 @@ using NineToFive.Event;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.ReceiveOps;
+using NineToFive.Util;
 
 namespace NineToFive.Login.Event {
     public class SelectCharEvent : PacketEvent {
@@ -54,15 +55,16 @@ namespace NineToFive.Login.Event {
                 _localMacAddressWithHddSn = p.ReadString().Split("_");
             }
 
+            // check if selected playerId exists within the account
             Client.User = Client.Users.FirstOrDefault(u => u.CharacterStat.Id == _playerId);
             if (Client.User == null) {
-                // playerId does not exist within account
                 Client.Session.Write(GetSelectCharFailed(5));
                 return false;
             }
 
             {
                 // hehe variable scopes
+                // send a migration request to the central server to obtain the remote server's IP address
                 using Packet w = new Packet();
                 w.WriteByte((byte) Interoperation.MigrateClientRequest);
                 w.WriteString(Client.Username);
@@ -75,12 +77,13 @@ namespace NineToFive.Login.Event {
                     _remoteAddress = r.ReadBytes(4);
                 }
             }
+
+            // check if server end-point is unavailable
             if (_remoteAddress == null || !Interoperability.TestConnection(new IPAddress(_remoteAddress), Client.Channel.Port)) {
                 if (_remoteAddress != null) {
                     Log.Warn($"Failed to connect to channel server {Client.Channel.Id}");
                 }
 
-                // server end-point not available
                 Client.Session.Write(GetSelectCharFailed(6));
                 return false;
             }
@@ -91,6 +94,10 @@ namespace NineToFive.Login.Event {
         public override void OnHandle() {
             Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
 
+            using DatabaseQuery q = Database.Table("accounts");
+            int success = q.Update("last_known_ip", Client.Session.RemoteAddress.ToString())
+                .Where("account_id", "=", Client.Id).ExecuteNonQuery();
+            if (success == 0) throw new InvalidOperationException("Failure to update last known IP for client : " + Client.Id);
             Client.Session.Write(GetSelectChar(Client, _remoteAddress));
             Server.Clients.Remove(Client.Username);
         }

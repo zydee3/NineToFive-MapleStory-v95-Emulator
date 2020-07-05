@@ -7,6 +7,7 @@ namespace NineToFive.Game {
     public class Channel {
         private readonly byte _worldId;
         public readonly ChannelSnapshot Snapshot = new ChannelSnapshot();
+        private Dictionary<int, Field> _fields = new Dictionary<int, Field>();
 
         public Dictionary<int, Field> Fields { get; set; }
         
@@ -22,6 +23,14 @@ namespace NineToFive.Game {
         public int Port { get; }
         public IPAddress HostAddress { get; set; }
         public ServerListener ServerListener { get; set; }
+
+        public Field GetField(int fieldId) {
+            _fields.TryGetValue(fieldId, out Field field);
+            if (field != null) return field;
+            field = new Field(fieldId, Id);
+            _fields.Add(fieldId, field);
+            return field;
+        } 
     }
 
     /// <summary>

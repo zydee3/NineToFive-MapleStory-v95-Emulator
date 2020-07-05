@@ -87,10 +87,10 @@ namespace NineToFive.IO {
             return this;
         }
 
-        public Packet WriteByte(byte item = 0) {
+        public byte WriteByte(byte item = 0) {
             Writer.Write(item);
             if (Position > Size) Size = Position;
-            return this;
+            return item;
         }
 
         public Packet WriteSByte(sbyte item = 0) {
@@ -99,10 +99,10 @@ namespace NineToFive.IO {
             return this;
         }
 
-        public Packet WriteShort(short item = 0) {
+        public short WriteShort(short item = 0) {
             Writer.Write(item);
             if (Position > Size) Size = Position;
-            return this;
+            return item;
         }
 
         public Packet WriteUShort(ushort item = 0) {
@@ -111,10 +111,10 @@ namespace NineToFive.IO {
             return this;
         }
 
-        public Packet WriteInt(int item = 0) {
+        public int WriteInt(int item = 0) {
             Writer.Write(item);
             if (Position > Size) Size = Position;
-            return this;
+            return item;
         }
 
         public Packet WriteUInt(uint item = 0) {

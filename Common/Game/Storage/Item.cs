@@ -8,7 +8,6 @@ namespace NineToFive.Game.Storage {
         public Item(int id) {
             Id = id;
             InventoryType = ItemConstants.GetInventoryType(id);
-            if (InventoryType == InventoryType.Equip) throw new InvalidOperationException("cannot create Item of an Equip : " + id);
         }
 
         public virtual byte Type => 2;

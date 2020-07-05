@@ -1,9 +1,8 @@
-﻿using System;
-using log4net;
+﻿using log4net;
 using log4net.Config;
 using NineToFive.Constants;
 using NineToFive.Net;
-using NineToFive.Net.Security;
+using NineToFive.Util;
 
 [assembly: XmlConfigurator(ConfigFile = "Resources/login-logger.xml")]
 
@@ -20,6 +19,10 @@ namespace NineToFive.Login {
             LoginServer server = new LoginServer(ServerConstants.LoginPort);
             server.Start();
             Log.Info($"Login server listening on port {server.Port}");
+
+            using var q = Database.Table("accounts");
+            int count = q.Update("login_status", 0).ExecuteNonQuery();
+            Log.Info($"Updated {count} accounts login status");
         }
     }
 }

@@ -8,6 +8,7 @@ using NineToFive.Game;
 using NineToFive.Interopation.Event;
 using NineToFive.IO;
 using NineToFive.Net.Security;
+using NineToFive.Util;
 
 namespace NineToFive.Net {
     public class Interoperability {
@@ -21,11 +22,16 @@ namespace NineToFive.Net {
 
         private void OnInteroperationReceived(TcpClient c, Packet r) {
             Interoperation op = (Interoperation) r.ReadByte();
-            Log.Info($"{op}");
             switch (op) {
-                case Interoperation.ClientGenderUpdateRequest:
-                    Server.AddClientIfAbsent(r.ReadString()).Gender = r.ReadByte();
+                case Interoperation.ClientGenderUpdateRequest: {
+                    string username = r.ReadString();
+                    byte gender = r.ReadByte();
+                    Server.AddClientIfAbsent(username).Gender = gender;
+                    using DatabaseQuery q = Database.Table("accounts");
+                    q.Update("gender", gender).Where("username", "=", username).ExecuteNonQuery();
                     return;
+                }
+
                 case Interoperation.WorldInformationRequest:
                     c.GetStream().Write(SimpleCrypto.Encrypt(WorldInformationRequest.OnHandle()));
                     return;

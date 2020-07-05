@@ -14,6 +14,7 @@ namespace NineToFive.Game {
         public readonly AvatarLook AvatarLook;
         public readonly GW_CharacterStat CharacterStat;
         public readonly Dictionary<InventoryType, Inventory> Inventories;
+        private Field _field;
 
         public User(MySqlDataReader reader = null) {
             Inventories = new Dictionary<InventoryType, Inventory>();
@@ -45,7 +46,13 @@ namespace NineToFive.Game {
             }
         }
 
+        public uint AccountId { get; set; }
         public Client Client { get; set; }
+
+        public Field Field {
+            get => _field;
+            set => _field = value;
+        }
 
         public void Save() {
             using DatabaseQuery updateChars = Database.Table("characters");
@@ -132,7 +139,7 @@ namespace NineToFive.Game {
 
         public GW_CharacterStat(MySqlDataReader r = null) {
             if (r == null) return;
-            Id = r.GetUInt32("id");
+            Id = r.GetUInt32("character_id");
             Username = r.GetString("username");
             Level = r.GetSByte("level");
             Job = r.GetInt16("job");

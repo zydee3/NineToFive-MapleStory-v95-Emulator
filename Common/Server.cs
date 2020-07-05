@@ -38,7 +38,7 @@ namespace NineToFive {
             Clients.TryGetValue(username, out Client client);
             if (client != null) return client;
 
-            client = new Client(null, null);
+            client = new Client();
             Clients.Add(username, client);
             return client;
         }

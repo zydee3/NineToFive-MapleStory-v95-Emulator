@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using IniParser;
 using IniParser.Model;
 using log4net;
-using log4net.Core;
 using NineToFive.Game.Storage;
-using NineToFive.Util;
 
 namespace NineToFive.Constants {
     public static class ServerConstants {
@@ -29,24 +27,25 @@ namespace NineToFive.Constants {
             LogManager.GetLogger(typeof(ServerConstants)).Info("Configurations loaded");
         }
 
-        public static readonly short GameVersion = 95;
+        public static readonly short GameVersion;
 
-        public static readonly string HostServer = "127.0.0.1";
-        public static readonly string CentralServer = "127.0.0.1";
+        public static readonly string HostServer;
+        public static readonly string CentralServer;
 
         public const short InterCentralPort = 8481;
         public const int InterChannelPort = 8482;
         public const short InterLoginPort = 8483;
 
-        public static readonly int LoginPort = 8484;
-        public static readonly int ChannelPort = 7575;
+        public static readonly int LoginPort;
+        public static readonly int ChannelPort;
 
-        public static readonly int WorldCount = 1;
-        public static readonly int ChannelCount = 3;
-        public static readonly bool EnabledRanking = false;
-        public static readonly bool EnabledSecondaryPassword = true;
+        public static readonly int WorldCount;
+        public static readonly int ChannelCount;
 
-        public static readonly string DatabaseConString = "server=127.0.0.1;port=3306;userid=root;password=fireworks;database=ntf;charset=utf8;Allow User Variables=true;pooling=true";
+        public static readonly bool EnabledRanking;
+        public static readonly bool EnabledSecondaryPassword;
+
+        public static readonly string DatabaseConString;
 
         public static readonly string[] WorldNames = {
             "Scania", "Bera", "Broa", "Windia", "Khaini", "Bellocan", "Mardia", "kradia", "Yellonde", "Demethos",
@@ -64,6 +63,84 @@ namespace NineToFive.Constants {
 
     public static class Job {
         public static bool IsExtendedSpJob(int jobId) => !(jobId / 1000 != 3 && jobId / 100 != 22 && jobId != 2001);
+        public static bool IsEvanJob(int jobId) => jobId / 100 == 22 || jobId == 2001;
+
+        public static int GetJobLevel(int jobId) {
+            int jobStage;
+            if ((jobId % 100) == 0 || jobId == 2001) return 1;
+            if (jobId / 10 == 43) jobStage = (jobId - 430) / 2;
+            else jobStage = jobId % 10;
+            jobStage += 2;
+            return jobStage >= 2 && (jobStage <= 4 || jobStage <= 10 && IsEvanJob(jobId)) ? jobStage : 0;
+        }
+
+        public static bool IsBeginnerJob(int jobId) {
+            if (jobId > 6001) return jobId == 13000 || jobId == 14000;
+            if (jobId >= 6000) return true;
+            if (jobId > 3002) return jobId == 5000;
+            if (jobId >= 3001 || jobId >= 2001 && jobId <= 2005) return true;
+            return (jobId % 1000) == 0;
+        }
+    }
+
+    public static class SkillConstants {
+        private static bool IsIgnoreMasterLevelForCommon(int skillId) {
+            if (skillId > 3220010) {
+                return skillId == 32120009 || skillId == 33120010;
+            }
+
+            if (skillId >= 3220009) return true;
+            if (skillId > 2120009) {
+                if (skillId > 2320010) {
+                    return skillId >= 3120010 && skillId <= 3120011;
+                }
+
+                return skillId == 2320010 || skillId == 2220009;
+            }
+
+            return skillId == 2120009 || skillId == 1120012 || skillId == 1220013 || skillId == 1320011;
+        }
+
+        private static int GetSkillRootFromSkill(int skillId) {
+            int jobId = skillId / 10000;
+            if (skillId / 10000 == 8000)
+                jobId = skillId / 100;
+            return jobId;
+        }
+
+        private static bool IsCommonSkill(int skillId) {
+            int jobId = skillId / 10000;
+            if (skillId / 10000 == 8000)
+                jobId = skillId / 100;
+            return jobId >= 800000 && jobId <= 800099;
+        }
+
+        private static bool IsNoviceSkill(int skillId) {
+            int jobId = skillId / 10000;
+            if (skillId / 10000 == 8000) {
+                jobId = skillId / 100;
+            }
+
+            return Job.IsBeginnerJob(jobId);
+        }
+
+        private static bool IsFieldAttackObjSkill(int skillId) {
+            if (skillId == 0 || skillId < 0)
+                return false;
+            int jobId = skillId / 10000;
+            if (skillId / 10000 == 8000)
+                jobId = skillId / 100;
+            return jobId == 9500;
+        }
+
+        public static bool IsSkillNeedMasterLevel(int skillId) {
+            return !IsIgnoreMasterLevelForCommon(skillId)
+                   && (skillId / 1000000 != 92 || (skillId % 10000) != 0)
+                   && !IsCommonSkill(skillId)
+                   && !IsNoviceSkill(skillId)
+                   && !IsFieldAttackObjSkill(skillId)
+                   && Job.GetJobLevel(GetSkillRootFromSkill(skillId)) != 4;
+        }
     }
 
     public static class ItemConstants {
@@ -73,7 +150,7 @@ namespace NineToFive.Constants {
                 throw new ArgumentException($"Unknown inventory type for item {itemId}");
             }
 
-            return (InventoryType) type;
+            return (InventoryType) (type - 1);
         }
 
         public static byte GetGenderFromId(int itemId) {
@@ -228,13 +305,13 @@ namespace NineToFive.Constants {
         Mob,
         Player,
         Reactor,
-        Summon, 
+        Summon,
         Pet
     }
 
     public enum TemplateType {
         Mob,
-        Field, 
+        Field,
         Item,
     }
 

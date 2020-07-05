@@ -12,7 +12,7 @@ namespace NineToFive.Event {
         public Client Client { get; private set; }
 
         public virtual void OnError(Exception e) {
-            Log.Error($"{GetType().Name}", e);
+            Log.Error($"================ {GetType().Name} ================", e);
         }
 
         public virtual bool OnProcess(Packet p) {

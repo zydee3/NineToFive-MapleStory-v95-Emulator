@@ -26,6 +26,7 @@ namespace NineToFive.Login.Event {
             w.WriteBytes(_machineId);
 
             using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
+            if (r.Size == 0) return 6;
             byte result = r.ReadByte();
             // un-successful login
             if (result != 1) return result;

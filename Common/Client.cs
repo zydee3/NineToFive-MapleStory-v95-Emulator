@@ -14,6 +14,8 @@ namespace NineToFive {
         public readonly List<User> Users = new List<User>(15);
         private byte _worldId, _channelId;
 
+        public Client() { }
+
         public Client(ServerListener server, TcpClient socket) {
             ServerHandler = server;
             Session = new ClientSession(this, socket);
@@ -33,7 +35,9 @@ namespace NineToFive {
                 p.WriteString(SecondaryPassword);
             }
 
-            p.WriteBytes(LastKnownIp.GetAddressBytes());
+            if (p.WriteBool(LastKnownIp != null)) {
+                p.WriteBytes(LastKnownIp?.GetAddressBytes());
+            }
         }
 
         public void Decode(Client t, Packet p) {
@@ -49,7 +53,9 @@ namespace NineToFive {
                 t.SecondaryPassword = p.ReadString();
             }
 
-            t.LastKnownIp = new IPAddress(p.ReadBytes(4));
+            if (p.ReadBool()) {
+                t.LastKnownIp = new IPAddress(p.ReadBytes(4));
+            }
         }
 
         public uint Id { get; set; }
@@ -77,7 +83,9 @@ namespace NineToFive {
             using DatabaseQuery q = Database.Table("characters");
             using MySqlDataReader r = q.Select().Where("account_id", "=", Id).ExecuteReader();
             while (r.Read()) {
-                Users.Add(new User(r));
+                Users.Add(new User(r) {
+                    AccountId = Id
+                });
             }
         }
     }
