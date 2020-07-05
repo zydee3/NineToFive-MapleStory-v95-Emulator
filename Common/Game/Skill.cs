@@ -10,6 +10,7 @@ using NineToFive.Wz;
 
 namespace NineToFive.Game {
     public class Skill {
+        public int Id { get; set; }
         public string Acc { get; set; } 
         public string AsrR { get; set; }
         public string AttackCount { get; set; }
@@ -85,8 +86,9 @@ namespace NineToFive.Game {
         ///     This constructor is meant for when only a single skill is being loaded so the WzFile is being used as a singleton.
         /// </summary>
         /// <param name="SkillID">Id of the skill being loaded.</param>
-        public Skill(int SkillID) {
-            List<WzImageProperty> SkillProperties = WzProvider.GetWzProperties(WzProvider.Load("Skill"), $"{(SkillID / 10000)}.img/skill/{SkillID}/common");
+        public Skill(int id) {
+            Id = id;
+            List<WzImageProperty> SkillProperties = WzProvider.GetWzProperties(WzProvider.Load("Skill"), $"{(id / 10000)}.img/skill/{id}/common");
             SkillWz.SetSkill(this, ref SkillProperties);
         }
     }

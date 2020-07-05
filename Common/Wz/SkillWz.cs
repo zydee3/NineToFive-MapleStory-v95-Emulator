@@ -269,9 +269,10 @@ namespace NineToFive.Wz {
                         if (int.TryParse(Skill.Name, out int SkillID)) { 
                             
                             // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
-                            List<WzImageProperty> SkillProperties = Job.GetFromPath("common").WzProperties;
-                            if (SkillProperties == null || SkillProperties.Count == 0) continue;
-                            
+                            WzImageProperty image = Skill.GetFromPath("common");
+                            if (image == null || image.WzProperties.Count == 0) continue;
+                            List<WzImageProperty> SkillProperties = Skill.GetFromPath("common").WzProperties;
+
                             Skill S = new Skill();
                             SetSkill(S, ref SkillProperties);
                             SkillsRetrieved.Add(SkillID, S);
@@ -312,9 +313,10 @@ namespace NineToFive.Wz {
                         if (!int.TryParse(Skill.Name, out int SkillID) || !Predicate(SkillID)) continue;
                         
                         // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
+                        WzImageProperty image = Skill.GetFromPath("common");
+                        if (image == null || image.WzProperties.Count == 0) continue;
                         List<WzImageProperty> SkillProperties = Skill.GetFromPath("common").WzProperties;
-                        if (SkillProperties == null) continue;
-                        
+
                         Skill S = new Skill();
                         SetSkill(S, ref SkillProperties);
                         SkillsRetrieved.Add(SkillID, S);

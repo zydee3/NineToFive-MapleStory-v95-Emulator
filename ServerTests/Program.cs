@@ -5,10 +5,10 @@ using ServerTests.Wz;
 namespace ServerTests {
     class Program {
         private const bool 
-            _field = false,
-            _item  = false,
-            _mob   = false,
-            _skill = false;
+            _field = true,
+            _item  = true,
+            _mob   = true,
+            _skill = true;
         
         static void Main(string[] args) {
             // The first execution includes the time that the Just In Time (JIT) compiler spends converting the code from Microsoft's Intermediary Language (MSIL) into

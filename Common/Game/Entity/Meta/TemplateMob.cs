@@ -44,8 +44,8 @@ namespace NineToFive.Game.Entity.Meta {
         public List<int> DamagedBySelectedMob { get; set; }
         public List<int> Revives { get; set; }
         public List<Skill> Skills { get; set; }
-        public Tuple<int, int> HealOnDestroy;
-        public int SelfDestruction;
+        public Tuple<int, int> HealOnDestroy { get; set; }
+        public int SelfDestruction { get; set; }
         
         public int ID { get; set; }
         
@@ -124,10 +124,6 @@ namespace NineToFive.Game.Entity.Meta {
         public string ElemAttr { get; set; }
         public TemplateMob() {
             
-        }
-
-        public TemplateMob(int ID) {
-            this.ID = ID;
         }
     }
 }
