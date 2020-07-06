@@ -13,7 +13,10 @@ namespace NineToFive.Channels {
 
         public ChannelServer(int port) : base(port) {
             _receive = new RecvOps() {
-                [(short) CLogin.OnEnterGamePacket] = typeof(CharEnterGameEvent),
+                [(short) ReceiveOperations.Login_OnEnterGamePacket] = typeof(CharEnterGameEvent),
+                [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
+                [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
+                [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
             };
         }
 

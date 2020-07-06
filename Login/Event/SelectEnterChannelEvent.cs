@@ -60,6 +60,7 @@ namespace NineToFive.Login.Event {
 
             Client.SetWorld(_worldId);
             Client.SetChannel(_channelId);
+            Client.LoadCharacters();
             Client.Session.Write(GetSelectWorld());
         }
 

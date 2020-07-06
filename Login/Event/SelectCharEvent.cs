@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
 using log4net;
 using NineToFive.Constants;
 using NineToFive.Event;
@@ -29,7 +30,7 @@ namespace NineToFive.Login.Event {
         public override bool OnProcess(Packet p) {
             p.Position = 0;
             short op = p.ReadShort();
-            if (op == (int) CLogin.OnSelectCharInitSPWPacket) {
+            if (op == (int) ReceiveOperations.Login_OnSelectCharInitSPWPacket) {
                 p.ReadByte(); // COutPacket::Encode1(&iPacket, 1);
                 _playerId = p.ReadInt();
                 _localMacAddress = p.ReadString().Split(", ");
@@ -42,7 +43,7 @@ namespace NineToFive.Login.Event {
                 w.WriteString(_secondaryPassword);
                 Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
             } else {
-                if (op == (int) CLogin.OnSelectCharSPWPacket) {
+                if (op == (int) ReceiveOperations.Login_OnSelectCharSPWPacket) {
                     _secondaryPassword = p.ReadString();
                     if (!_secondaryPassword.Equals(Client.SecondaryPassword, StringComparison.Ordinal)) {
                         Client.Session.Write(GetSelectCharFailed(4));

@@ -5,6 +5,8 @@ using MySql.Data.MySqlClient;
 using NineToFive.Constants;
 using NineToFive.Game.Storage;
 using NineToFive.IO;
+using NineToFive.Packets;
+using NineToFive.SendOps;
 using NineToFive.Util;
 using Item = NineToFive.Game.Storage.Item;
 
@@ -25,6 +27,8 @@ namespace NineToFive.Game.Entity {
             AvatarLook = new AvatarLook(reader);
             CharacterStat = new GW_CharacterStat(reader);
             if (reader == null) return;
+
+            AccountId = reader.GetUInt32("account_id");
             using DatabaseQuery q = Database.Table("items");
             using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
             while (r.Read()) {
@@ -77,6 +81,59 @@ namespace NineToFive.Game.Entity {
 
             count = insertItems.ExecuteNonQuery();
             Log.Info($"Successfully saved {count} items in {CharacterStat.Username}'s inventories");
+        }
+
+        public void SetField(in int fieldId, bool characterData = true) {
+            Field?.RemoveLife(this);
+            Field = Client.Channel.GetField(fieldId);
+            Field.AddLife(this);
+
+            using Packet w = new Packet();
+            w.WriteShort((short) CStage.OnSetField);
+
+            // CClientOptMan::DecodeOpt
+            for (int i = 0; i < w.WriteShort(); i++) {
+                w.WriteInt();
+                w.WriteInt();
+            }
+
+            w.WriteInt(Math.Abs(Field.VrRight) - Math.Abs(Field.VrLeft)); // nFieldWidth
+            w.WriteInt(Math.Abs(Field.VrBottom) - Math.Abs(Field.VrTop)); // nFieldHeight
+            w.WriteByte(1);                                               // unknown
+            w.WriteBool(characterData);
+            short notifierCheck = w.WriteShort();
+            if (notifierCheck > 0) {
+                w.WriteString();
+                for (int i = 0; i < notifierCheck; i++) {
+                    w.WriteString();
+                }
+            }
+
+            if (characterData) {
+                // CalcDamage::SetSeed
+                w.WriteInt(RNG.GetInt());
+                w.WriteInt(RNG.GetInt());
+                w.WriteInt(RNG.GetInt());
+
+                UserPackets.EncodeCharacterData(this, w, -1);
+                // CWvsContext::OnSetLogoutGiftConfig
+                w.WriteInt();
+                for (int i = 0; i < 3; i++) {
+                    w.WriteInt();
+                }
+            } else {
+                w.WriteBool(false); // CWvsContext::OnRevive
+                w.WriteInt(CharacterStat.FieldId);
+                w.WriteByte(CharacterStat.Portal);
+                w.WriteInt(CharacterStat.HP);
+                if (w.WriteBool(false)) {
+                    w.WriteInt();
+                    w.WriteInt();
+                }
+            }
+
+            w.WriteLong(DateTime.Now.ToFileTime()); // paramFieldInit.ftServer
+            Client.Session.Write(w.ToArray());
         }
     }
 

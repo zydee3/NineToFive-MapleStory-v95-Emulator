@@ -12,7 +12,6 @@ using NineToFive.Net.Security;
 namespace NineToFive.Channels {
     class Program {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
-        private static readonly SimpleCrypto SimpleCrypto = new SimpleCrypto();
 
         static void Main(string[] args) {
             if (!Interoperability.TestConnection(IPAddress.Parse(ServerConstants.CentralServer), ServerConstants.InterCentralPort)) {

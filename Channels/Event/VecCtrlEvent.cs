@@ -11,8 +11,11 @@ namespace NineToFive.Channels.Event {
 
         public override bool OnProcess(Packet p) {
             p.ReadInt();
-            p.ReadInt(); // get_update_time
+            p.ReadInt();
             p.ReadByte();
+            p.ReadInt();
+            p.ReadInt();
+            
             Origin = new Vector2(p.ReadShort(), p.ReadShort());
             Velocity = new Vector2(p.ReadShort(), p.ReadShort());
             byte count = p.ReadByte();
@@ -23,7 +26,7 @@ namespace NineToFive.Channels.Event {
                 Movements.Add(move);
             }
 
-            return true;
+            return false;
         }
 
         public Vector2 Origin { get; set; }

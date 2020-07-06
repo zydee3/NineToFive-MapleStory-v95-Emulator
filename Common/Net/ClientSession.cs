@@ -31,6 +31,7 @@ namespace NineToFive.Net {
         }
 
         public void Dispose() {
+            _client?.Dispose();
             _client = null;
             _socket?.Dispose();
             _socket = null;

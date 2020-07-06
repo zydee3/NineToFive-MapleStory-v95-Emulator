@@ -32,7 +32,7 @@ namespace NineToFive.Login.Event {
             }
 
             int countAl; // amount of elements in AvatarLook array
-            if (op == (int) CLogin.OnNewCharPacket22) {
+            if (op == (int) ReceiveOperations.Login_OnNewCharPacket22) {
                 p.ReadShort();
                 countAl = 8;
             } else {
@@ -45,7 +45,7 @@ namespace NineToFive.Login.Event {
                 _avatarLook[i] = p.ReadInt();
             }
 
-            if (countAl == (int) CLogin.OnNewCharPacket22) {
+            if (countAl == (int) ReceiveOperations.Login_OnNewCharPacket22) {
                 _gender = p.ReadByte();
             }
 

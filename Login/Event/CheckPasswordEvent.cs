@@ -44,7 +44,6 @@ namespace NineToFive.Login.Event {
         public override void OnHandle() {
             byte loginResult = GetAuthRequest();
             if (loginResult == 1) {
-                Client.LoadCharacters();
                 Client.Session.Write(GetLoginSuccess(Client));
             } else {
                 Client.Session.Write(GetLoginFailed(loginResult));

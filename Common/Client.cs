@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using MySql.Data.MySqlClient;
@@ -9,7 +10,7 @@ using NineToFive.Net;
 using NineToFive.Util;
 
 namespace NineToFive {
-    public class Client : IPacketSerializer<Client> {
+    public class Client : IPacketSerializer<Client>, IDisposable {
         public readonly ServerListener ServerHandler;
         public readonly ClientSession Session;
         public readonly List<User> Users = new List<User>(15);
@@ -23,6 +24,10 @@ namespace NineToFive {
             Gender = 10;
         }
 
+        public void Dispose() {
+            
+        }
+        
         public void Encode(Client t, Packet p) {
             p.WriteUInt(t.Id);
             p.WriteString(t.Username);
@@ -84,9 +89,7 @@ namespace NineToFive {
             using DatabaseQuery q = Database.Table("characters");
             using MySqlDataReader r = q.Select().Where("account_id", "=", Id).ExecuteReader();
             while (r.Read()) {
-                Users.Add(new User(r) {
-                    AccountId = Id
-                });
+                Users.Add(new User(r));
             }
         }
     }
