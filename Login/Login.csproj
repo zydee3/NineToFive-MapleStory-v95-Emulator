@@ -25,10 +25,4 @@
     <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Resources\login-logger.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

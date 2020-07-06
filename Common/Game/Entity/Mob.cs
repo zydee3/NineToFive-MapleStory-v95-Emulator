@@ -4,8 +4,7 @@ using NineToFive.Game.Entity.Meta;
 using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
-    public class Mob : Meta.Entity {
-        public int Id { get; set; }
+    public class Mob : Life {
         public int Level { get; set; }
         public int HP { get; set; }
         public int MaxHP { get; set; }
@@ -91,8 +90,7 @@ namespace NineToFive.Game.Entity {
         public string MobType { get; set; }
         public string ElemAttr { get; set; }
 
-        public Mob(int id) : base(EntityType.Mob) {
-            Id = id;
+        public Mob(int id) : base(id, EntityType.Mob) {
             MobWz.SetMob(this);
         }
     }

@@ -44,9 +44,14 @@ namespace NineToFive.Net {
                 case Interoperation.CheckDuplicateIdRequest:
                     c.GetStream().Write(SimpleCrypto.Encrypt(CheckDuplicateIdRequest.OnHandle(r)));
                     return;
-                case Interoperation.ClientInitializeSPWRequest:
-                    Server.AddClientIfAbsent(r.ReadString()).SecondaryPassword = r.ReadString();
+                case Interoperation.ClientInitializeSPWRequest: {
+                    string username = r.ReadString();
+                    string spw = r.ReadString();
+                    Server.AddClientIfAbsent(username).SecondaryPassword = spw;
+                    using DatabaseQuery q = Database.Table("accounts");
+                    q.Update("second_password", spw).Where("username", "=", username).ExecuteNonQuery();
                     return;
+                }
                 case Interoperation.MigrateClientRequest:
                     c.GetStream().Write(SimpleCrypto.Encrypt(ClientMigrateSocketRequest.OnHandle(r)));
                     return;

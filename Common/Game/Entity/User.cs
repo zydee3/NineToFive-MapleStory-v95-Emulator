@@ -8,15 +8,15 @@ using NineToFive.IO;
 using NineToFive.Util;
 using Item = NineToFive.Game.Storage.Item;
 
-namespace NineToFive.Game {
-    public class User {
+namespace NineToFive.Game.Entity {
+    public class User : Life {
         private static readonly ILog Log = LogManager.GetLogger(typeof(User));
         public readonly AvatarLook AvatarLook;
         public readonly GW_CharacterStat CharacterStat;
         public readonly Dictionary<InventoryType, Inventory> Inventories;
         private Field _field;
 
-        public User(MySqlDataReader reader = null) {
+        public User(MySqlDataReader reader = null) : base(EntityType.Player) {
             Inventories = new Dictionary<InventoryType, Inventory>();
             foreach (InventoryType type in Enum.GetValues(typeof(InventoryType))) {
                 Inventories.Add(type, new Inventory(type));
@@ -53,7 +53,7 @@ namespace NineToFive.Game {
             get => _field;
             set {
                 _field = value;
-                CharacterStat.FieldId = value.Id;
+                if (_field != null) CharacterStat.FieldId = _field.Id;
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using NineToFive.Event;
 using NineToFive.Game;
+using NineToFive.Game.Entity;
 using NineToFive.IO;
 using NineToFive.SendOps;
 

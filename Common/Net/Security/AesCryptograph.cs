@@ -45,7 +45,7 @@ namespace Destiny.Security {
 
             Aes = new AesManaged() {
                 KeySize = 256,
-                Key = AesCryptograph.UserKey,
+                Key = UserKey,
                 Mode = CipherMode.ECB
             };
         }
@@ -53,22 +53,22 @@ namespace Destiny.Security {
         private static byte[] Shuffle(byte inputByte, byte[] data) {
             byte alpha = data[1];
             byte beta = inputByte;
-            byte gamma = AesCryptograph.Shufflers[alpha];
+            byte gamma = Shufflers[alpha];
 
             gamma -= inputByte;
             data[0] += gamma;
             gamma = data[2];
-            gamma ^= AesCryptograph.Shufflers[beta];
+            gamma ^= Shufflers[beta];
             alpha -= gamma;
             data[1] = alpha;
             alpha = data[3];
             gamma = alpha;
             alpha -= data[0];
-            gamma = AesCryptograph.Shufflers[gamma];
+            gamma = Shufflers[gamma];
             gamma += inputByte;
             gamma ^= data[2];
             data[2] = gamma;
-            alpha += AesCryptograph.Shufflers[beta];
+            alpha += Shufflers[beta];
             data[3] = alpha;
 
             int delta = data[0];
@@ -130,7 +130,7 @@ namespace Destiny.Security {
             byte[] newIV = new byte[4] { 0xF2, 0x53, 0x50, 0xC6 };
 
             for (int i = 0; i < 4; i++) {
-                AesCryptograph.Shuffle(IV[i], newIV);
+                Shuffle(IV[i], newIV);
             }
 
             IV = newIV;

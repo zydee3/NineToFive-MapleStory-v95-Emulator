@@ -1,29 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using NineToFive.Constants;
 using NineToFive.Game;
-using NineToFive.Game.Entity.Meta;
 
 namespace ServerTests.Wz {
     public class FieldTest {
         public static void Test() {
-            const int fieldId = 610020005;
-            Stopwatch Watch = new Stopwatch();
+            const int fieldId = 100000000;
+            Stopwatch watch = new Stopwatch();
 
-            Watch.Start();
-            Field Field = new Field(fieldId,  1);
-            Watch.Stop();
+            watch.Start();
+            Field field = new Field(fieldId, 1);
+            watch.Stop();
 
-            foreach ((EntityType Type, var Entities) in Field.Life) {
-                foreach ((int ID, Entity Entity) in Entities) {
-                    Console.WriteLine($"Loaded Entity: ID={ID}, Type={Type}.");
+            foreach (var pair in field.LifePools) {
+                foreach (var life in pair.Value.Values) {
+                    Console.WriteLine($"Loaded life: {pair.Key}, {life.Id}");
                 }
             }
 
-            Console.WriteLine($"Loaded {Field.SpawnPoints.Count} spawn points.");
-            Console.WriteLine($"Loaded {Field.Portals.Length} Portals");
-            Console.WriteLine($"Time Elpased Loading Field({fieldId}): {Watch.Elapsed}.");
+            Console.WriteLine($"Loaded {field.SpawnPoints.Count} spawn points.");
+            Console.WriteLine($"Loaded {field.Portals.Length} Portals");
+            Console.WriteLine($"Time elapsed Loading Field({fieldId}): {watch.Elapsed}.");
         }
     }
 }

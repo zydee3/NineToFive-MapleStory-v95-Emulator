@@ -4,6 +4,7 @@ using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Constants;
 using NineToFive.Game;
+using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
 using Item = NineToFive.Game.Storage.Item;
 

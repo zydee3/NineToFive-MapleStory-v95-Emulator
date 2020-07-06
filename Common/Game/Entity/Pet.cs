@@ -1,7 +1,7 @@
 ﻿using NineToFive.Constants;
 
 namespace NineToFive.Game.Entity {
-    public class Pet : Meta.Entity {
+    public class Pet : Life {
         private int ID { get; set; }
         
         public Pet(int ID, int ItemID) : base(EntityType.Pet) {

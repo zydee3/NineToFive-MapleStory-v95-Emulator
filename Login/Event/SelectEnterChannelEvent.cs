@@ -3,6 +3,7 @@ using log4net;
 using NineToFive.Constants;
 using NineToFive.Event;
 using NineToFive.Game;
+using NineToFive.Game.Entity;
 using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.SendOps;

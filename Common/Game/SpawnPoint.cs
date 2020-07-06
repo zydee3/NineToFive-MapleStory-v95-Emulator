@@ -1,24 +1,23 @@
-﻿using NineToFive.Constants;
-using NineToFive.Game.Entity;
-
+﻿using NineToFive.Game.Entity;
 
 namespace NineToFive.Game {
     public class SpawnPoint {
-        private Field Field;
-        private int MobID { get; set; }
-        public Mob Mob { get; set; }
-        
-        public SpawnPoint(Field Field, int MobID) {
-            this.Field = Field;
-            this.MobID = MobID;
+        private readonly Field _field;
+
+        public SpawnPoint(Field field, int mobId) {
+            _field = field;
+            MobId = mobId;
         }
+
+        private int MobId { get; set; }
+        public Mob Mob { get; set; }
 
         public void SummonMob() {
             if (Mob != null) return;
 
-            Mob = new Mob(MobID);
-            Field.Life[EntityType.Mob].Add(MobID, Mob);
-            
+            Mob = new Mob(MobId);
+            _field.AddLife(Mob);
+
             //todo: spawn
         }
     }

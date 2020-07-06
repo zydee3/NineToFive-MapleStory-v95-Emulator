@@ -2,6 +2,7 @@
 using System.Linq;
 using NineToFive.Constants;
 using NineToFive.Game;
+using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
 using NineToFive.IO;
 

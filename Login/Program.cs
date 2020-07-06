@@ -4,8 +4,6 @@ using NineToFive.Constants;
 using NineToFive.Net;
 using NineToFive.Util;
 
-[assembly: XmlConfigurator(ConfigFile = "Resources/login-logger.xml")]
-
 namespace NineToFive.Login {
     class Program {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Program));

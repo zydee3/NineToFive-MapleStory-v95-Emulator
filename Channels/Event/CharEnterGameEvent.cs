@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Net;
-using System.Security.Cryptography;
 using MySql.Data.MySqlClient;
 using NineToFive.Event;
 using NineToFive.Game;
+using NineToFive.Game.Entity;
 using NineToFive.IO;
 using NineToFive.Packets;
 using NineToFive.SendOps;
@@ -43,8 +43,9 @@ namespace NineToFive.Channels.Event {
         }
 
         public override void OnHandle() {
-            Client.User.Field = Client.Channel.GetField(Client.User.CharacterStat.FieldId);
-            Client.Session.Write(SetField(Client.User));
+            User user = Client.User;
+            Client.Channel.GetField(user.CharacterStat.FieldId).AddLife(user);
+            Client.Session.Write(SetField(user));
         }
 
         private static byte[] SetField(User user, bool characterData = true) {
@@ -59,9 +60,9 @@ namespace NineToFive.Channels.Event {
                 w.WriteInt();
             }
 
-            w.WriteInt(Math.Abs(field.VRRight) - Math.Abs(field.VRLeft)); // nFieldWidth
-            w.WriteInt(Math.Abs(field.VRBottom) - Math.Abs(field.VRTop)); // nFieldHeight
-            w.WriteByte(1);                                                // unknown
+            w.WriteInt(Math.Abs(field.VrRight) - Math.Abs(field.VrLeft)); // nFieldWidth
+            w.WriteInt(Math.Abs(field.VrBottom) - Math.Abs(field.VrTop)); // nFieldHeight
+            w.WriteByte(1);                                               // unknown
             w.WriteBool(characterData);
             short notifierCheck = w.WriteShort();
             if (notifierCheck > 0) {

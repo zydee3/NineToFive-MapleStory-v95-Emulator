@@ -7,6 +7,7 @@ using MapleLib.WzLib.WzProperties;
 using MapleLib.WzLib.WzStructure.Data;
 using NineToFive.Constants;
 using NineToFive.Game;
+using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 
 namespace NineToFive.Wz {
@@ -39,12 +40,6 @@ namespace NineToFive.Wz {
 
             // t isn't null, so re-set so we don't have to keep typecasting.
             TemplateField template = (TemplateField)t;
-            
-            // initialize caches
-            field.Life = new Dictionary<EntityType, Dictionary<int, Entity>>();
-            foreach (EntityType Type in Enum.GetValues(typeof(EntityType))) {
-                field.Life.Add(Type, new Dictionary<int, Entity>());
-            }
 
             // Create spawn points only where monsters exist.
             Dictionary<int, FieldLifeEntry> MobEntries = template.Life[EntityType.Mob];
@@ -75,10 +70,10 @@ namespace NineToFive.Wz {
             field.MobCount = template.MobCount;
             field.MobRate = template.MobRate;
 
-            field.VRBottom = template.VRBottom;
-            field.VRTop = template.VRTop;
-            field.VRLeft = template.VRLeft;
-            field.VRRight = template.VRRight;
+            field.VrBottom = template.VRBottom;
+            field.VrTop = template.VRTop;
+            field.VrLeft = template.VRLeft;
+            field.VrRight = template.VRRight;
             
             Server.Worlds[0].Channels[field.ChannelId].Fields.Add(fieldId, field);
         }

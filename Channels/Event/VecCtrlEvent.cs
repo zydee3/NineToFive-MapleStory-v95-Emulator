@@ -1,0 +1,32 @@
+﻿using System.Collections.Generic;
+using System.Numerics;
+using NineToFive.Channels.Event.Data;
+using NineToFive.Event;
+using NineToFive.IO;
+
+namespace NineToFive.Channels.Event {
+    public class VecCtrlEvent : PacketEvent {
+        public List<Movement> Movements = new List<Movement>();
+        public VecCtrlEvent(Client client) : base(client) { }
+
+        public override bool OnProcess(Packet p) {
+            p.ReadInt();
+            p.ReadInt(); // get_update_time
+            p.ReadByte();
+            Origin = new Vector2(p.ReadShort(), p.ReadShort());
+            Velocity = new Vector2(p.ReadShort(), p.ReadShort());
+            byte count = p.ReadByte();
+            while (count-- > 0) {
+                byte type = p.ReadByte();
+                Movement move = new Movement(type);
+                move.Decode(move, p);
+                Movements.Add(move);
+            }
+
+            return true;
+        }
+
+        public Vector2 Origin { get; set; }
+        public Vector2 Velocity { get; set; }
+    }
+}
