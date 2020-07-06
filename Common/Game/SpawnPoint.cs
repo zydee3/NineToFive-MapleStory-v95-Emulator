@@ -5,7 +5,7 @@ namespace NineToFive.Game {
         private readonly Field _field;
         private readonly int _mobId;
         public Mob mob { get; set; }
-        
+
         public SpawnPoint(Field field, int mobId) {
             _field = field;
             _mobId = mobId;
@@ -18,8 +18,6 @@ namespace NineToFive.Game {
             if (mob != null) return;
 
             mob = new Mob(_mobId);
-            _field.Life[EntityType.Mob].Add(_mobId, mob);
-            
             //todo: spawn
         }
     }

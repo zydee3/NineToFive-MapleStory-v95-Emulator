@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using NineToFive.Constants;
-using NineToFive.Game.Entity;
 using NineToFive.Game.Entity;
 using NineToFive.Util;
 using NineToFive.Wz;
@@ -16,14 +16,14 @@ namespace NineToFive.Game {
     /// Life should only hold monsters that are alive / custom entities (ex: entities spawned specific to this instance)
     /// </summary>
     public class Field : PacketBroadcaster {
-        public Portal[] Portals;
-        public readonly Dictionary<EntityType, LifePool<Life>> LifePools;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Field));
 
         public Field(int id, uint channelId) {
             Id = id;
             ChannelId = channelId;
 
             LifePools = new Dictionary<EntityType, LifePool<Life>>();
+            SpawnPoints = new List<SpawnPoint>();
             foreach (EntityType type in Enum.GetValues(typeof(EntityType))) {
                 LifePools.Add(type, new LifePool<Life>());
             }
@@ -33,31 +33,24 @@ namespace NineToFive.Game {
 
         public int Id { get; }
         public uint ChannelId { get; }
-        
         public Foothold[] Footholds { get; set; }
-        public Portal[] Portals;
-        
+        public Portal[] Portals { get; set; }
         public string BackgroundMusic { get; set; }
         public string OnFirstUserEnter { get; set; }
         public string OnUserEnter { get; set; }
-        
         public int ForcedReturn { get; set; }
         public int ReturnMap { get; set; }
-        
         public bool Town { get; set; }
         public bool Swim { get; set; }
-        public bool Fly  { get; set; }
-        
+        public bool Fly { get; set; }
         public int VRTop { get; set; }
         public int VRBottom { get; set; }
         public int VRLeft { get; set; }
         public int VRRight { get; set; }
-        
-        public int MobCount  { get; set; }
+        public int MobCount { get; set; }
         public float MobRate { get; set; }
-
-        public List<SpawnPoint> SpawnPoints { get; set; } = new List<SpawnPoint>();
-        public Dictionary<EntityType, Dictionary<int, Entity.Meta.Entity>> Life { get; set; }
+        public List<SpawnPoint> SpawnPoints { get; }
+        public Dictionary<EntityType, LifePool<Life>> LifePools { get; }
         public bool[] FieldLimits { get; set; }
 
         /// <summary>
@@ -86,25 +79,33 @@ namespace NineToFive.Game {
 
             return new Tuple<int, int>(position.Item1, foundFoothold.SlopeForm.GetYLocation(position.Item1));
         }
-        
+
         public override IEnumerable<Client> GetClients() {
             return LifePools[EntityType.Player].Values.Cast<User>().Select(u => u.Client);
         }
-        
+
         public void AddLife(Life life) {
+            if (life.PoolId != 0) {
+                Log.Info("Life already exists in a field");
+                return;
+            }
+
             if (life is User user) {
                 user.Field = this;
+                // todo broadcast OnEnterField
             }
 
             LifePools[life.EntityType].AddLife(life);
         }
-        
+
         public void RemoveLife(Life life) {
+            if (!LifePools[life.EntityType].RemoveLife(life)) return;
+            life.PoolId = 0;
+
             if (life is User user) {
                 user.Field = null;
+                // todo broadcast OnLeaveField
             }
-
-            LifePools[life.EntityType].RemoveLife(life);
         }
     }
 }

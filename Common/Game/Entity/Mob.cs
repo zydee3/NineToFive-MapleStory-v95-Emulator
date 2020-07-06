@@ -18,7 +18,6 @@ namespace NineToFive.Game.Entity {
         public int MDRate { get; set; }
         public int Acc { get; set; }
         public int Eva { get; set; }
-        
         public TemplateMob.Ban MonsterBan { get; set; }
         public TemplateMob.LoseItem[] LoseItems { get; set; }
         public int[] DamagedBySelectedSkill { get; set; }
@@ -79,9 +78,7 @@ namespace NineToFive.Game.Entity {
         public int Phase { get; set; }
         public int DualGauge { get; set; }
         public int Disable { get; set; }
-        
         public float Fs { get; set; }
-        
         public string PartyReward { get; set; }
         public string Buff { get; set; }
         public string DefaultHP { get; set; }

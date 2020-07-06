@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
@@ -11,6 +12,7 @@ using NineToFive.Util;
 
 namespace NineToFive {
     public class Client : IPacketSerializer<Client>, IDisposable {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Client));
         public readonly ServerListener ServerHandler;
         public readonly ClientSession Session;
         public readonly List<User> Users = new List<User>(15);
@@ -25,9 +27,12 @@ namespace NineToFive {
         }
 
         public void Dispose() {
-            
+            Users.Clear();
+            User?.Dispose();
+            if (Username == null) return;
+            Log.Info($"Client '{Username}' disconnected");
         }
-        
+
         public void Encode(Client t, Packet p) {
             p.WriteUInt(t.Id);
             p.WriteString(t.Username);

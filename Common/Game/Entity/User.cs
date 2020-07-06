@@ -11,7 +11,7 @@ using NineToFive.Util;
 using Item = NineToFive.Game.Storage.Item;
 
 namespace NineToFive.Game.Entity {
-    public class User : Life {
+    public class User : Life, IDisposable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(User));
         public readonly AvatarLook AvatarLook;
         public readonly GW_CharacterStat CharacterStat;
@@ -27,7 +27,6 @@ namespace NineToFive.Game.Entity {
             AvatarLook = new AvatarLook(reader);
             CharacterStat = new GW_CharacterStat(reader);
             if (reader == null) return;
-
             AccountId = reader.GetUInt32("account_id");
             using DatabaseQuery q = Database.Table("items");
             using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
@@ -47,6 +46,15 @@ namespace NineToFive.Game.Entity {
                     };
                     Inventories[item.InventoryType][item.BagIndex] = item;
                 }
+            }
+        }
+
+        public void Dispose() {
+            Save();
+            Log.Info($"Saved user '{CharacterStat.Username}'");
+            if (Field != null) {
+                Field.RemoveLife(this);
+                Field = null;
             }
         }
 
@@ -97,8 +105,8 @@ namespace NineToFive.Game.Entity {
                 w.WriteInt();
             }
 
-            w.WriteInt(Math.Abs(Field.VrRight) - Math.Abs(Field.VrLeft)); // nFieldWidth
-            w.WriteInt(Math.Abs(Field.VrBottom) - Math.Abs(Field.VrTop)); // nFieldHeight
+            w.WriteInt(Math.Abs(Field.VRRight) - Math.Abs(Field.VRLeft)); // nFieldWidth
+            w.WriteInt(Math.Abs(Field.VRBottom) - Math.Abs(Field.VRTop)); // nFieldHeight
             w.WriteByte(1);                                               // unknown
             w.WriteBool(characterData);
             short notifierCheck = w.WriteShort();
