@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using log4net;
 using NineToFive.Constants;
 using NineToFive.Game;
-using NineToFive.Game.Entity;
+using NineToFive.Game.Entity.Meta;
 
 namespace NineToFive {
     public static class Server {
@@ -33,7 +33,7 @@ namespace NineToFive {
                 Log.Info($"Skeleton for world {(worldId + 1)} created with {world.Channels.Length} spooky channels");
             }
         }
-
+        
         public static Client AddClientIfAbsent(string username) {
             Clients.TryGetValue(username, out Client client);
             if (client != null) return client;

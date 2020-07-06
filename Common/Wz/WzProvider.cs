@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using log4net;
 using MapleLib.WzLib;
 
 namespace NineToFive.Wz {
@@ -13,46 +14,57 @@ namespace NineToFive.Wz {
         public static WzFile Load(string TargetWz) {
             string path = $"../../../../Wz/{TargetWz}.wz"; //wtf this is so troll
 
-            if (!File.Exists(path)) { 
-                Console.WriteLine($"Could not locate file: {TargetWz}");
-                return null;
+            if (!File.Exists(path)) {
+                throw new FileNotFoundException($"Could not locate {TargetWz}");
             }
 
-            WzFile Wz = new WzFile(path, WzMapleVersion.GMS);
-            Wz.ParseWzFile(out _);
+            WzFile wz = new WzFile(path, WzMapleVersion.GMS);
+            wz.ParseWzFile(out _);
 
-            return Wz;
+            return wz;
         }
 
-        public static List<WzImageProperty> GetWzProperties(WzFile Wz, string TargetPath) {
-            return GetWzProperties(Wz, null, TargetPath);
+        public static List<WzImageProperty> GetWzProperties(WzFile wz, string targetPath) {
+            return GetWzProperties(wz, null, targetPath);
         }
 
         /// <summary>
         ///     Parses Wz by traversing along TargetPath.
         /// </summary>
-        /// <param name="Wz">Wz to parse.</param>
-        /// <<param name="Directory">Optional directory, argument != null when the function is used recursively</param>
-        /// <param name="TargetPath">Path to target property</param>
+        /// <param name="wz">Wz to parse.</param>
+        /// <<param name="directory">Optional directory, argument != null when the function is used recursively</param>
+        /// <param name="targetPath">Path to target property</param>
         /// <returns>WzImageProperty at TargetPath location, else null</returns>
-        public static List<WzImageProperty> GetWzProperties(WzFile Wz, WzDirectory? Directory, string TargetPath) {
-            string[] Directories = TargetPath.Split("/", 2);
-            foreach (WzImage ParentNode in (Directory ?? Wz.WzDirectory).WzImages) {
-                if (ParentNode.Name == Directories[0]) { // if this is evaluated as true, we're able to get the target
-                    return Directories.Length == 1 ? ParentNode.WzProperties : ParentNode.GetFromPath(Directories[1]).WzProperties;
+        public static List<WzImageProperty> GetWzProperties(WzFile wz, WzDirectory? directory, string targetPath) {
+            string[] directories = targetPath.Split("/", 2);
+            foreach (WzImage parentNode in (directory ?? wz.WzDirectory).WzImages) {
+                
+                // if this is evaluated as true, we're able to get the target
+                if (parentNode.Name == directories[0]) {
+                    return directories.Length == 1 ? parentNode.WzProperties : parentNode.GetFromPath(directories[1]).WzProperties;
                 }
             }
 
-            foreach (WzDirectory ParentNode in (Directory ?? Wz.WzDirectory).WzDirectories) {
-                if (ParentNode.Name == Directories[0]) { // unable to get target so pass in current position and remainder of path to recursively find path.
-                    return GetWzProperties(Wz, ParentNode, Directories[1]);
+            foreach (WzDirectory parentNode in (directory ?? wz.WzDirectory).WzDirectories) {
+                
+                // unable to get target so pass in current position and remainder of path to recursively find path.
+                if (parentNode.Name == directories[0]) { 
+                    return GetWzProperties(wz, parentNode, directories[1]);
                 }
             }
             
-            return null; // if the two loops above fell through, the path is invalid or the target WzImage doesn't exist.
+            // if the two loops above fell through, the path is invalid or the target WzImage doesn't exist.
+            return null; 
         }
 
-        public int? EvaluateProperty(string Property, int? x, int? u) {
+        /// <summary>
+        /// Evaluates a string as an equation using two arguments commonly used.
+        /// </summary>
+        /// <param name="property"></param>
+        /// <param name="x">argument 1</param>
+        /// <param name="u">argument 2</param>
+        /// <returns>evaluated property as a float; must extend nullable because a string can be evaluated to any number.</returns>
+        public float? EvaluateProperty(string property, int? x, int? u) {
             //todo: Evaluate
             return null;
         }

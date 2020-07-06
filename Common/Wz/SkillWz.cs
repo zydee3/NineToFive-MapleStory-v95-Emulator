@@ -1,242 +1,243 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using log4net;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
-using NineToFive.Constants;
 using NineToFive.Game;
 
 namespace NineToFive.Wz {
     public static class SkillWz {
         private const string WzName = "Skill";
+        private static readonly ILog Log = LogManager.GetLogger(typeof(SkillWz));
 
         /// <summary>
         ///     Parses skill properties data contained inside skill properties list.
         /// </summary>
-        /// <param name="Skill">Skill object being loaded</param>
+        /// <param name="skill">Skill object being loaded</param>
         /// <param name="CommonImage">Image loaded from WzFile containing skill properties data.</param>
         /// <note>
         ///     I had to store all Values as a string because some Values were stored as both a WzIntProperty or WzStringProperty
         ///     depending on the skill so I wasn't able to store the string in an integer variable sometimes.
         /// </note>
-        public static void SetSkill(Skill Skill, ref List<WzImageProperty> SkillProperties) {
-            if (Skill == null || SkillProperties == null || SkillProperties.Count == 0) return;
+        public static void SetSkill(Skill skill, ref List<WzImageProperty> skillProperties) {
+            if (skill == null || skillProperties == null || skillProperties.Count == 0) return;
             
-            foreach (WzImageProperty ChildProperty in SkillProperties) {
-                string PropertyName = ChildProperty.Name;
-                switch (PropertyName) {
+            foreach (WzImageProperty childProperty in skillProperties) {
+                string propertyName = childProperty.Name;
+                switch (propertyName) {
                     case "lt": {
-                        WzVectorProperty Vector = (WzVectorProperty) ChildProperty;
-                        Skill.Lt = new Vector2(Vector.GetPoint().X, Vector.GetPoint().Y);
+                        WzVectorProperty vector = (WzVectorProperty) childProperty;
+                        skill.Lt = new Vector2(vector.GetPoint().X, vector.GetPoint().Y);
                         break;
                     }
                     case "rb": {
-                        WzVectorProperty Vector = (WzVectorProperty) ChildProperty;
-                        Skill.Rb = new Vector2(Vector.GetPoint().X, Vector.GetPoint().Y);
+                        WzVectorProperty vector = (WzVectorProperty) childProperty;
+                        skill.Rb = new Vector2(vector.GetPoint().X, vector.GetPoint().Y);
                         break;
                     }
                     default: {
-                        string PropertyStringValue = "";
-                        if (ChildProperty.GetType() == typeof(WzIntProperty)) {
-                            PropertyStringValue = ((WzIntProperty) ChildProperty).Value.ToString();
-                        } else if (ChildProperty.GetType() == typeof(WzStringProperty)) {
-                            PropertyStringValue = ((WzStringProperty) ChildProperty).Value;
+                        string propertyStringValue = "";
+                        if (childProperty.GetType() == typeof(WzIntProperty)) {
+                            propertyStringValue = ((WzIntProperty) childProperty).Value.ToString();
+                        } else if (childProperty.GetType() == typeof(WzStringProperty)) {
+                            propertyStringValue = ((WzStringProperty) childProperty).Value;
                         } else {
-                            Console.WriteLine($"Unhandled Property Type: {PropertyName}({PropertyName.GetType()})");
+                            Log.Info($"Unhandled Property Type: {propertyName}({propertyName.GetType()})");
                         }
 
-                        switch (PropertyName) {
+                        switch (propertyName) {
                             case "acc":
-                                Skill.Acc = PropertyStringValue;
+                                skill.Acc = propertyStringValue;
                                 break;
                             case "asrR": 
-                                Skill.AsrR = PropertyStringValue;
+                                skill.AsrR = propertyStringValue;
                                 break;
                             case "attackCount": 
-                                Skill.AttackCount = PropertyStringValue;
+                                skill.AttackCount = propertyStringValue;
                                 break;
                             case "bulletCount": 
-                                Skill.BulletCount = PropertyStringValue;
+                                skill.BulletCount = propertyStringValue;
                                 break;
                             case "cooltime": 
-                                Skill.Cooltime = PropertyStringValue;
+                                skill.Cooltime = propertyStringValue;
                                 break;
                             case "cr": 
-                                Skill.Cr = PropertyStringValue;
+                                skill.Cr = propertyStringValue;
                                 break;
                             case "criticaldamageMax": 
-                                Skill.CriticaldamageMax = PropertyStringValue;
+                                skill.CriticaldamageMax = propertyStringValue;
                                 break;
                             case "criticaldamageMin": 
-                                Skill.CriticaldamageMin = PropertyStringValue;
+                                skill.CriticaldamageMin = propertyStringValue;
                                 break;
                             case "damage": 
-                                Skill.Damage = PropertyStringValue;
+                                skill.Damage = propertyStringValue;
                                 break;
                             case "damR":
-                                Skill.DamR = PropertyStringValue;
+                                skill.DamR = propertyStringValue;
                                 break;
                             case "dot": 
-                                Skill.Dot = PropertyStringValue;
+                                skill.Dot = propertyStringValue;
                                 break;
                             case "dotInterval": 
-                                Skill.DotInterval = PropertyStringValue;
+                                skill.DotInterval = propertyStringValue;
                                 break;
                             case "dotTime": 
-                                Skill.DotTime = PropertyStringValue;
+                                skill.DotTime = propertyStringValue;
                                 break;
                             case "emdd": 
-                                Skill.Emdd = PropertyStringValue;
+                                skill.Emdd = propertyStringValue;
                                 break;
                             case "epad": 
-                                Skill.Epad = PropertyStringValue;
+                                skill.Epad = propertyStringValue;
                                 break;
                             case "epdd": 
-                                Skill.Epdd = PropertyStringValue;
+                                skill.Epdd = propertyStringValue;
                                 break;
                             case "er": 
-                                Skill.Er = PropertyStringValue;
+                                skill.Er = propertyStringValue;
                                 break;
                             case "eva": 
-                                Skill.Eva = PropertyStringValue;
+                                skill.Eva = propertyStringValue;
                                 break;
                             case "expR": 
-                                Skill.ExpR = PropertyStringValue;
+                                skill.ExpR = propertyStringValue;
                                 break;
                             case "hpCon": 
-                                Skill.HpCon = PropertyStringValue;
+                                skill.HpCon = propertyStringValue;
                                 break;
                             case "ignoreMobpdpR": 
-                                Skill.IgnoreMobpdpR = PropertyStringValue;
+                                skill.IgnoreMobpdpR = propertyStringValue;
                                 break;
                             case "jump": 
-                                Skill.Jump = PropertyStringValue;
+                                skill.Jump = propertyStringValue;
                                 break;
                             case "mad": 
-                                Skill.Mad = PropertyStringValue;
+                                skill.Mad = propertyStringValue;
                                 break;
                             case "mastery": 
-                                Skill.Mastery = PropertyStringValue;
+                                skill.Mastery = propertyStringValue;
                                 break;
                             case "maxLevel": 
-                                Skill.MaxLevel = PropertyStringValue;
+                                skill.MaxLevel = propertyStringValue;
                                 break;
                             case "mdd": 
-                                Skill.Mdd = PropertyStringValue;
+                                skill.Mdd = propertyStringValue;
                                 break;
                             case "mhpR": 
-                                Skill.MhpR = PropertyStringValue;
+                                skill.MhpR = propertyStringValue;
                                 break;
                             case "mobCount": 
-                                Skill.MobCount = PropertyStringValue;
+                                skill.MobCount = propertyStringValue;
                                 break;
                             case "morph": 
-                                Skill.Morph = PropertyStringValue;
+                                skill.Morph = propertyStringValue;
                                 break;
                             case "mp": 
-                                Skill.Mp = PropertyStringValue;
+                                skill.Mp = propertyStringValue;
                                 break;
                             case "mpCon": 
-                                Skill.MpCon = PropertyStringValue;
+                                skill.MpCon = propertyStringValue;
                                 break;
                             case "pad": 
-                                Skill.Pad = PropertyStringValue;
+                                skill.Pad = propertyStringValue;
                                 break;
                             case "padX": 
-                                Skill.PadX = PropertyStringValue;
+                                skill.PadX = propertyStringValue;
                                 break;
                             case "pdd": 
-                                Skill.Pdd = PropertyStringValue;
+                                skill.Pdd = propertyStringValue;
                                 break;
                             case "pddR": 
-                                Skill.PddR = PropertyStringValue;
+                                skill.PddR = propertyStringValue;
                                 break;
                             case "prop": 
-                                Skill.Prop = PropertyStringValue;
+                                skill.Prop = propertyStringValue;
                                 break;
                             case "range": 
-                                Skill.Range = PropertyStringValue;
+                                skill.Range = propertyStringValue;
                                 break;
                             case "speed": 
-                                Skill.Speed = PropertyStringValue;
+                                skill.Speed = propertyStringValue;
                                 break;
                             case "subProp": 
-                                Skill.SubProp = PropertyStringValue;
+                                skill.SubProp = propertyStringValue;
                                 break;
                             case "subTime": 
-                                Skill.SubTime = PropertyStringValue;
+                                skill.SubTime = propertyStringValue;
                                 break;
                             case "t": 
-                                Skill.T = PropertyStringValue;
+                                skill.T = propertyStringValue;
                                 break;
                             case "terR": 
-                                Skill.TerR = PropertyStringValue;
+                                skill.TerR = propertyStringValue;
                                 break;
                             case "time": 
-                                Skill.Time = PropertyStringValue;
+                                skill.Time = propertyStringValue;
                                 break;
                             case "u": 
-                                Skill.U = PropertyStringValue;
+                                skill.U = propertyStringValue;
                                 break;
                             case "v": 
-                                Skill.V = PropertyStringValue;
+                                skill.V = propertyStringValue;
                                 break;
                             case "w": 
-                                Skill.W = PropertyStringValue;
+                                skill.W = propertyStringValue;
                                 break;
                             case "x": 
-                                Skill.X = PropertyStringValue;
+                                skill.X = propertyStringValue;
                                 break;
                             case "y": 
-                                Skill.Y = PropertyStringValue;
+                                skill.Y = propertyStringValue;
                                 break;
                             case "z":
-                                Skill.Z = PropertyStringValue;
+                                skill.Z = propertyStringValue;
                                 break;
                             case "selfDestruction": 
-                                Skill.SelfDestruction = PropertyStringValue;
+                                skill.SelfDestruction = propertyStringValue;
                                 break;
                             case "itemCon":
-                                Skill.ItemCon = PropertyStringValue;
+                                skill.ItemCon = propertyStringValue;
                                 break;
                             case "itemConNo": 
-                                Skill.ItemCon = PropertyStringValue;
+                                skill.ItemCon = propertyStringValue;
                                 break;
                             case "bulletConsume": 
-                                Skill.BulletConsume = PropertyStringValue;
+                                skill.BulletConsume = propertyStringValue;
                                 break;
                             case "emmp": 
-                                Skill.Emmp = PropertyStringValue;
+                                skill.Emmp = propertyStringValue;
                                 break;
                             case "emhp": 
-                                Skill.Emhp = PropertyStringValue;
+                                skill.Emhp = propertyStringValue;
                                 break;
                             case "action": 
-                                Skill.Action = PropertyStringValue;
+                                skill.Action = propertyStringValue;
                                 break;
                             case "mesoR": 
-                                Skill.MesoR = PropertyStringValue;
+                                skill.MesoR = propertyStringValue;
                                 break;
                             case "madX": 
-                                Skill.MadX = PropertyStringValue;
+                                skill.MadX = propertyStringValue;
                                 break;
                             case "mmpR": 
-                                Skill.MmpR = PropertyStringValue;
+                                skill.MmpR = propertyStringValue;
                                 break;
                             case "hp": 
-                                Skill.Hp = PropertyStringValue;
+                                skill.Hp = propertyStringValue;
                                 break;
                             case "moneyCon": 
-                                Skill.MoneyCon = PropertyStringValue;
+                                skill.MoneyCon = propertyStringValue;
                                 break;
                             case "itemConsume": 
-                                Skill.ItemConsume = PropertyStringValue;
+                                skill.ItemConsume = propertyStringValue;
                                 break;
                             case "mddR": 
-                                Skill.MddR = PropertyStringValue;
+                                skill.MddR = propertyStringValue;
                                 break;
                             default:
-                                Console.WriteLine($"Unhandled Skill Property: {PropertyName}");
+                                Log.Info($"Unhandled Skill Property: {propertyName}");
                                 break;
                         }
                         break;
@@ -248,46 +249,46 @@ namespace NineToFive.Wz {
         /// <summary>
         /// Returns a dictionary of all skills found within a single job.
         /// </summary>
-        /// <param name="JobID">Id of job from where skills are being retrieved.</param>
+        /// <param name="jobID">Id of job from where skills are being retrieved.</param>
         /// <returns>Dictionary of found skills.</returns>
         /// <note>
         /// </note>
-        public static Dictionary<int, Skill> GetFromJob(int JobID) {
-            Dictionary<int, Skill> SkillsRetrieved = new Dictionary<int, Skill>();
+        public static Dictionary<int, Skill> GetFromJob(int jobID) {
+            Dictionary<int, Skill> skillsRetrieved = new Dictionary<int, Skill>();
             WzFile _wz = WzProvider.Load(WzName);
 
             if (_wz != null) {
-                foreach (WzImage Job in _wz.WzDirectory.WzImages) {
-                    if (Job.Name != $"{JobID}.img") continue;
+                foreach (WzImage job in _wz.WzDirectory.WzImages) {
+                    if (job.Name != $"{jobID}.img") continue;
                     
                     // Current Path: Skill.wz/{JobID}.img/skill
-                    WzImageProperty Skills = Job.GetFromPath("skill");
-                    if (Skills == null) break;
+                    WzImageProperty skills = job.GetFromPath("skill");
+                    if (skills == null) break;
                     
                     // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}
-                    foreach (WzImageProperty Skill in Skills.WzProperties) {
-                        if (int.TryParse(Skill.Name, out int SkillID)) { 
+                    foreach (WzImageProperty skill in skills.WzProperties) {
+                        if (int.TryParse(skill.Name, out int SkillID)) { 
                             
                             // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
-                            WzImageProperty image = Skill.GetFromPath("common");
+                            WzImageProperty image = skill.GetFromPath("common");
                             if (image == null || image.WzProperties.Count == 0) continue;
-                            List<WzImageProperty> SkillProperties = Skill.GetFromPath("common").WzProperties;
+                            List<WzImageProperty> skillProperties = skill.GetFromPath("common").WzProperties;
 
-                            Skill S = new Skill();
-                            SetSkill(S, ref SkillProperties);
-                            SkillsRetrieved.Add(SkillID, S);
+                            Skill s = new Skill();
+                            SetSkill(s, ref skillProperties);
+                            skillsRetrieved.Add(SkillID, s);
                         }
                     }
                 }
             }
 
-            return SkillsRetrieved;
+            return skillsRetrieved;
         }
         
         /// <summary>
         /// Retrieves all skill ids where the predicate is evaluated as true.
         /// </summary>
-        /// <param name="Predicate">Condition to add to returned dictionary.</param>
+        /// <param name="predicate">Condition to add to returned dictionary.</param>
         /// <returns>Dictionary of all skills that match the predicate.</returns>
         /// <note>
         ///     The downside to this function is it iterates through the whole skill wz;
@@ -298,33 +299,33 @@ namespace NineToFive.Wz {
         /// <note>
         ///    Average benchmark time: 00:00:01.3542697
         /// </note>
-        public static Dictionary<int, Skill> GetSkills(Func<int, bool> Predicate) {
-            Dictionary<int, Skill> SkillsRetrieved = new Dictionary<int, Skill>();
+        public static Dictionary<int, Skill> GetSkills(Func<int, bool> predicate) {
+            Dictionary<int, Skill> skillsRetrieved = new Dictionary<int, Skill>();
             WzFile _wz = WzProvider.Load(WzName);
 
             if (_wz != null) {
-                foreach (WzImage Job in _wz.WzDirectory.WzImages) {
+                foreach (WzImage job in _wz.WzDirectory.WzImages) {
                     // Current Path: Skill.wz/{JobID}.img/skill
-                    WzImageProperty Skills = Job.GetFromPath("skill");
-                    if (Skills == null) continue;
+                    WzImageProperty skills = job.GetFromPath("skill");
+                    if (skills == null) continue;
                     
                     // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}
-                    foreach (WzImageProperty Skill in Skills.WzProperties) {
-                        if (!int.TryParse(Skill.Name, out int SkillID) || !Predicate(SkillID)) continue;
+                    foreach (WzImageProperty skill in skills.WzProperties) {
+                        if (!int.TryParse(skill.Name, out int SkillID) || !predicate(SkillID)) continue;
                         
                         // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
-                        WzImageProperty image = Skill.GetFromPath("common");
+                        WzImageProperty image = skill.GetFromPath("common");
                         if (image == null || image.WzProperties.Count == 0) continue;
-                        List<WzImageProperty> SkillProperties = Skill.GetFromPath("common").WzProperties;
+                        List<WzImageProperty> SkillProperties = skill.GetFromPath("common").WzProperties;
 
-                        Skill S = new Skill();
-                        SetSkill(S, ref SkillProperties);
-                        SkillsRetrieved.Add(SkillID, S);
+                        Skill s = new Skill();
+                        SetSkill(s, ref SkillProperties);
+                        skillsRetrieved.Add(SkillID, s);
                     }
                 }
             }
 
-            return SkillsRetrieved;
+            return skillsRetrieved;
         }
     }
 }

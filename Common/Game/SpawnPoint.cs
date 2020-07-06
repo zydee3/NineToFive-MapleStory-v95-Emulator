@@ -3,21 +3,23 @@
 namespace NineToFive.Game {
     public class SpawnPoint {
         private readonly Field _field;
-
+        private readonly int _mobId;
+        public Mob mob { get; set; }
+        
         public SpawnPoint(Field field, int mobId) {
             _field = field;
-            MobId = mobId;
+            _mobId = mobId;
         }
 
-        private int MobId { get; set; }
-        public Mob Mob { get; set; }
-
+        /// <summary>
+        /// Summons the mob associated to _mobId if the previous monster has been killed.
+        /// </summary>
         public void SummonMob() {
-            if (Mob != null) return;
+            if (mob != null) return;
 
-            Mob = new Mob(MobId);
-            _field.AddLife(Mob);
-
+            mob = new Mob(_mobId);
+            _field.Life[EntityType.Mob].Add(_mobId, mob);
+            
             //todo: spawn
         }
     }

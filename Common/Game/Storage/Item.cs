@@ -2,12 +2,19 @@
 using NineToFive.Constants;
 using NineToFive.IO;
 using NineToFive.Util;
+using NineToFive.Wz;
 
 namespace NineToFive.Game.Storage {
     public class Item : IPacketSerializer<Item> {
-        public Item(int id) {
+        
+        
+        
+        public Item(int id, bool setItem = true) {
             Id = id;
             InventoryType = ItemConstants.GetInventoryType(id);
+            if (InventoryType == InventoryType.Equip) throw new InvalidOperationException("cannot create Item of an Equip : " + id);
+            
+            if(setItem) ItemWz.SetItem(this);
         }
 
         public virtual byte Type => 2;
