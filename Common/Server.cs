@@ -4,6 +4,7 @@ using log4net;
 using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Game.Entity.Meta;
+using Item = NineToFive.Game.Storage.Item;
 
 namespace NineToFive {
     public static class Server {
@@ -29,6 +30,7 @@ namespace NineToFive {
                 }
                 
                 world.Entities = new Dictionary<int, Entity>[Enum.GetNames(typeof(EntityType)).Length];
+                world.Items = new Dictionary<int, Item>();
 
                 Log.Info($"Skeleton for world {(worldId + 1)} created with {world.Channels.Length} spooky channels");
             }

@@ -11,6 +11,10 @@ namespace NineToFive.Game {
         public int Y1 { get; set; }
         public int Y2 { get; set; }
         public int ID { get; set; }
+        /// <summary>
+        /// The left end point is the point that has the smaller x (further left). The furthest left point is used
+        /// to calculate things like item drop position.
+        /// </summary>
         public Tuple<int, int> LeftEndPoint { get; set; }
         public Tuple<int, int> RightEndPoint { get; set; }
 

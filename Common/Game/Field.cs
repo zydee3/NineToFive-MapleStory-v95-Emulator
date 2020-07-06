@@ -59,28 +59,28 @@ namespace NineToFive.Game {
         /// <summary>
         /// Calculates the projected position on a foothold directly under the provided argument.
         /// </summary>
-        /// <param name="Position">Position reference to find point on ground underneath.</param>
+        /// <param name="position">Position reference to find point on ground underneath.</param>
         /// <returns>Position as tuple(item1=x, item2=y)</returns>
-        public Tuple<int, int> GetGroundBelow(Tuple<int, int> Position) {
-            int SmallestYDistance = 999999;
-            Foothold FoundFoothold = null;
-            foreach (Foothold Foothold in Footholds) {
-                (int X, int Y) = Position;
-                if (Foothold.LeftEndPoint.Item1 <= X && Foothold.RightEndPoint.Item1 >= X) {
-                    int DistanceFromUpperY = Y - Math.Max(Foothold.Y1, Foothold.Y2);
-                    int DistanceFromLowerY = Y - Math.Min(Foothold.Y1, Foothold.Y2);
+        public Tuple<int, int> GetGroundBelow(Tuple<int, int> position) {
+            int smallestYDistance = 999999;
+            Foothold foundFoothold = null;
+            foreach (Foothold foothold in Footholds) {
+                (int X, int Y) = position;
+                if (foothold.LeftEndPoint.Item1 <= X && foothold.RightEndPoint.Item1 >= X) {
+                    int distanceFromUpperY = Y - Math.Max(foothold.Y1, foothold.Y2);
+                    int distanceFromLowerY = Y - Math.Min(foothold.Y1, foothold.Y2);
 
-                    if (DistanceFromUpperY >= 0 && DistanceFromUpperY < SmallestYDistance) {
-                        SmallestYDistance = DistanceFromUpperY;
-                        FoundFoothold = Foothold;
-                    } else if (DistanceFromLowerY >= 0 && DistanceFromLowerY < SmallestYDistance) {
-                        SmallestYDistance = DistanceFromLowerY;
-                        FoundFoothold = Foothold;
+                    if (distanceFromUpperY >= 0 && distanceFromUpperY < smallestYDistance) {
+                        smallestYDistance = distanceFromUpperY;
+                        foundFoothold = foothold;
+                    } else if (distanceFromLowerY >= 0 && distanceFromLowerY < smallestYDistance) {
+                        smallestYDistance = distanceFromLowerY;
+                        foundFoothold = foothold;
                     }
                 }
             }
 
-            return new Tuple<int, int>(Position.Item1, FoundFoothold.SlopeForm.GetYLocation(Position.Item1));
+            return new Tuple<int, int>(position.Item1, foundFoothold.SlopeForm.GetYLocation(position.Item1));
         }
         
         

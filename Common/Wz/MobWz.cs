@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
 using NineToFive.Constants;
@@ -9,19 +10,26 @@ using NineToFive.Game.Entity.Meta;
 
 namespace NineToFive.Wz {
     public class MobWz {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MobWz));
+        /// <summary>
+        /// Copies all the properties from the loaded template in cache to the mob being initialized. If the template
+        /// isn't in the cache it is loaded and cached. 
+        /// </summary>
+        /// <param name="mob">Mob being initialized.</param>
         public static void SetMob(Mob mob) {
             if (mob == null) return;
-            
+
+            int mobId = mob.Id;
             Dictionary<int, object> TemplateMobs = Server.Worlds[0].Templates[(int) TemplateType.Mob];
-            if (!TemplateMobs.TryGetValue(mob.Id, out object t)) {
-                string PathToMobImage = mob.Id.ToString().PadLeft(7, '0');
-                List<WzImageProperty> MobProperties = WzProvider.GetWzProperties(WzProvider.Load("Mob"), $"{PathToMobImage}.img");
+            if (!TemplateMobs.TryGetValue(mobId, out object t)) {
+                string PathToMobImage = mobId.ToString().PadLeft(7, '0');
+                List<WzImageProperty> mobProperties = WzProvider.GetWzProperties(WzProvider.Load("Mob"), $"{PathToMobImage}.img");
                 t = new TemplateMob();
-                SetTemplateMob((TemplateMob) t, ref MobProperties);
-                TemplateMobs.Add(mob.Id, t);
+                SetTemplateMob((TemplateMob) t, ref mobProperties);
+                TemplateMobs.Add(mobId, t);
             }
 
-            if (t == null) return;
+            if (t == null) throw new NullReferenceException($"Unable to load mob: {mobId}");
 
             TemplateMob template = (TemplateMob) t;
             
@@ -110,299 +118,304 @@ namespace NineToFive.Wz {
             mob.DamagedBySelectedSkill = template.DamagedBySelectedSkill == null ? new int[0] : template.DamagedBySelectedSkill.ToArray();
         }
 
+        /// <summary>
+        /// This is invoked when a template doesn't exist in the cache. Creates the template to be cached for when creating mirrors of the template.
+        /// </summary>
+        /// <param name="template">Template being initialized.</param>
+        /// <param name="mobProperties">Properties loaded from the wz file.</param>
         public static void SetTemplateMob(TemplateMob template, ref List<WzImageProperty> mobProperties) {
-            foreach (WzImageProperty Node in mobProperties) {
-                if (Node.Name != "info") continue;
-                foreach (WzImageProperty Property in Node.WzProperties) {
-                    switch (Property.Name) {
+            foreach (WzImageProperty node in mobProperties) {
+                if (node.Name != "info") continue;
+                foreach (WzImageProperty property in node.WzProperties) {
+                    switch (property.Name) {
                         case "level":
-                            template.Level = ((WzIntProperty) Property).Value;
+                            template.Level = ((WzIntProperty) property).Value;
                             break;
                         case "exp":
-                            template.Exp = ((WzIntProperty) Property).Value;
+                            template.Exp = ((WzIntProperty) property).Value;
                             break;
                         case "hpRecovery":
-                            template.HpRecovery = ((WzIntProperty) Property).Value;
+                            template.HpRecovery = ((WzIntProperty) property).Value;
                             break;
                         case "mpRecovery":
-                            template.MpRecovery = ((WzIntProperty) Property).Value;
+                            template.MpRecovery = ((WzIntProperty) property).Value;
                             break;    
                         case "maxHP":
-                            template.MaxHP = ((WzIntProperty) Property).Value;
+                            template.MaxHP = ((WzIntProperty) property).Value;
                             break;
                         case "maxMP":
-                            template.MaxMP = ((WzIntProperty) Property).Value;
+                            template.MaxMP = ((WzIntProperty) property).Value;
                             break;
                         case "defaultHP":
-                            template.DefaultHP = ((WzStringProperty) Property).Value;
+                            template.DefaultHP = ((WzStringProperty) property).Value;
                             break;
                         case "defaultMP":
-                            template.DefaultMP = ((WzStringProperty) Property).Value;
+                            template.DefaultMP = ((WzStringProperty) property).Value;
                             break;
                         case "speed":
-                            template.Speed = ((WzIntProperty) Property).Value;
+                            template.Speed = ((WzIntProperty) property).Value;
                             break;
                         case "PADamage":
-                            template.PADamage = ((WzIntProperty) Property).Value;
+                            template.PADamage = ((WzIntProperty) property).Value;
                             break;
                         case "PDDamage":
-                            template.PDDamage = ((WzIntProperty) Property).Value;
+                            template.PDDamage = ((WzIntProperty) property).Value;
                             break;
                         case "PDRate":
-                            template.PDRate = ((WzIntProperty) Property).Value;
+                            template.PDRate = ((WzIntProperty) property).Value;
                             break;
                         case "MADamage":
-                            template.MADamage = ((WzIntProperty) Property).Value;
+                            template.MADamage = ((WzIntProperty) property).Value;
                             break;
                         case "MDDamage":
-                            template.MDDamage = ((WzIntProperty) Property).Value;
+                            template.MDDamage = ((WzIntProperty) property).Value;
                             break;
                         case "MDRate":
-                            template.MDRate = ((WzIntProperty) Property).Value;
+                            template.MDRate = ((WzIntProperty) property).Value;
                             break;
                         case "acc":
-                            template.Acc = ((WzIntProperty) Property).Value;
+                            template.Acc = ((WzIntProperty) property).Value;
                             break;
                         case "eva":
-                            template.Eva = ((WzIntProperty) Property).Value;
+                            template.Eva = ((WzIntProperty) property).Value;
                             break;
                         
                         
                         case "bodyattack":
                         case "bodyAttack":
-                            template.BodyAttack = ((WzIntProperty) Property).Value;
+                            template.BodyAttack = ((WzIntProperty) property).Value;
                             break;
                         case "pushed":
-                            template.Pushed = ((WzIntProperty) Property).Value;
+                            template.Pushed = ((WzIntProperty) property).Value;
                             break;
                         case "fs":
-                            template.Fs = ((WzFloatProperty) Property).Value;
+                            template.Fs = ((WzFloatProperty) property).Value;
                             break;
                         case "summonType":
-                            template.SummonType = ((WzIntProperty) Property).Value;
+                            template.SummonType = ((WzIntProperty) property).Value;
                             break;
                         case "boss":
-                            template.Boss = ((WzIntProperty) Property).Value;
+                            template.Boss = ((WzIntProperty) property).Value;
                             break;
                         case "ignoreFieldOut":
-                            template.IgnoreFieldOut = ((WzIntProperty) Property).Value;
+                            template.IgnoreFieldOut = ((WzIntProperty) property).Value;
                             break;
                         case "elemAttr":
-                            template.ElemAttr = ((WzStringProperty) Property).Value;
+                            template.ElemAttr = ((WzStringProperty) property).Value;
                             break;
                         case "category":
-                            template.Category = ((WzIntProperty) Property).Value;
+                            template.Category = ((WzIntProperty) property).Value;
                             break;
                         case "mobType":
-                            template.MobType = ((WzStringProperty) Property).Value;
+                            template.MobType = ((WzStringProperty) property).Value;
                             break;
                         case "HPgaugeHide":
-                            template.HPgaugeHide = ((WzIntProperty) Property).Value;
+                            template.HPgaugeHide = ((WzIntProperty) property).Value;
                             break;
                         case "hpTagColor":
-                            template.HpTagColor = ((WzIntProperty) Property).Value;
+                            template.HpTagColor = ((WzIntProperty) property).Value;
                             break;
                         case "hpTagBgcolor":
-                            template.HpTagBgColor = ((WzIntProperty) Property).Value;
+                            template.HpTagBgColor = ((WzIntProperty) property).Value;
                             break;
                         case "firstattack":
                         case "firstAttack":
-                            template.FirstAttack = ((WzIntProperty) Property).Value;
+                            template.FirstAttack = ((WzIntProperty) property).Value;
                             break;
                         case "explosiveReward":
-                            template.ExplosiveReward = ((WzIntProperty) Property).Value;
+                            template.ExplosiveReward = ((WzIntProperty) property).Value;
                             break;
                         case "link":
-                            template.Link = ((WzStringProperty) Property).Value;
+                            template.Link = ((WzStringProperty) property).Value;
                             break;
                         case "hidename":
                         case "hideName":
-                            template.HideName = ((WzIntProperty) Property).Value;
+                            template.HideName = ((WzIntProperty) property).Value;
                             break;
                         case "removeAfter":
-                            template.RemoveAfter = ((WzIntProperty) Property).Value;
+                            template.RemoveAfter = ((WzIntProperty) property).Value;
                             break;
                         case "noFlip":
-                            template.NoFlip = ((WzIntProperty) Property).Value;
+                            template.NoFlip = ((WzIntProperty) property).Value;
                             break;
                         case "undead":
-                            template.Undead = ((WzIntProperty) Property).Value;
+                            template.Undead = ((WzIntProperty) property).Value;
                             break;
                         case "damagedByMob":
-                            template.DamagedByMob = ((WzIntProperty) Property).Value;
+                            template.DamagedByMob = ((WzIntProperty) property).Value;
                             break;
                         case "rareItemDropLevel":
-                            template.RareItemDropLevel = ((WzIntProperty) Property).Value;
+                            template.RareItemDropLevel = ((WzIntProperty) property).Value;
                             break;
                         case "flySpeed":
-                            template.FlySpeed = ((WzIntProperty) Property).Value;
+                            template.FlySpeed = ((WzIntProperty) property).Value;
                             break;
                         case "publicReward":
-                            template.PublicReward = ((WzIntProperty) Property).Value;
+                            template.PublicReward = ((WzIntProperty) property).Value;
                             break;
                         case "invincible":
-                            template.Invincible = ((WzIntProperty) Property).Value;
+                            template.Invincible = ((WzIntProperty) property).Value;
                             break;
                         case "upperMostLayer":
-                            template.UpperMostLayer = ((WzIntProperty) Property).Value;
+                            template.UpperMostLayer = ((WzIntProperty) property).Value;
                             break;
       
                         case "PartyReward":
-                            template.PartyReward = ((WzStringProperty) Property).Value;
+                            template.PartyReward = ((WzStringProperty) property).Value;
                             break;
                         case "noregen":
-                            template.NoRegen = ((WzIntProperty) Property).Value;
+                            template.NoRegen = ((WzIntProperty) property).Value;
                             break;
                         case "hideHP":
-                            template.HideHP = ((WzIntProperty) Property).Value;
+                            template.HideHP = ((WzIntProperty) property).Value;
                             break;
                         case "mbookID":
-                            template.MBookID = ((WzIntProperty) Property).Value;
+                            template.MBookID = ((WzIntProperty) property).Value;
                             break;
                         case "noDoom":
-                            template.NoDoom = ((WzIntProperty) Property).Value;
+                            template.NoDoom = ((WzIntProperty) property).Value;
                             break;
                         case "fixedDamage":
-                            template.FixedDamage = ((WzIntProperty) Property).Value;
+                            template.FixedDamage = ((WzIntProperty) property).Value;
                             break;
                         case "removeQuest":
-                            template.RemoveQuest = ((WzIntProperty) Property).Value;
+                            template.RemoveQuest = ((WzIntProperty) property).Value;
                             break;
                         case "ChargeCount":
-                            template.ChargeCount = ((WzIntProperty) Property).Value;
+                            template.ChargeCount = ((WzIntProperty) property).Value;
                             break;
                         case "AngerGauge":
-                            template.AngerGauge = ((WzIntProperty) Property).Value;
+                            template.AngerGauge = ((WzIntProperty) property).Value;
                             break;
                         case "chaseSpeed":
-                            template.ChaseSpeed = ((WzIntProperty) Property).Value;
+                            template.ChaseSpeed = ((WzIntProperty) property).Value;
                             break;
                         case "escort":
-                            template.Escort = ((WzIntProperty) Property).Value;
+                            template.Escort = ((WzIntProperty) property).Value;
                             break;
                         case "removeOnMiss":
-                            template.RemoveOnMiss = ((WzIntProperty) Property).Value;
+                            template.RemoveOnMiss = ((WzIntProperty) property).Value;
                             break;
                         case "coolDamage":
-                            template.CoolDamage = ((WzIntProperty) Property).Value;
+                            template.CoolDamage = ((WzIntProperty) property).Value;
                             break;
                         case "coolDamageProb":
-                            template.CoolDamageProb = ((WzIntProperty) Property).Value;
+                            template.CoolDamageProb = ((WzIntProperty) property).Value;
                             break;
                         case "0":
-                            template._0 = ((WzIntProperty) Property).Value;
+                            template._0 = ((WzIntProperty) property).Value;
                             break;
                         case "getCP":
-                            template.GetCP = ((WzIntProperty) Property).Value;
+                            template.GetCP = ((WzIntProperty) property).Value;
                             break;
                         case "cannotEvade":
-                            template.CannotEvade = ((WzIntProperty) Property).Value;
+                            template.CannotEvade = ((WzIntProperty) property).Value;
                             break;
                         case "dropItemPeriod":
-                            template.DropItemPeriod = ((WzIntProperty) Property).Value;
+                            template.DropItemPeriod = ((WzIntProperty) property).Value;
                             break;
                         case "onlyNormalAttack":
-                            template.OnlyNormalAttack = ((WzIntProperty) Property).Value;
+                            template.OnlyNormalAttack = ((WzIntProperty) property).Value;
                             break;
                         case "point":
-                            template.Point = ((WzIntProperty) Property).Value;
+                            template.Point = ((WzIntProperty) property).Value;
                             break;
                         case "fixDamage":
-                            template.FixDamage = ((WzIntProperty) Property).Value;
+                            template.FixDamage = ((WzIntProperty) property).Value;
                             break;
                         case "weapon":
-                            template.Weapon = ((WzIntProperty) Property).Value;
+                            template.Weapon = ((WzIntProperty) property).Value;
                             break;
                         case "notAttack":
-                            template.NotAttack = ((WzIntProperty) Property).Value;
+                            template.NotAttack = ((WzIntProperty) property).Value;
                             break;
                         case "doNotRemove":
-                            template.DoNotRemove = ((WzIntProperty) Property).Value;
+                            template.DoNotRemove = ((WzIntProperty) property).Value;
                             break;
                         case "buff":
-                            template.Buff = ((WzStringProperty) Property).Value;
+                            template.Buff = ((WzStringProperty) property).Value;
                             break;
                         case "Speed":
-                            template.Speed = ((WzIntProperty) Property).Value;
+                            template.Speed = ((WzIntProperty) property).Value;
                             break;
                         case "cantPassByTeleport":
-                            template.CantPassByTeleport = ((WzIntProperty) Property).Value;
+                            template.CantPassByTeleport = ((WzIntProperty) property).Value;
                             break;
                         case "phase":
-                            template.Phase = ((WzIntProperty) Property).Value;
+                            template.Phase = ((WzIntProperty) property).Value;
                             break;
                         case "flyspeed":
                         case "FlySpeed":
-                            template.FlySpeed = ((WzIntProperty) Property).Value;
+                            template.FlySpeed = ((WzIntProperty) property).Value;
                             break;
                         case "dualGauge":
-                            template.DualGauge = ((WzIntProperty) Property).Value;
+                            template.DualGauge = ((WzIntProperty) property).Value;
                             break;
                         case "disable":
-                            template.Disable = ((WzIntProperty) Property).Value;
+                            template.Disable = ((WzIntProperty) property).Value;
                             break;
                         
                         case "ban":
                             template.MonsterBan = new TemplateMob.Ban();
-                            foreach (WzImageProperty BanProperty in Property.WzProperties) {
-                                switch (BanProperty.Name) {
+                            foreach (WzImageProperty banProperty in property.WzProperties) {
+                                switch (banProperty.Name) {
                                     case "0":
-                                        foreach (WzImageProperty TargetProperty in BanProperty.WzProperties) {
-                                            switch (TargetProperty.Name) {
+                                        foreach (WzImageProperty targetProperty in banProperty.WzProperties) {
+                                            switch (targetProperty.Name) {
                                                 case "field":
-                                                    template.MonsterBan.TargetFieldID = ((WzIntProperty) TargetProperty).Value;
+                                                    template.MonsterBan.TargetFieldID = ((WzIntProperty) targetProperty).Value;
                                                     break;
                                                 case "portal":
-                                                    template.MonsterBan.TargetPortalName = ((WzStringProperty) TargetProperty).Value;
+                                                    template.MonsterBan.TargetPortalName = ((WzStringProperty) targetProperty).Value;
                                                     break;
                                                 default:
-                                                    Console.WriteLine($"Unhandled Ban Target Property: {BanProperty.Name} ({BanProperty.GetType()})");
+                                                    Log.Info($"Unhandled Ban Target Property: {banProperty.Name} ({banProperty.GetType()})");
                                                     break;
                                                     
                                             }
                                         }
                                         break;
                                     case "banMsg":
-                                        template.MonsterBan.Message = ((WzStringProperty) BanProperty).Value;
+                                        template.MonsterBan.Message = ((WzStringProperty) banProperty).Value;
                                         break;
                                     case "banMsgType":
-                                        template.MonsterBan.MessageType = ((WzIntProperty) BanProperty).Value;
+                                        template.MonsterBan.MessageType = ((WzIntProperty) banProperty).Value;
                                         break;
                                     case "banType":
-                                        template.MonsterBan.Type = ((WzIntProperty) BanProperty).Value;
+                                        template.MonsterBan.Type = ((WzIntProperty) banProperty).Value;
                                         break;
                                     default:
-                                        Console.WriteLine($"Unhandled Ban Message Property: {BanProperty.Name} ({BanProperty.GetType()})");
+                                        Log.Info($"Unhandled Ban Message Property: {banProperty.Name} ({banProperty.GetType()})");
                                         break;
                                 }
                             }
                             break;
                         case "loseItem":
                             template.LoseItems = new List<TemplateMob.LoseItem>();
-                            foreach (WzImageProperty Items in Property.WzProperties) {
-                                TemplateMob.LoseItem LoseItem = new TemplateMob.LoseItem();
-                                foreach (WzImageProperty LoseProperty in Items.WzProperties) {
-                                    switch (LoseProperty.Name) {
+                            foreach (WzImageProperty items in property.WzProperties) {
+                                TemplateMob.LoseItem loseItem = new TemplateMob.LoseItem();
+                                foreach (WzImageProperty loseProperty in items.WzProperties) {
+                                    switch (loseProperty.Name) {
                                         case "id":
-                                            LoseItem.ID = ((WzIntProperty) LoseProperty).Value;
+                                            loseItem.ID = ((WzIntProperty) loseProperty).Value;
                                             break;
                                         case "loseMsg":
-                                            LoseItem.Message = ((WzStringProperty) LoseProperty).Value;
+                                            loseItem.Message = ((WzStringProperty) loseProperty).Value;
                                             break;
                                         case "loseMsgType":
-                                            LoseItem.MessageType = ((WzIntProperty) LoseProperty).Value;
+                                            loseItem.MessageType = ((WzIntProperty) loseProperty).Value;
                                             break;
                                         case "notDrop":
-                                            LoseItem.Drop = ((WzIntProperty) LoseProperty).Value == 1; 
+                                            loseItem.Drop = ((WzIntProperty) loseProperty).Value == 1; 
                                             break;
                                         case "prop":
-                                            LoseItem.Prop = ((WzIntProperty) LoseProperty).Value;
+                                            loseItem.Prop = ((WzIntProperty) loseProperty).Value;
                                             break;
                                         case "x":
-                                            LoseItem.X = ((WzIntProperty) LoseProperty).Value;
+                                            loseItem.X = ((WzIntProperty) loseProperty).Value;
                                             break;
                                         default:
-                                            Console.WriteLine($"Unhandled Lose Item Property: {LoseProperty.Name} ({LoseProperty.GetType()})");
+                                            Log.Info($"Unhandled Lose Item Property: {loseProperty.Name} ({loseProperty.GetType()})");
                                             break;
                                     }
                                 }
@@ -410,81 +423,81 @@ namespace NineToFive.Wz {
                             break;
                         case "damagedBySelectedMob":
                             template.DamagedBySelectedMob = new List<int>();
-                            foreach (WzImageProperty Mob in Property.WzProperties) {
-                                template.DamagedBySelectedMob.Add(((WzIntProperty)Mob).Value);
+                            foreach (WzImageProperty mob in property.WzProperties) {
+                                template.DamagedBySelectedMob.Add(((WzIntProperty)mob).Value);
                             }
                             break;
                         case "damagedBySelectedSkill":
                             template.DamagedBySelectedSkill = new List<int>();
-                            foreach (WzImageProperty Skill in Property.WzProperties) {
-                                template.DamagedBySelectedSkill.Add(((WzIntProperty)Skill).Value);
+                            foreach (WzImageProperty skill in property.WzProperties) {
+                                template.DamagedBySelectedSkill.Add(((WzIntProperty)skill).Value);
                             }
                             break;
                         case "healOnDestroy":
-                            int? Type = null, Amount = null;
-                            foreach (WzImageProperty Heal in Property.WzProperties) {
-                                switch (Heal.Name) {
+                            int? type = null, amount = null;
+                            foreach (WzImageProperty heal in property.WzProperties) {
+                                switch (heal.Name) {
                                     case "amount":
-                                        Amount = ((WzIntProperty) Heal).Value;
+                                        amount = ((WzIntProperty) heal).Value;
                                         break;
                                     case "type":
-                                        Type = ((WzIntProperty) Heal).Value;
+                                        type = ((WzIntProperty) heal).Value;
                                         break;
                                     default:
-                                        Console.WriteLine($"Unhandled HealOnDestroy Property: {Heal.Name} ({Heal.GetType()})");
+                                        Log.Info($"Unhandled HealOnDestroy Property: {heal.Name} ({heal.GetType()})");
                                         break;
                                 }
                             }
 
-                            if (Amount.HasValue && Type.HasValue) {
-                                template.HealOnDestroy = new Tuple<int, int>(Type.Value, Amount.Value);
+                            if (amount.HasValue && type.HasValue) {
+                                template.HealOnDestroy = new Tuple<int, int>(type.Value, amount.Value);
                             }
                             break;
                         case "selfDestruction":
-                            foreach (WzImageProperty Destruction in Property.WzProperties) {
-                                switch (Destruction.Name) {
+                            foreach (WzImageProperty destruction in property.WzProperties) {
+                                switch (destruction.Name) {
                                     case "action":
-                                        template.SelfDestruction = ((WzIntProperty) Destruction).Value;
+                                        template.SelfDestruction = ((WzIntProperty) destruction).Value;
                                         break;
                                     default:
-                                        Console.WriteLine($"Unhandled SelfDestruction Property: {Destruction.Name} ({Destruction.GetType()})");
+                                        Log.Info($"Unhandled SelfDestruction Property: {destruction.Name} ({destruction.GetType()})");
                                         break;
                                 }
                             }
                             break;
                         case "skill":
                             template.Skills = new List<TemplateMob.Skill>();
-                            foreach (WzImageProperty MonsterSkillLevel in Property.WzProperties) {
-                                TemplateMob.Skill Skill = new TemplateMob.Skill();
-                                foreach (WzImageProperty MonsterSkill in MonsterSkillLevel.WzProperties) {
-                                    switch (MonsterSkill.Name) {
+                            foreach (WzImageProperty monsterSkillLevel in property.WzProperties) {
+                                TemplateMob.Skill skill = new TemplateMob.Skill();
+                                foreach (WzImageProperty monsterSkill in monsterSkillLevel.WzProperties) {
+                                    switch (monsterSkill.Name) {
                                         case "action":
-                                            Skill.Action = ((WzIntProperty) MonsterSkill).Value;
+                                            skill.Action = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "effectAfter":
-                                            Skill.EffectAfter = ((WzIntProperty) MonsterSkill).Value;
+                                            skill.EffectAfter = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "level":
-                                            Skill.Level = ((WzIntProperty) MonsterSkill).Value;
+                                            skill.Level = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "skill":
-                                            Skill.ID = ((WzIntProperty) MonsterSkill).Value;
+                                            skill.ID = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "skillAfter":
-                                            Skill.NextID = ((WzIntProperty) MonsterSkill).Value;
+                                            skill.NextID = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         default:
-                                            Console.WriteLine($"Unhandled MonsterSkill Property: {MonsterSkill.Name} ({MonsterSkill.GetType()})");
+                                            Log.Info($"Unhandled MonsterSkill Property: {monsterSkill.Name} ({monsterSkill.GetType()})");
                                             break;
                                     }
                                 }
-                                template.Skills.Add(Skill);
+                                template.Skills.Add(skill);
                             }
                             break;
                         case "revive":
                             template.Revives = new List<int>();
-                            foreach (WzImageProperty Revive in Property.WzProperties) {
-                                template.Revives.Add(((WzIntProperty)Revive).Value);
+                            foreach (WzImageProperty revive in property.WzProperties) {
+                                template.Revives.Add(((WzIntProperty)revive).Value);
                             }
                             break;
                         case "speak":
@@ -492,7 +505,7 @@ namespace NineToFive.Wz {
                         case "default":
                             break;
                         default:
-                            Console.WriteLine($"Unhandled Mob Property: {Property.Name}");
+                            Log.Info($"Unhandled Mob Property: {property.Name}");
                             break;
                     }
                 }
@@ -502,14 +515,13 @@ namespace NineToFive.Wz {
         }
 
         public static void PrintDirectory() {
-            List<string> UniqueProperties = new List<string>();
-            foreach (WzImage Image in WzProvider.Load("Mob").WzDirectory.WzImages) {
-                foreach (WzImageProperty Info in Image.WzProperties.Where(Property => Property.Name == "info")) {
-                    foreach (WzImageProperty Property in Info.WzProperties) {
-                        if (UniqueProperties.All(Name => Name != Property.Name)) {
-                            UniqueProperties.Add(Property.Name);
-                            //Console.WriteLine($"{Property.Name, 25} = {Property.GetType()}, from ({Image.Name})");
-                            Console.WriteLine($"case \"{Property.Name}\":\nbreak;");
+            List<string> uniqueProperties = new List<string>();
+            foreach (WzImage image in WzProvider.Load("Mob").WzDirectory.WzImages) {
+                foreach (WzImageProperty info in image.WzProperties.Where(Property => Property.Name == "info")) {
+                    foreach (WzImageProperty property in info.WzProperties) {
+                        if (uniqueProperties.All(name => name != property.Name)) {
+                            uniqueProperties.Add(property.Name);
+                            Log.Info($"{property.Name, 25} = {property.GetType()}, from ({image.Name})");
                         }
                     }
                 }

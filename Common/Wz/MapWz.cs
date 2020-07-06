@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using log4net;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
 using MapleLib.WzLib.WzStructure.Data;
@@ -12,7 +13,7 @@ using NineToFive.Game.Entity.Meta;
 namespace NineToFive.Wz {
     public static class MapWz {
         private const string WzName = "Map";
-        
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MapWz));
         /// <summary>
         /// Sets the the field variables of the field being passed in.
         /// </summary>
@@ -32,10 +33,8 @@ namespace NineToFive.Wz {
                 TemplateFields.Add(fieldId, (TemplateField) t);
             }
 
-            if (t == null) {
-                Console.WriteLine($"Unable to load map: {fieldId}");
-                return;
-            }
+            if (t == null) throw new NullReferenceException($"Unable to load field: {fieldId}");
+            
 
             // t isn't null, so re-set so we don't have to keep typecasting.
             TemplateField template = (TemplateField)t;
@@ -117,7 +116,7 @@ namespace NineToFive.Wz {
                         break;
                     default:
                         if (!int.TryParse(Node.Name, out int _)) {
-                            Console.WriteLine($"Unhandled Map Node: {Node.Name, 10}({Node.GetType()})");   
+                            Log.Info($"Unhandled Map Node: {Node.Name,10}({Node.GetType()})"); 
                         }
                         break;
                 }
@@ -126,20 +125,19 @@ namespace NineToFive.Wz {
 
         public static void PrintDirectory(WzImageProperty Parent) {
             foreach(WzImageProperty InternalProperty in Parent.WzProperties) {
-                Console.WriteLine($"-- {InternalProperty.Name}({InternalProperty.GetType()})");
-                Console.WriteLine($"---- {InternalProperty.WzValue}");
+                Log.Info($"--{InternalProperty.Name}({InternalProperty.GetType()})\n----{InternalProperty.WzValue}");
                 if (InternalProperty.Name == "fieldLimit") {
                     foreach (FieldLimitType Type in Enum.GetValues(typeof(FieldLimitType))) {
-                        Console.WriteLine($"{Type} : {Type.Check((int)InternalProperty.WzValue)}");
+                        Log.Info($"{Type} : {Type.Check((int)InternalProperty.WzValue)}");
                     }
                 }
             }
         }
         
-        private static void LoadFootholds(TemplateField Template, WzImageProperty FootholdsImage) {
+        private static void LoadFootholds(TemplateField template, WzImageProperty footholdsImage) {
             Dictionary<uint, Foothold> Footholds = new Dictionary<uint, Foothold>();
             
-            foreach (WzImageProperty Collection in FootholdsImage.WzProperties) {
+            foreach (WzImageProperty Collection in footholdsImage.WzProperties) {
                 foreach (WzImageProperty Parent in Collection.WzProperties) {
                     foreach (WzImageProperty Child in Parent.WzProperties) {
                         if (!int.TryParse(Child.Name, out int ChildID)) continue;
@@ -168,7 +166,7 @@ namespace NineToFive.Wz {
                                 case "piece":
                                     break;
                                 default:
-                                    Console.WriteLine($"Unhandled Field/Foothold Property: {Property.Name, 10}({Property.PropertyType})");
+                                    Log.Info($"Unhandled Field/Foothold Property: {Property.Name, 10}({Property.PropertyType})");
                                     break;
                             }
                         }
@@ -180,7 +178,7 @@ namespace NineToFive.Wz {
                 }
             }
 
-            Template.Footholds = Footholds.Select(Entry => Entry.Value).ToArray();
+            template.Footholds = Footholds.Select(Entry => Entry.Value).ToArray();
         }
         
         private static void LoadLife(TemplateField Template, WzImageProperty LifeImage) {
@@ -210,7 +208,7 @@ namespace NineToFive.Wz {
                                     Type = EntityType.Reactor;
                                     break;
                                 default:
-                                    Console.WriteLine($"Unhandled Entity Type: {Value}");
+                                    Log.Info($"Unhandled Entity Type: {Value}");
                                     break;
                             }
                             break;
@@ -242,7 +240,7 @@ namespace NineToFive.Wz {
                             FieldLife.Y = ((WzIntProperty) Property).Value;
                             break;
                         default: 
-                            Console.WriteLine($"Unhandled Field/Life Property: {Property.Name, 10}({Property.PropertyType})");
+                            Log.Info($"Unhandled Field/Life Property: {Property.Name, 10}({Property.PropertyType})");
                             break;
                     }
                 }
@@ -251,7 +249,7 @@ namespace NineToFive.Wz {
                     if (Template.Life.TryGetValue(Type.Value, out Dictionary<int, FieldLifeEntry> FieldLifeEntries)) {
                         FieldLifeEntries.Add((Type == EntityType.Mob ? FieldLife.FootholdID : FieldLife.ID), FieldLife);
                     } else {
-                        Console.WriteLine($"Unable to add field life entry: id={ID}, type={Type}");
+                        Log.Info($"Unable to add field life entry: id={ID}, type={Type}");
                     }
                 }
             }
@@ -310,7 +308,7 @@ namespace NineToFive.Wz {
                     case "version":
                         break;
                     default:
-                        Console.WriteLine($"Unhandled Map/Info Property: {Property.Name, 10}({Property.GetType()})");
+                        Log.Info($"Unhandled Map/Info Property: {Property.Name, 10}({Property.GetType()})");
                         break;
                 }
             }
@@ -341,7 +339,7 @@ namespace NineToFive.Wz {
                             Portal.Y = ((WzIntProperty) Property).Value;
                             break;
                         default:
-                            Console.WriteLine($"Unhandled Portal Property: {Property.Name}");
+                            Log.Info($"Unhandled Portal Property: {Property.Name}");
                             break;
                     }
                 }

@@ -9,12 +9,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>..\bin\Debug\Common</OutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <OutputPath>..\bin\Release\Common</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +24,7 @@
 
   <ItemGroup>
     <None Update="Resources\config.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Resources\central-logger.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
