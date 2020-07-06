@@ -15,7 +15,7 @@ namespace NineToFive.Wz {
 
             Dictionary<int, Item> items = Server.Worlds[0].Items;
             if(!items.TryGetValue(item.Id, out Item template)){
-                string itemCategory = Constants.Item.GetItemCategory(item.Id);
+                string itemCategory = ItemConstants.GetItemCategory(item.Id);
                 if (itemCategory == "" || itemCategory == "Special" || itemCategory == "ItemOption") return;
                 
                 string subItemCategory = (item.Id / 10000).ToString().PadLeft(4, '0');

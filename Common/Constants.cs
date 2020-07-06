@@ -144,6 +144,17 @@ namespace NineToFive.Constants {
     }
 
     public static class ItemConstants {
+        public static string GetItemCategory(int ItemID) {
+            if (ItemID >= 2000000 && ItemID <= 2500002) return "Consume";
+            if (ItemID >= 4000000 && ItemID <= 4320000) return "Etc";
+            if (ItemID >= 5010000 && ItemID <= 5990000) return "Cash";
+            if (ItemID >= 3010000 && ItemID <= 3995000) return "Install";
+            if (ItemID >= 5000000 && ItemID <= 5000107) return "Pet";
+            if (ItemID >= 9000000 && ItemID <= 9114000) return "Special";
+            if (ItemID >= 1 && ItemID <= 31004) return "ItemOption";
+            return "";
+        }
+
         public static InventoryType GetInventoryType(int itemId) {
             int type = itemId / 1000000;
             if (type < 1 || type > 5) {
@@ -313,18 +324,5 @@ namespace NineToFive.Constants {
         Mob,
         Field,
         Item,
-    }
-
-    public static class Item {
-        public static string GetItemCategory(int ItemID) {
-            if (ItemID >= 2000000 && ItemID <= 2500002) return "Consume";
-            if (ItemID >= 4000000 && ItemID <= 4320000) return "Etc";
-            if (ItemID >= 5010000 && ItemID <= 5990000) return "Cash";
-            if (ItemID >= 3010000 && ItemID <= 3995000) return "Install";
-            if (ItemID >= 5000000 && ItemID <= 5000107) return "Pet";
-            if (ItemID >= 9000000 && ItemID <= 9114000) return "Special";
-            if (ItemID >= 1 && ItemID <= 31004) return "ItemOption";
-            return "";
-        }
     }
 }
