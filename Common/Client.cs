@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Game;
@@ -12,24 +11,23 @@ using NineToFive.Util;
 namespace NineToFive {
     public class Client : IPacketSerializer<Client>, IDisposable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Client));
-        public readonly ServerListener ServerHandler;
         public readonly ClientSession Session;
         public readonly List<User> Users = new List<User>(15);
         private byte _worldId, _channelId;
 
-        public Client() { }
-
-        public Client(ServerListener server, TcpClient socket) {
-            ServerHandler = server;
-            Session = new ClientSession(this, socket);
+        public Client() {
             Gender = 10;
+        }
+
+        public Client(ClientSession session) : this() {
+            Session = session;
         }
 
         public void Dispose() {
             Users.Clear();
             User?.Dispose();
             if (Username == null) return;
-            Log.Info($"Client '{Username}' disconnected");
+            Log.Info($"'{Username}' disconnected");
         }
 
         public void Encode(Client t, Packet p) {

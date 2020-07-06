@@ -7,7 +7,6 @@ using NineToFive.Net;
 using NineToFive.Packets;
 using NineToFive.SendOps;
 using NineToFive.Util;
-using Item = NineToFive.Game.Storage.Item;
 
 namespace NineToFive.Game.Entity {
     public class User : Life, IDisposable {
@@ -33,18 +32,26 @@ namespace NineToFive.Game.Entity {
                 int itemId = r.GetInt32("item_id");
                 short bagIndex = r.GetInt16("bag_index");
                 InventoryType type = ItemConstants.GetInventoryType(itemId);
-                if (type == InventoryType.Equip && bagIndex < 0) {
-                    Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true));
+                Item item;
+
+                if (type == InventoryType.Equip) {
+                    if (bagIndex < 0) {
+                        Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true));
+                        continue;
+                    }
+
+                    item = new Equip(itemId);
                 } else {
-                    Item item = new Item(r.GetInt32("item_id")) {
-                        GeneratedId = r.GetUInt32("generated_id"),
-                        BagIndex = bagIndex,
+                    item = new Item(itemId, false) {
                         Quantity = r.GetUInt16("quantity"),
-                        CashItemSn = r.GetInt64("cash_sn"),
-                        DateExpire = r.GetInt64("date_expire")
                     };
-                    Inventories[item.InventoryType][item.BagIndex] = item;
                 }
+
+                item.GeneratedId = r.GetUInt32("generated_id");
+                item.BagIndex = bagIndex;
+                item.CashItemSn = r.GetInt64("cash_sn");
+                item.DateExpire = r.GetInt64("date_expire");
+                Inventories[item.InventoryType][item.BagIndex] = item;
             }
         }
 

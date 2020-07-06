@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
+using log4net;
 
 namespace NineToFive.Net {
     public abstract class ServerListener : IDisposable {
-        public readonly int Port;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ServerListener));
+        protected readonly int Port;
         private TcpListener _listener;
 
-        public ServerListener(int port) {
+        protected ServerListener(int port) {
             Port = port;
             _listener = new TcpListener(IPAddress.Any, port);
         }
@@ -20,19 +21,18 @@ namespace NineToFive.Net {
 
         public void Start() {
             _listener.Start();
-
-            void StartSocket() {
-                while (true) ServerAcceptClient();
-            }
-
-            new Thread(StartSocket).Start();
+            _listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);
         }
 
-        private void ServerAcceptClient() {
-            TcpClient client = _listener.AcceptTcpClient();
-            _ = new Client(this, client);
-        }
+        private void OnAcceptTcpClient(IAsyncResult ar) {
+            TcpClient socket = _listener.EndAcceptTcpClient(ar);
+            ClientSession session = new ClientSession(this, socket);
+            session.Client = new Client(session);
+            Log.Info($"TCP connection established : {session.RemoteAddress}");
 
+            _listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);
+        }
+        
         public abstract void OnPacketReceived(Client c, Packet p);
     }
 }

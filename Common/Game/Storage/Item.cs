@@ -11,7 +11,6 @@ namespace NineToFive.Game.Storage {
         public Item(int id, bool setItem = true) {
             Id = id;
             InventoryType = ItemConstants.GetInventoryType(id);
-            if (InventoryType == InventoryType.Equip) throw new InvalidOperationException("cannot create Item of an Equip : " + id);
             
             if(setItem) ItemWz.SetItem(this);
         }

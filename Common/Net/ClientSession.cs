@@ -3,89 +3,109 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using Destiny.Security;
+using log4net;
 using NineToFive.Security;
 
 namespace NineToFive.Net {
     public class ClientSession : IDisposable {
-        private Client _client;
-        private TcpClient _socket;
-        private readonly MapleCryptoHandler _cipher = new MapleCryptoHandler();
-        private byte[] _packetBuffer = new byte[512];
-        private int _packetSize;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ClientSession));
+        private readonly object _lock = new object();
 
-        public ClientSession(Client client, TcpClient socket) {
-            _client = client;
+        private MapleCryptoHandler _cipher = new MapleCryptoHandler();
+        private ServerListener _server;
+        private TcpClient _socket;
+
+        private readonly byte[] _packetHeader = new byte[4];
+        private byte[] _packetBody = new byte[1024];
+
+        public ClientSession(ServerListener server, TcpClient socket) {
+            _server = server;
             _socket = socket;
 
-            if (socket == null) return;
-            _socket.GetStream().Write(_cipher.Initialize()); // send raw data
-            BeginAccept();
+            _socket.NoDelay = true;
+            RemoteAddress = ((IPEndPoint) socket.Client.RemoteEndPoint).Address;
+
+            // handshake data
+            _socket.GetStream().Write(_cipher.Initialize());
+            BeginReadPacketHeader();
         }
 
-        public IPAddress RemoteAddress {
-            get {
-                var ip = _socket?.Client.RemoteEndPoint as IPEndPoint;
-                return ip?.Address;
-            }
-        }
+        public IPAddress RemoteAddress { get; }
+        public Client Client { get; set; }
 
         public void Dispose() {
-            _client?.Dispose();
-            _client = null;
+            Client?.Dispose();
+            Client = null;
+
             _socket?.Dispose();
             _socket = null;
-            _cipher.Dispose();
+
+            _cipher?.Dispose();
+            _cipher = null;
+
+            _server = null;
         }
 
-        private void BeginAccept() {
+        private void BeginReadPacketHeader() {
+            _socket.GetStream().BeginRead(_packetHeader, 0, _packetHeader.Length, EndReadPacketHeader, null);
+        }
+
+        private void EndReadPacketHeader(IAsyncResult ar) {
+            int size;
             try {
-                _socket.GetStream().BeginRead(_packetBuffer, _packetSize, _packetBuffer.Length - _packetSize, OnReceivePacket, null);
+                size = _socket.GetStream().EndRead(ar);
             } catch (IOException) {
-                Dispose();
+                size = 0;
             }
+
+            if (size < 1) {
+                // disconnection
+                Dispose();
+                return;
+            }
+
+            if (!_cipher.De.IsValidPacket(_packetHeader)) {
+                Log.Warn("Invalid packet received");
+                return;
+            }
+
+            int packetLength = AesCryptograph.RetrieveLength(_packetHeader);
+            if (packetLength > _packetBody.Length) {
+                _packetBody = new byte[packetLength];
+            }
+
+            _socket.GetStream().BeginRead(_packetBody, 0, packetLength, BeginReadPacketBody, packetLength);
         }
 
-        private void OnReceivePacket(IAsyncResult result) {
-            lock (_cipher) {
-                int count;
-                try {
-                    count = _socket.GetStream().EndRead(result);
-                    if (count == 0) return;
-                } catch {
-                    Dispose();
-                    return;
-                }
-
-                // while sufficient information is present
-                _packetSize += count;
-                while (_packetSize >= 6) {
-                    int packetLength = AesCryptograph.RetrieveLength(_packetBuffer) + 4; // packet + header
-
-                    // expand the buffer because the full packet cannot fit
-                    if (packetLength >= _packetBuffer.Length) {
-                        byte[] buf = new byte[packetLength];
-                        Buffer.BlockCopy(_packetBuffer, 0, buf, 0, _packetBuffer.Length);
-                        _packetBuffer = buf;
-                        break;
-                    }
-
-                    if (_packetSize >= packetLength) {
-                        // sufficient information to process
-                        _packetSize -= packetLength;
-                        byte[] packet = new byte[packetLength];
-                        Buffer.BlockCopy(_packetBuffer, 0, packet, 0, packetLength);
-
-                        using Packet p = new Packet(_cipher.Decrypt(packet));
-                        _client.ServerHandler.OnPacketReceived(_client, p);
-                    } else break;
-                }
+        private void BeginReadPacketBody(IAsyncResult ar) {
+            int size;
+            try {
+                size = _socket.GetStream().EndRead(ar);
+            } catch (IOException) {
+                size = 0;
             }
 
-            BeginAccept();
+            if (size < 1) {
+                // disconnection
+                Dispose();
+                return;
+            }
+
+            int packetLength = (int) ar.AsyncState;
+            byte[] packet = new byte[packetLength];
+            Buffer.BlockCopy(_packetBody, 0, packet, 0, packetLength);
+            try {
+                using Packet p = new Packet(_cipher.Decrypt(packet));
+                _server.OnPacketReceived(Client, p);
+            } catch (Exception e) {
+                Log.Error("Failed to handle packet", e);
+            }
+
+            BeginReadPacketHeader();
         }
 
         /// <summary>
-        /// encrypts and sends the specified byte array to the socket
+        /// encrypts then sends the byte array to the client socket stream
         /// </summary>
         public void Write(byte[] b) {
             _socket.GetStream().Write(_cipher.Encrypt(b));

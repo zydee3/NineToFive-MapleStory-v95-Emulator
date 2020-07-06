@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
 using Destiny.Security;
 using NineToFive.Net;
 using NineToFive.Util;
 
 namespace NineToFive.Security {
     public class MapleCryptoHandler : ICryptograph {
-        private AesCryptograph En { get; set; }
-        private AesCryptograph De { get; set; }
+        public AesCryptograph En { get; set; }
+        public AesCryptograph De { get; set; }
 
         /// <summary>
         /// Generates Initialization Vector keys and returns the handshake packet
@@ -53,20 +52,9 @@ namespace NineToFive.Security {
         /// <returns>the decrypted packet (excluding the header)</returns>
         public byte[] Decrypt(byte[] data) {
             lock (this) {
-                if (!De.IsValidPacket(data)) {
-                    throw new InvalidDataException("invalid header");
-                }
-
-                int length = AesCryptograph.RetrieveLength(data);
-
-                if ((data.Length - 4) != length)
-                    throw new CryptographyException($"Packet length not matching ({data.Length} != {length}).");
-
-                byte[] packet = new byte[data.Length - 4];
-                Buffer.BlockCopy(data, 4, packet, 0, packet.Length);
-                De.Crypt(packet);
-                BlurCryptoHandler.Decrypt(packet);
-                return packet;
+                De.Crypt(data);
+                BlurCryptoHandler.Decrypt(data);
+                return data;
             }
         }
 
