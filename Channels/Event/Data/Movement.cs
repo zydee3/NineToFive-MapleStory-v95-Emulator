@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.Util;
 
-namespace NineToFive.Channels.Event.Data {
+namespace NineToFive.Event.Data {
     public class Movement : IPacketSerializer<Movement> {
         public byte Type { get; set; }
 

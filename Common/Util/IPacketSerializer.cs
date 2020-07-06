@@ -1,4 +1,4 @@
-﻿using NineToFive.IO;
+﻿using NineToFive.Net;
 
 namespace NineToFive.Util {
     public interface IPacketSerializer<T> {

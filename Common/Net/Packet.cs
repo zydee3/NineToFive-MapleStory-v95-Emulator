@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace NineToFive.IO {
+namespace NineToFive.Net {
     public class Packet : IDisposable {
         private MemoryStream Stream { get; set; }
         private BinaryWriter Writer { get; set; }

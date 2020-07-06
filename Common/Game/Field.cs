@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
-using NineToFive.Constants;
 using NineToFive.Game.Entity;
 using NineToFive.Util;
 using NineToFive.Wz;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using Destiny.Security;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.Util;
 
 namespace NineToFive.Security {
@@ -16,12 +16,12 @@ namespace NineToFive.Security {
             byte[] receiveIv = BitConverter.GetBytes(RNG.GetUInt());
             byte[] sendIv = BitConverter.GetBytes(RNG.GetUInt());
 
-            En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - Constants.ServerConstants.GameVersion)));
-            De = new AesCryptograph(receiveIv, Constants.ServerConstants.GameVersion);
+            En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - ServerConstants.GameVersion)));
+            De = new AesCryptograph(receiveIv, ServerConstants.GameVersion);
 
             using Packet packet = new Packet();
             packet.WriteShort(14);
-            packet.WriteShort(Constants.ServerConstants.GameVersion);
+            packet.WriteShort(ServerConstants.GameVersion);
             packet.WriteString("1");
             packet.WriteBytes(receiveIv);
             packet.WriteBytes(sendIv);

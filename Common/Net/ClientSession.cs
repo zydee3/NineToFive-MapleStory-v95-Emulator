@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using Destiny.Security;
-using NineToFive.IO;
 using NineToFive.Security;
 
 namespace NineToFive.Net {

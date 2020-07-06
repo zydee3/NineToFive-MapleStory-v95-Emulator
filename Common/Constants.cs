@@ -5,7 +5,7 @@ using IniParser.Model;
 using log4net;
 using NineToFive.Game.Storage;
 
-namespace NineToFive.Constants {
+namespace NineToFive {
     public static class ServerConstants {
         private const string FileName = "Resources/config.ini";
 

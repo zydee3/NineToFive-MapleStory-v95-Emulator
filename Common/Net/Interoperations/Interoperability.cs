@@ -6,7 +6,6 @@ using System.Threading;
 using log4net;
 using NineToFive.Game;
 using NineToFive.Interopation.Event;
-using NineToFive.IO;
 using NineToFive.Net.Security;
 using NineToFive.Util;
 

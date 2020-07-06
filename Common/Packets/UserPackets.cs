@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
-using NineToFive.IO;
+using NineToFive.Net;
 
 namespace NineToFive.Packets {
     public static class UserPackets {

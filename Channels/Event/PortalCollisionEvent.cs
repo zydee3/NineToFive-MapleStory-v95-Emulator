@@ -1,9 +1,8 @@
 ﻿using System.Numerics;
 using log4net;
-using NineToFive.Event;
-using NineToFive.IO;
+using NineToFive.Net;
 
-namespace NineToFive.Channels.Event {
+namespace NineToFive.Event {
     public class PortalCollisionEvent : PacketEvent {
         private static readonly ILog Log = LogManager.GetLogger(typeof(PortalCollisionEvent));
         

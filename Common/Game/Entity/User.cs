@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using log4net;
 using MySql.Data.MySqlClient;
-using NineToFive.Constants;
 using NineToFive.Game.Storage;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.Packets;
 using NineToFive.SendOps;
 using NineToFive.Util;
@@ -250,7 +249,7 @@ namespace NineToFive.Game.Entity {
             p.WriteInt(MP);
             p.WriteInt(MaxMP);
             p.WriteShort(AP);
-            if (Constants.Job.IsExtendedSpJob(Job)) {
+            if (NineToFive.Job.IsExtendedSpJob(Job)) {
                 byte advancements = (byte) (9 - Math.Min(9, 2218 - Job));
                 p.WriteByte(advancements);
                 for (byte i = 0; i < advancements; i++) {

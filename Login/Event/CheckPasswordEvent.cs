@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Net;
 using log4net;
-using NineToFive.Constants;
 using NineToFive.Event;
-using NineToFive.IO;
 using NineToFive.Net;
 using NineToFive.SendOps;
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Numerics;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
-using NineToFive.Constants;
 using NineToFive.Wz;
 
 //todo handle two mage skills that still use levels

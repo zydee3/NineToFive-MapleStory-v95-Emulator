@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using NineToFive.Channels.Event.Data;
-using NineToFive.Event;
-using NineToFive.IO;
+using NineToFive.Event.Data;
+using NineToFive.Net;
 
-namespace NineToFive.Channels.Event {
+namespace NineToFive.Event {
     public class VecCtrlEvent : PacketEvent {
         public List<Movement> Movements = new List<Movement>();
         public VecCtrlEvent(Client client) : base(client) { }

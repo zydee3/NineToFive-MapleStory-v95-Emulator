@@ -1,6 +1,6 @@
-﻿using NineToFive.IO;
-using System;
+﻿using System;
 using log4net;
+using NineToFive.Net;
 
 namespace NineToFive.Event {
     public class PacketEvent {

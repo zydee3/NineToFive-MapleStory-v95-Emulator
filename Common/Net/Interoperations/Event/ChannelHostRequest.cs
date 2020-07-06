@@ -2,7 +2,6 @@
 using System.Net;
 using log4net;
 using NineToFive.Game;
-using NineToFive.IO;
 using NineToFive.Net;
 
 namespace NineToFive.Interopation.Event {

@@ -1,6 +1,5 @@
 ﻿using System;
-using NineToFive.Constants;
-using NineToFive.IO;
+using NineToFive.Net;
 
 namespace NineToFive.Game.Storage {
     public class Equip : Item {

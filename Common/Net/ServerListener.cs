@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using NineToFive.IO;
 
 namespace NineToFive.Net {
     public abstract class ServerListener : IDisposable {

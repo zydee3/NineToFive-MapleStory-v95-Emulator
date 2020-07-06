@@ -1,9 +1,8 @@
-﻿using NineToFive.Event;
-using NineToFive.Game.Entity;
-using NineToFive.IO;
+﻿using NineToFive.Game.Entity;
+using NineToFive.Net;
 using NineToFive.SendOps;
 
-namespace NineToFive.Channels.Event {
+namespace NineToFive.Event {
     public class ChatMsgEvent : PacketEvent {
         private string _msg;
         private bool _shout;

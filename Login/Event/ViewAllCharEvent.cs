@@ -1,7 +1,7 @@
 ﻿using NineToFive.Event;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.SendOps;
 
 namespace NineToFive.Login.Event {

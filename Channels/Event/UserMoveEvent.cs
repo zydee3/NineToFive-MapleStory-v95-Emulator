@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using NineToFive.Channels.Event.Data;
+using NineToFive.Event.Data;
 using NineToFive.Game.Entity;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.SendOps;
 
-namespace NineToFive.Channels.Event {
+namespace NineToFive.Event {
     public class UserMoveEvent : VecCtrlEvent {
         public UserMoveEvent(Client client) : base(client) { }
 

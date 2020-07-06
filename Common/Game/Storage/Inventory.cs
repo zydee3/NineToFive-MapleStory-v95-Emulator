@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using NineToFive.Constants;
 
 namespace NineToFive.Game.Storage {
     public enum InventoryType {

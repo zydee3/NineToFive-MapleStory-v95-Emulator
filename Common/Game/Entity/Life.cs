@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using NineToFive.Constants;
 
 namespace NineToFive.Game.Entity {
     public class Life {

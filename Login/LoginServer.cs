@@ -1,16 +1,19 @@
 ﻿using System;
+using log4net;
+using log4net.Config;
 using NineToFive.Event;
 using NineToFive.Login.Event;
-using NineToFive.IO;
 using NineToFive.Net;
-using NineToFive.ReceiveOps;
 
-namespace NineToFive.Login {
-    class LoginServer : ServerListener {
-        private readonly RecvOps _receive;
+[assembly: XmlConfigurator(ConfigFile = "Resources/central-logger.xml")]
+
+namespace NineToFive {
+    public class LoginServer : ServerListener {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(LoginServer));
+        private readonly EventDirector _director;
 
         public LoginServer(int port) : base(port) {
-            _receive = new RecvOps {
+            _director = new EventDirector {
                 [(short) ReceiveOperations.Login_OnCheckPasswordResult] = typeof(CheckPasswordEvent),
                 [(short) ReceiveOperations.Login_OnWorldListReinitializeRequest] = typeof(WorldListEvent),
                 [(short) ReceiveOperations.Login_OnChannelSelectEnterChannel] = typeof(SelectEnterChannelEvent),
@@ -34,10 +37,10 @@ namespace NineToFive.Login {
 
         public override void OnPacketReceived(Client c, Packet p) {
             short operation = p.ReadShort();
-            if (!_receive.Events.TryGetValue(operation, out Type t)) {
-                Console.WriteLine($"[unhandled] {operation} (0x{operation:X2}) : {p.ToArrayString(true)}");
-                Console.WriteLine($"[ascii-decode] {p}");
-                Console.WriteLine("-----------");
+            if (!_director.Events.TryGetValue(operation, out Type t)) {
+                Log.Debug($"[unhandled] {operation} (0x{operation:X2}) : {p.ToArrayString(true)}");
+                Log.Debug($"[ascii-decode] {p}");
+                Log.Debug("-----------");
                 return;
             }
 
@@ -51,6 +54,17 @@ namespace NineToFive.Login {
                     handler.OnError(e);
                 }
             }
+        }
+
+        public static void Main(string[] args) {
+            Log.Info("Hello World, from Login Server!");
+            Interoperability.ServerCreate(ServerConstants.InterLoginPort);
+            Log.Info($"Interoperations listening on port {ServerConstants.InterLoginPort}");
+
+            // Initialize the login server socket
+            LoginServer server = new LoginServer(ServerConstants.LoginPort);
+            server.Start();
+            Log.Info($"Login server listening on port {server.Port}");
         }
     }
 }

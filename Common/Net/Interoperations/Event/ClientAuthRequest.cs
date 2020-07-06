@@ -2,7 +2,7 @@
 using System.Net;
 using log4net;
 using MySql.Data.MySqlClient;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.Util;
 
 namespace NineToFive.Interopation.Event {

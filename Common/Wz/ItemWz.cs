@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using log4net;
 using MapleLib.WzLib;
-using NineToFive.Constants;
 using NineToFive.Game.Storage.Meta;
 using Item = NineToFive.Game.Storage.Item;
 

@@ -1,5 +1,5 @@
 ﻿using NineToFive.Event;
-using NineToFive.IO;
+using NineToFive.Net;
 
 namespace NineToFive.Login.Event {
     public class CWvsUiMenuEvent : PacketEvent {

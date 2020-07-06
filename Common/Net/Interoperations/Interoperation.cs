@@ -1,6 +1,4 @@
-﻿using NineToFive.ReceiveOps;
-
-namespace NineToFive.Net {
+﻿namespace NineToFive.Net {
     public enum Interoperation : byte {
         /// <summary>
         /// When the channel server is requesting the login server for permission

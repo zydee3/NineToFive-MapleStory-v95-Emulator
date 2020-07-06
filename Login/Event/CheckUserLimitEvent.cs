@@ -1,6 +1,6 @@
 ﻿using NineToFive.Event;
 using NineToFive.Game;
-using NineToFive.IO;
+using NineToFive.Net;
 
 namespace NineToFive.Login.Event {
     public class CheckUserLimitEvent : PacketEvent {

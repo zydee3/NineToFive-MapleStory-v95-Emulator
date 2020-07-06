@@ -3,11 +3,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Security;
 using log4net;
-using NineToFive.Constants;
 using NineToFive.Event;
-using NineToFive.IO;
 using NineToFive.Net;
-using NineToFive.ReceiveOps;
 using NineToFive.Util;
 
 namespace NineToFive.Login.Event {

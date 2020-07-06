@@ -1,5 +1,5 @@
 ﻿using NineToFive.Event;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.SendOps;
 
 namespace NineToFive.Login.Event {

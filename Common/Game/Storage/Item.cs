@@ -1,6 +1,5 @@
 ﻿using System;
-using NineToFive.Constants;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.Util;
 using NineToFive.Wz;
 

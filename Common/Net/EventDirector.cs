@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace NineToFive.ReceiveOps {
-    public class RecvOps {
+namespace NineToFive.Net {
+    public class EventDirector {
         public Dictionary<short, Type> Events { get; }
 
-        public RecvOps() {
+        public EventDirector() {
             Events = new Dictionary<short, Type>(35);
         }
 

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <StartupObject>NineToFive.Channels.Program</StartupObject>
+    <StartupObject>NineToFive.ChannelServer</StartupObject>
     <RootNamespace>NineToFive</RootNamespace>
   </PropertyGroup>
 

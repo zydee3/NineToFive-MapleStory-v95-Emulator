@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using NineToFive.Game;
-using NineToFive.IO;
+using NineToFive.Net;
 
 namespace NineToFive.Interopation.Event {
     public static class WorldInformationRequest {

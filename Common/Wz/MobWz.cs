@@ -4,7 +4,6 @@ using System.Linq;
 using log4net;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
-using NineToFive.Constants;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 

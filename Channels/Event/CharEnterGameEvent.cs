@@ -3,13 +3,12 @@ using System.Linq;
 using System.Net;
 using log4net;
 using MySql.Data.MySqlClient;
-using NineToFive.Event;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
-using NineToFive.IO;
+using NineToFive.Net;
 using NineToFive.Util;
 
-namespace NineToFive.Channels.Event {
+namespace NineToFive.Event {
     public class CharEnterGameEvent : PacketEvent {
         private static readonly ILog Log = LogManager.GetLogger(typeof(CharEnterGameEvent));
         private uint _playerId;

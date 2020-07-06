@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using MapleLib.WzLib.WzStructure.Data;
-using NineToFive.Constants;
 
 namespace NineToFive.Game.Entity.Meta {
     /// <summary>

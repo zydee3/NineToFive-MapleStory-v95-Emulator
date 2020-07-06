@@ -1,8 +1,7 @@
 ﻿using System;
 using NineToFive.Event;
 using NineToFive.Game.Storage;
-using NineToFive.IO;
-using NineToFive.ReceiveOps;
+using NineToFive.Net;
 using NineToFive.Util;
 
 namespace NineToFive.Login.Event {

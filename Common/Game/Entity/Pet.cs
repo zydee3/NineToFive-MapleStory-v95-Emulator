@@ -1,6 +1,4 @@
-﻿using NineToFive.Constants;
-
-namespace NineToFive.Game.Entity {
+﻿namespace NineToFive.Game.Entity {
     public class Pet : Life {
         private int ID { get; set; }
         

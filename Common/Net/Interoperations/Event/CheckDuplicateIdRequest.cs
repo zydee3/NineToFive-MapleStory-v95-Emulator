@@ -1,4 +1,4 @@
-﻿using NineToFive.IO;
+﻿using NineToFive.Net;
 
 namespace NineToFive.Interopation.Event {
     public static class CheckDuplicateIdRequest {
