@@ -319,10 +319,4 @@ namespace NineToFive {
         Summon,
         Pet
     }
-
-    public enum TemplateType {
-        Mob,
-        Field,
-        Item,
-    }
 }

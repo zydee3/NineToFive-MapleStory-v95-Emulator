@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using log4net;
@@ -26,13 +27,17 @@ namespace NineToFive.Net {
 
         private void OnAcceptTcpClient(IAsyncResult ar) {
             TcpClient socket = _listener.EndAcceptTcpClient(ar);
-            ClientSession session = new ClientSession(this, socket);
-            session.Client = new Client(session);
-            Log.Info($"TCP connection established : {session.RemoteAddress}");
+            try {
+                ClientSession session = new ClientSession(this, socket);
+                session.Client = new Client(session);
+                Log.Info($"TCP connection established : {session.RemoteAddress}");
+            } catch (IOException) {
+                // probably disconnected when migrating sockets
+            }
 
             _listener.BeginAcceptTcpClient(OnAcceptTcpClient, null);
         }
-        
+
         public abstract void OnPacketReceived(Client c, Packet p);
     }
 }

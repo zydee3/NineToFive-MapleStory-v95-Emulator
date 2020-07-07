@@ -25,9 +25,13 @@ namespace NineToFive {
 
         public void Dispose() {
             Users.Clear();
-            User?.Dispose();
             if (Username == null) return;
-            Log.Info($"'{Username}' disconnected");
+            try {
+                User?.Dispose();
+                Log.Info($"'{Username}' disconnected");
+            } catch (Exception e) {
+                Log.Error($"Failure to disconnect '{Username}'", e);
+            }
         }
 
         public void Encode(Client t, Packet p) {

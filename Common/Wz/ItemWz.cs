@@ -1,25 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using log4net;
 using MapleLib.WzLib;
-using NineToFive.Game.Storage.Meta;
-using Item = NineToFive.Game.Storage.Item;
+using NineToFive.Game.Storage;
+using NineToFive.Resources;
 
 namespace NineToFive.Wz {
     public class ItemWz {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ItemWz));
+
         public static void SetItem(Item item) {
             if (item == null) return;
 
-            Dictionary<int, Item> items = Server.Worlds[0].Items;
-            if(!items.TryGetValue(item.Id, out Item template)){
+            if (!WzCache.Items.TryGetValue(item.Id, out Item template)) {
                 string itemCategory = ItemConstants.GetItemCategory(item.Id);
                 if (itemCategory == "" || itemCategory == "Special" || itemCategory == "ItemOption") return;
-                
+
                 string subItemCategory = (item.Id / 10000).ToString().PadLeft(4, '0');
                 string pathToItemImage = $"{itemCategory}/{subItemCategory}.img/{item.Id.ToString().PadLeft(8, '0')}";
-                
+
                 List<WzImageProperty> itemProperties = WzProvider.GetWzProperties(WzProvider.Load("Item"), pathToItemImage);
                 if (itemProperties == null) return;
 
@@ -39,6 +37,7 @@ namespace NineToFive.Wz {
                                         break;
                                 }
                             }
+
                             break;
                         case "spec":
                             foreach (WzImageProperty specNode in node.WzProperties) {
@@ -50,6 +49,7 @@ namespace NineToFive.Wz {
                                         break;
                                 }
                             }
+
                             break;
                         case "effect":
                             foreach (WzImageProperty effectNode in node.WzProperties) {
@@ -59,19 +59,16 @@ namespace NineToFive.Wz {
                                         break;
                                 }
                             }
+
                             break;
                         default:
                             Log.Info($"Unhandled Item Property: {node.Name}");
                             break;
                     }
                 }
-                
-                items.Add(item.Id, template);
-            }
-            
-            
-            
-        }
 
+                WzCache.Items.Add(item.Id, template);
+            }
+        }
     }
 }

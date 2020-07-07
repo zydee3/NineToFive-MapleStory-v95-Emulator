@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
-using System.Net.Security;
 using log4net;
 using NineToFive.Event;
 using NineToFive.Net;
+using NineToFive.SendOps;
 using NineToFive.Util;
 
 namespace NineToFive.Login.Event {
     public class SelectCharEvent : PacketEvent {
         private static readonly ILog Log = LogManager.GetLogger(typeof(SelectCharEvent));
 
-        private int _playerId;
+        private uint _playerId;
         private string[] _localMacAddress;          // CLogin::GetLocalMacAddress
         private string[] _localMacAddressWithHddSn; // CLogin::GetLocalMacAddressWithHDDSerialNo
         private string _secondaryPassword;
@@ -29,7 +29,7 @@ namespace NineToFive.Login.Event {
             short op = p.ReadShort();
             if (op == (int) ReceiveOperations.Login_OnSelectCharInitSPWPacket) {
                 p.ReadByte(); // COutPacket::Encode1(&iPacket, 1);
-                _playerId = p.ReadInt();
+                _playerId = p.ReadUInt();
                 _localMacAddress = p.ReadString().Split(", ");
                 _localMacAddressWithHddSn = p.ReadString().Split("_");
                 _secondaryPassword = p.ReadString();
@@ -48,14 +48,13 @@ namespace NineToFive.Login.Event {
                     }
                 }
 
-                _playerId = p.ReadInt();
+                _playerId = p.ReadUInt();
                 _localMacAddress = p.ReadString().Split(", ");
                 _localMacAddressWithHddSn = p.ReadString().Split("_");
             }
 
             // check if selected playerId exists within the account
-            Client.User = Client.Users.FirstOrDefault(u => u.CharacterStat.Id == _playerId);
-            if (Client.User == null) {
+            if (Client.Users.FirstOrDefault(u => u.CharacterStat.Id == _playerId) == null) {
                 Client.Session.Write(GetSelectCharFailed(5));
                 return false;
             }
@@ -92,23 +91,25 @@ namespace NineToFive.Login.Event {
         public override void OnHandle() {
             Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
 
+            // update account last known ip
             using DatabaseQuery q = Database.Table("accounts");
             int success = q.Update("last_known_ip", Client.Session.RemoteAddress.ToString())
                 .Where("account_id", "=", Client.Id).ExecuteNonQuery();
             if (success == 0) throw new InvalidOperationException("Failure to update last known IP for client : " + Client.Id);
-            Client.Session.Write(GetSelectChar(Client, _remoteAddress));
+
+            Client.Session.Write(GetSelectChar(Client, _playerId, _remoteAddress));
             Server.Clients.Remove(Client.Username);
         }
 
-        private static byte[] GetSelectChar(Client client, byte[] address) {
+        private static byte[] GetSelectChar(Client client, uint characterId, byte[] address) {
             using Packet p = new Packet();
-            p.WriteShort((short) SendOps.CLogin.OnSelectCharacterResult);
+            p.WriteShort((short) CLogin.OnSelectCharacterResult);
             p.WriteByte();
             p.WriteByte();
 
             p.WriteBytes(address);                     // uChatIp
             p.WriteShort((short) client.Channel.Port); // uChatPort
-            p.WriteUInt(client.User.CharacterStat.Id); // dwCharacterId
+            p.WriteUInt(characterId);                  // dwCharacterId
             p.WriteByte(69);                           // bAuthenCode
             p.WriteInt(1337);                          // ulArgument
             return p.ToArray();
@@ -144,7 +145,7 @@ namespace NineToFive.Login.Event {
         /// <param name="b">Represents a message popup image in the directory: <code>UI.wz/Login.img/Notice/text</code></param>
         private static byte[] GetSelectCharFailed(byte a, byte b = 0) {
             using Packet p = new Packet();
-            p.WriteShort((short) SendOps.CLogin.OnSelectCharacterResult);
+            p.WriteShort((short) CLogin.OnSelectCharacterResult);
             p.WriteByte(a);
             p.WriteByte(b);
             return p.ToArray();

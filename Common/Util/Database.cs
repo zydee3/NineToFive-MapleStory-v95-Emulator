@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using log4net;
 using MySql.Data.MySqlClient;
-using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
-using Item = NineToFive.Game.Storage.Item;
 
 namespace NineToFive.Util {
     public static class Database {
@@ -230,7 +228,7 @@ namespace NineToFive.Util {
 
                     // the idea is to have the ability to insert any number of rows (but never none)
                     // ...values (@value_0), (@value_1), (@value_2) and can continue to an unknown amount of times
-                    int varCount = 0, totalVars = (_parameters[0].Length / 2) * _parameters.Count; // global variable count
+                    int varCount = 0, totalVars = _parameters[0].Length / 2 * _parameters.Count; // global variable count
                     foreach (object[] parameters in _parameters) {
                         string values = "(";
                         // local variable count (parameter indexer)
@@ -266,6 +264,7 @@ namespace NineToFive.Util {
                     for (int i = 0; i < parameters.Length; i += 2) {
                         // column_name=@column_name
                         query += $"`{parameters[i]}`=@{parameters[i]}";
+                        if (i < parameters.Length - 2) query += ",";
                     }
 
                     query += ProcessConditions();

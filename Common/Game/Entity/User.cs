@@ -42,9 +42,8 @@ namespace NineToFive.Game.Entity {
 
                     item = new Equip(itemId);
                 } else {
-                    item = new Item(itemId, false) {
-                        Quantity = r.GetUInt16("quantity"),
-                    };
+                    item = new Item(itemId);
+                    item.Quantity = r.GetUInt16("quantity");
                 }
 
                 item.GeneratedId = r.GetUInt32("generated_id");
@@ -62,6 +61,8 @@ namespace NineToFive.Game.Entity {
                 Field.RemoveLife(this);
                 Field = null;
             }
+
+            Client.World.Users.TryRemove(CharacterStat.Id, out _);
         }
 
         public uint AccountId { get; set; }

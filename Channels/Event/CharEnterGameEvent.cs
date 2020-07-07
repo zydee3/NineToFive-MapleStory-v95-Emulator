@@ -46,7 +46,8 @@ namespace NineToFive.Event {
         public override void OnHandle() {
             Client.User.Client = Client;
             Client.Id = Client.User.AccountId;
-            Client.SetChannel(Server.Worlds[World.ActiveWorld].Channels.First(ch => ch.Port == Client.Channel.Port).Id); 
+            Client.SetChannel(Server.Worlds[World.ActiveWorld].Channels.First(ch => ch.Port == Client.Channel.Port).Id);
+            Client.World.Users.TryAdd(Client.User.CharacterStat.Id, Client.User);
             Client.User.SetField(Client.User.CharacterStat.FieldId);
         }
     }

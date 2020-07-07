@@ -7,6 +7,7 @@ using MapleLib.WzLib.WzProperties;
 using MapleLib.WzLib.WzStructure.Data;
 using NineToFive.Game;
 using NineToFive.Game.Entity.Meta;
+using NineToFive.Resources;
 
 namespace NineToFive.Wz {
     public static class MapWz {
@@ -16,31 +17,26 @@ namespace NineToFive.Wz {
         /// <summary>
         /// Sets the the field variables of the field being passed in.
         /// </summary>
-        /// <param name="Field">Field to be initialized</param>
+        /// <param name="field">Field to be initialized</param>
         /// <param name="MapProperties">List of WzImageProperty loaded from the Field's Image from Wz.</param>
         /// <param name="benchmark">Average time to create template and set: 00:00:00.2348726</param>
         public static void SetField(Field field) {
             if (field == null) return;
 
             int fieldId = field.Id;
-            Dictionary<int, object> templateFields = Server.Worlds[0].Templates[(int) TemplateType.Field];
-            if (!templateFields.TryGetValue(fieldId, out object t)) {
+            if (!WzCache.FieldTemplates.TryGetValue(fieldId, out TemplateField t)) {
                 string pathToMapImage = $"Map/Map{fieldId / 100000000}/{fieldId.ToString().PadLeft(9, '0')}.img";
                 List<WzImageProperty> fieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), pathToMapImage);
                 t = new TemplateField();
-                SetTemplateField((TemplateField) t, ref fieldProperties);
-                templateFields.Add(fieldId, (TemplateField) t);
+                SetTemplateField(t, ref fieldProperties);
+                WzCache.FieldTemplates.Add(fieldId, t);
             }
 
             if (t == null) throw new NullReferenceException($"Unable to load field: {fieldId}");
 
-
-            // t isn't null, so re-set so we don't have to keep typecasting.
-            TemplateField template = (TemplateField) t;
-
             // Create spawn points only where monsters exist.
-            Dictionary<int, FieldLifeEntry> mobEntries = template.Life[EntityType.Mob];
-            foreach (Foothold foothold in template.Footholds) {
+            Dictionary<int, FieldLifeEntry> mobEntries = t.Life[EntityType.Mob];
+            foreach (Foothold foothold in t.Footholds) {
                 if (mobEntries.TryGetValue(foothold.ID, out FieldLifeEntry entry)) {
                     field.SpawnPoints.Add(new SpawnPoint(field, entry.ID));
                 }
@@ -48,29 +44,29 @@ namespace NineToFive.Wz {
 
             //todo: load npcs and reactors from template.Life
             field.FieldLimits = new bool[Enum.GetNames(typeof(FieldLimitType)).Length];
-            template.FieldLimits.CopyTo(field.FieldLimits, 0);
+            t.FieldLimits.CopyTo(field.FieldLimits, 0);
 
-            field.Footholds = new Foothold[template.Footholds.Length];
-            template.Footholds.CopyTo(field.Footholds, 0);
+            field.Footholds = new Foothold[t.Footholds.Length];
+            t.Footholds.CopyTo(field.Footholds, 0);
 
-            field.Portals = new Portal[template.Portals.Length];
-            template.Portals.CopyTo(field.Portals, 0);
+            field.Portals = new Portal[t.Portals.Length];
+            t.Portals.CopyTo(field.Portals, 0);
 
-            field.BackgroundMusic = template.BackgroundMusic;
-            field.OnFirstUserEnter = template.OnFirstUserEnter;
-            field.OnUserEnter = template.OnUserEnter;
-            field.ForcedReturn = template.ForcedReturn;
-            field.ReturnMap = template.ReturnMap;
-            field.Town = template.Town;
-            field.Swim = template.Swim;
-            field.Fly = template.Fly;
-            field.MobCount = template.MobCount;
-            field.MobRate = template.MobRate;
+            field.BackgroundMusic = t.BackgroundMusic;
+            field.OnFirstUserEnter = t.OnFirstUserEnter;
+            field.OnUserEnter = t.OnUserEnter;
+            field.ForcedReturn = t.ForcedReturn;
+            field.ReturnMap = t.ReturnMap;
+            field.Town = t.Town;
+            field.Swim = t.Swim;
+            field.Fly = t.Fly;
+            field.MobCount = t.MobCount;
+            field.MobRate = t.MobRate;
 
-            field.VRBottom = template.VRBottom;
-            field.VRTop = template.VRTop;
-            field.VRLeft = template.VRLeft;
-            field.VRRight = template.VRRight;
+            field.VRBottom = t.VRBottom;
+            field.VRTop = t.VRTop;
+            field.VRLeft = t.VRLeft;
+            field.VRRight = t.VRRight;
 
             Server.Worlds[0].Channels[field.ChannelId].Fields.Add(fieldId, field);
         }

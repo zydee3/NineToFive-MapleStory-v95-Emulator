@@ -2,6 +2,7 @@
 using NineToFive.Event;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
+using NineToFive.SendOps;
 using NineToFive.Util;
 
 namespace NineToFive.Login.Event {
@@ -69,7 +70,7 @@ namespace NineToFive.Login.Event {
             int count = insertChar.Insert(Database.CreateUserParameters(user)).ExecuteNonQuery();
             user.CharacterStat.Id = (uint) insertChar.Command.LastInsertedId;
             if (count == 0) throw new InvalidOperationException($"Failed to save character {_username}");
-            
+
             using DatabaseQuery insertItems = Database.Table("items");
             foreach (var item in inventory.Items) {
                 insertItems.Insert(Database.CreateItemParameters(user, item));
@@ -79,11 +80,13 @@ namespace NineToFive.Login.Event {
 
             Client.Session.Write(GetCreateNewChar());
             Client.Users.Add(user);
+            // character creation is complete, we do not need reference to this character anymore
+            Client.User = null;
         }
 
         private byte[] GetCreateNewChar() {
             using Packet p = new Packet();
-            p.WriteShort((short) SendOps.CLogin.OnCreateNewCharacterResult);
+            p.WriteShort((short) CLogin.OnCreateNewCharacterResult);
             p.WriteByte();
             Client.User.CharacterStat.Encode(Client.User, p);
             Client.User.AvatarLook.Encode(Client.User, p);
@@ -99,7 +102,7 @@ namespace NineToFive.Login.Event {
         /// <param name="a">failure reason</param>
         private static byte[] GetCreateNewCharFailed(byte a) {
             using Packet p = new Packet();
-            p.WriteShort((short) SendOps.CLogin.OnCreateNewCharacterResult);
+            p.WriteShort((short) CLogin.OnCreateNewCharacterResult);
             p.WriteByte(a);
             return p.ToArray();
         }

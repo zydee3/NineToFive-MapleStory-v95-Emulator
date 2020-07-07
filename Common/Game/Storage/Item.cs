@@ -1,18 +1,14 @@
-﻿using System;
-using NineToFive.Net;
+﻿using NineToFive.Net;
 using NineToFive.Util;
 using NineToFive.Wz;
 
 namespace NineToFive.Game.Storage {
     public class Item : IPacketSerializer<Item> {
-        
-        
-        
-        public Item(int id, bool setItem = true) {
+        public Item(int id, bool setItem = false) {
             Id = id;
             InventoryType = ItemConstants.GetInventoryType(id);
-            
-            if(setItem) ItemWz.SetItem(this);
+
+            if (setItem) ItemWz.SetItem(this);
         }
 
         public virtual byte Type => 2;

@@ -6,10 +6,12 @@ using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
+using NineToFive.Resources;
 
 namespace NineToFive.Wz {
     public class MobWz {
         private static readonly ILog Log = LogManager.GetLogger(typeof(MobWz));
+
         /// <summary>
         /// Copies all the properties from the loaded template in cache to the mob being initialized. If the template
         /// isn't in the cache it is loaded and cached. 
@@ -19,102 +21,99 @@ namespace NineToFive.Wz {
             if (mob == null) return;
 
             int mobId = mob.Id;
-            Dictionary<int, object> TemplateMobs = Server.Worlds[0].Templates[(int) TemplateType.Mob];
-            if (!TemplateMobs.TryGetValue(mobId, out object t)) {
+            if (!WzCache.MobTemplates.TryGetValue(mobId, out TemplateMob t)) {
                 string PathToMobImage = mobId.ToString().PadLeft(7, '0');
                 List<WzImageProperty> mobProperties = WzProvider.GetWzProperties(WzProvider.Load("Mob"), $"{PathToMobImage}.img");
                 t = new TemplateMob();
-                SetTemplateMob((TemplateMob) t, ref mobProperties);
-                TemplateMobs.Add(mobId, t);
+                SetTemplateMob(t, ref mobProperties);
+                WzCache.MobTemplates.Add(mobId, t);
             }
 
             if (t == null) throw new NullReferenceException($"Unable to load mob: {mobId}");
 
-            TemplateMob template = (TemplateMob) t;
-            
-            mob.BodyAttack = template.BodyAttack;
-            mob.Level = template.Level;
-            mob.MaxHP = template.MaxHP;
-            mob.MaxMP = template.MaxMP;
-            mob.Speed = template.Speed;
-            mob.PADamage = template.PADamage;
-            mob.PDDamage = template.PDDamage;
-            mob.PDRate = template.PDRate;
-            mob.MADamage = template.MADamage;
-            mob.MDDamage = template.MDDamage;
-            mob.MDRate = template.MDRate;
-            mob.Acc = template.Acc;
-            mob.Eva = template.Eva;
-            mob.Pushed = template.Pushed;
-            mob.SummonType = template.SummonType;
-            mob.Boss = template.Boss;
-            mob.IgnoreFieldOut = template.IgnoreFieldOut;
-            mob.Category = template.Category;
-            mob.HPgaugeHide = template.HPgaugeHide;
-            mob.HpTagColor = template.HpTagColor;
-            mob.HpTagBgColor = template.HpTagBgColor;
-            mob.FirstAttack = template.FirstAttack;
-            mob.Exp = template.Exp;
-            mob.HpRecovery = template.HpRecovery;
-            mob.MpRecovery = template.MpRecovery;
-            mob.ExplosiveReward = template.ExplosiveReward;
-            mob.HideName = template.HideName;
-            mob.RemoveAfter = template.RemoveAfter;
-            mob.NoFlip = template.NoFlip;
-            mob.Undead = template.Undead;
-            mob.DamagedByMob = template.DamagedByMob;
-            mob.RareItemDropLevel = template.RareItemDropLevel;
-            mob.FlySpeed = template.FlySpeed;
-            mob.PublicReward = template.PublicReward;
-            mob.Invincible = template.Invincible;
-            mob.UpperMostLayer = template.UpperMostLayer;
-            mob.NoRegen = template.NoRegen;
-            mob.HideHP = template.HideHP;
-            mob.MBookID = template.MBookID;
-            mob.NoDoom = template.NoDoom;
-            mob.FixedDamage = template.FixedDamage;
-            mob.RemoveQuest = template.RemoveQuest;
-            mob.ChargeCount = template.ChargeCount;
-            mob.AngerGauge = template.AngerGauge;
-            mob.ChaseSpeed = template.ChaseSpeed;
-            mob.Escort = template.Escort;
-            mob.RemoveOnMiss = template.RemoveOnMiss;
-            mob.CoolDamage = template.CoolDamage;
-            mob.CoolDamageProb = template.CoolDamageProb;
-            mob._0 = template._0;
-            mob.GetCP = template.GetCP;
-            mob.CannotEvade = template.CannotEvade;
-            mob.DropItemPeriod = template.DropItemPeriod;
-            mob.OnlyNormalAttack = template.OnlyNormalAttack;
-            mob.Point = template.Point;
-            mob.FixDamage = template.FixDamage;
-            mob.Weapon = template.Weapon;
-            mob.NotAttack = template.NotAttack;
-            mob.DoNotRemove = template.DoNotRemove;
-            mob.CantPassByTeleport = template.CantPassByTeleport;
-            mob.Phase = template.Phase;
-            mob.DualGauge = template.DualGauge;
-            mob.Disable = template.Disable;
+            mob.BodyAttack = t.BodyAttack;
+            mob.Level = t.Level;
+            mob.MaxHP = t.MaxHP;
+            mob.MaxMP = t.MaxMP;
+            mob.Speed = t.Speed;
+            mob.PADamage = t.PADamage;
+            mob.PDDamage = t.PDDamage;
+            mob.PDRate = t.PDRate;
+            mob.MADamage = t.MADamage;
+            mob.MDDamage = t.MDDamage;
+            mob.MDRate = t.MDRate;
+            mob.Acc = t.Acc;
+            mob.Eva = t.Eva;
+            mob.Pushed = t.Pushed;
+            mob.SummonType = t.SummonType;
+            mob.Boss = t.Boss;
+            mob.IgnoreFieldOut = t.IgnoreFieldOut;
+            mob.Category = t.Category;
+            mob.HPgaugeHide = t.HPgaugeHide;
+            mob.HpTagColor = t.HpTagColor;
+            mob.HpTagBgColor = t.HpTagBgColor;
+            mob.FirstAttack = t.FirstAttack;
+            mob.Exp = t.Exp;
+            mob.HpRecovery = t.HpRecovery;
+            mob.MpRecovery = t.MpRecovery;
+            mob.ExplosiveReward = t.ExplosiveReward;
+            mob.HideName = t.HideName;
+            mob.RemoveAfter = t.RemoveAfter;
+            mob.NoFlip = t.NoFlip;
+            mob.Undead = t.Undead;
+            mob.DamagedByMob = t.DamagedByMob;
+            mob.RareItemDropLevel = t.RareItemDropLevel;
+            mob.FlySpeed = t.FlySpeed;
+            mob.PublicReward = t.PublicReward;
+            mob.Invincible = t.Invincible;
+            mob.UpperMostLayer = t.UpperMostLayer;
+            mob.NoRegen = t.NoRegen;
+            mob.HideHP = t.HideHP;
+            mob.MBookID = t.MBookID;
+            mob.NoDoom = t.NoDoom;
+            mob.FixedDamage = t.FixedDamage;
+            mob.RemoveQuest = t.RemoveQuest;
+            mob.ChargeCount = t.ChargeCount;
+            mob.AngerGauge = t.AngerGauge;
+            mob.ChaseSpeed = t.ChaseSpeed;
+            mob.Escort = t.Escort;
+            mob.RemoveOnMiss = t.RemoveOnMiss;
+            mob.CoolDamage = t.CoolDamage;
+            mob.CoolDamageProb = t.CoolDamageProb;
+            mob._0 = t._0;
+            mob.GetCP = t.GetCP;
+            mob.CannotEvade = t.CannotEvade;
+            mob.DropItemPeriod = t.DropItemPeriod;
+            mob.OnlyNormalAttack = t.OnlyNormalAttack;
+            mob.Point = t.Point;
+            mob.FixDamage = t.FixDamage;
+            mob.Weapon = t.Weapon;
+            mob.NotAttack = t.NotAttack;
+            mob.DoNotRemove = t.DoNotRemove;
+            mob.CantPassByTeleport = t.CantPassByTeleport;
+            mob.Phase = t.Phase;
+            mob.DualGauge = t.DualGauge;
+            mob.Disable = t.Disable;
 
-            mob.Fs = template.Fs;
+            mob.Fs = t.Fs;
 
-            mob.PartyReward = template.PartyReward;
-            mob.Buff = template.Buff;
-            mob.DefaultHP = template.DefaultHP;
-            mob.DefaultMP = template.DefaultMP;
-            mob.Link = template.Link;
-            mob.MobType = template.MobType;
-            mob.ElemAttr = template.ElemAttr;
+            mob.PartyReward = t.PartyReward;
+            mob.Buff = t.Buff;
+            mob.DefaultHP = t.DefaultHP;
+            mob.DefaultMP = t.DefaultMP;
+            mob.Link = t.Link;
+            mob.MobType = t.MobType;
+            mob.ElemAttr = t.ElemAttr;
 
-            mob.MonsterBan = template.MonsterBan;
-            mob.HealOnDestroy = template.HealOnDestroy;
+            mob.MonsterBan = t.MonsterBan;
+            mob.HealOnDestroy = t.HealOnDestroy;
             mob.SelfDestruction = mob.SelfDestruction;
-            
-            mob.Revives = template.Revives == null ? new int[0] : template.Revives.ToArray();
-            mob.Skills = template.Skills == null ? new TemplateMob.Skill[0] : template.Skills.ToArray();
-            mob.LoseItems = template.LoseItems == null ? new TemplateMob.LoseItem[0] : template.LoseItems.ToArray();
-            mob.DamagedBySelectedMob = template.DamagedBySelectedMob == null ? new int[0] : template.DamagedBySelectedMob.ToArray();
-            mob.DamagedBySelectedSkill = template.DamagedBySelectedSkill == null ? new int[0] : template.DamagedBySelectedSkill.ToArray();
+
+            mob.Revives = t.Revives == null ? new int[0] : t.Revives.ToArray();
+            mob.Skills = t.Skills == null ? new TemplateMob.Skill[0] : t.Skills.ToArray();
+            mob.LoseItems = t.LoseItems == null ? new TemplateMob.LoseItem[0] : t.LoseItems.ToArray();
+            mob.DamagedBySelectedMob = t.DamagedBySelectedMob == null ? new int[0] : t.DamagedBySelectedMob.ToArray();
+            mob.DamagedBySelectedSkill = t.DamagedBySelectedSkill == null ? new int[0] : t.DamagedBySelectedSkill.ToArray();
         }
 
         /// <summary>
@@ -138,7 +137,7 @@ namespace NineToFive.Wz {
                             break;
                         case "mpRecovery":
                             template.MpRecovery = ((WzIntProperty) property).Value;
-                            break;    
+                            break;
                         case "maxHP":
                             template.MaxHP = ((WzIntProperty) property).Value;
                             break;
@@ -178,8 +177,8 @@ namespace NineToFive.Wz {
                         case "eva":
                             template.Eva = ((WzIntProperty) property).Value;
                             break;
-                        
-                        
+
+
                         case "bodyattack":
                         case "bodyAttack":
                             template.BodyAttack = ((WzIntProperty) property).Value;
@@ -258,7 +257,7 @@ namespace NineToFive.Wz {
                         case "upperMostLayer":
                             template.UpperMostLayer = ((WzIntProperty) property).Value;
                             break;
-      
+
                         case "PartyReward":
                             template.PartyReward = ((WzStringProperty) property).Value;
                             break;
@@ -353,7 +352,7 @@ namespace NineToFive.Wz {
                         case "disable":
                             template.Disable = ((WzIntProperty) property).Value;
                             break;
-                        
+
                         case "ban":
                             template.MonsterBan = new TemplateMob.Ban();
                             foreach (WzImageProperty banProperty in property.WzProperties) {
@@ -370,9 +369,9 @@ namespace NineToFive.Wz {
                                                 default:
                                                     Log.Info($"Unhandled Ban Target Property: {banProperty.Name} ({banProperty.GetType()})");
                                                     break;
-                                                    
                                             }
                                         }
+
                                         break;
                                     case "banMsg":
                                         template.MonsterBan.Message = ((WzStringProperty) banProperty).Value;
@@ -388,6 +387,7 @@ namespace NineToFive.Wz {
                                         break;
                                 }
                             }
+
                             break;
                         case "loseItem":
                             template.LoseItems = new List<TemplateMob.LoseItem>();
@@ -405,7 +405,7 @@ namespace NineToFive.Wz {
                                             loseItem.MessageType = ((WzIntProperty) loseProperty).Value;
                                             break;
                                         case "notDrop":
-                                            loseItem.Drop = ((WzIntProperty) loseProperty).Value == 1; 
+                                            loseItem.Drop = ((WzIntProperty) loseProperty).Value == 1;
                                             break;
                                         case "prop":
                                             loseItem.Prop = ((WzIntProperty) loseProperty).Value;
@@ -419,18 +419,21 @@ namespace NineToFive.Wz {
                                     }
                                 }
                             }
+
                             break;
                         case "damagedBySelectedMob":
                             template.DamagedBySelectedMob = new List<int>();
                             foreach (WzImageProperty mob in property.WzProperties) {
-                                template.DamagedBySelectedMob.Add(((WzIntProperty)mob).Value);
+                                template.DamagedBySelectedMob.Add(((WzIntProperty) mob).Value);
                             }
+
                             break;
                         case "damagedBySelectedSkill":
                             template.DamagedBySelectedSkill = new List<int>();
                             foreach (WzImageProperty skill in property.WzProperties) {
-                                template.DamagedBySelectedSkill.Add(((WzIntProperty)skill).Value);
+                                template.DamagedBySelectedSkill.Add(((WzIntProperty) skill).Value);
                             }
+
                             break;
                         case "healOnDestroy":
                             int? type = null, amount = null;
@@ -451,6 +454,7 @@ namespace NineToFive.Wz {
                             if (amount.HasValue && type.HasValue) {
                                 template.HealOnDestroy = new Tuple<int, int>(type.Value, amount.Value);
                             }
+
                             break;
                         case "selfDestruction":
                             foreach (WzImageProperty destruction in property.WzProperties) {
@@ -463,6 +467,7 @@ namespace NineToFive.Wz {
                                         break;
                                 }
                             }
+
                             break;
                         case "skill":
                             template.Skills = new List<TemplateMob.Skill>();
@@ -490,14 +495,17 @@ namespace NineToFive.Wz {
                                             break;
                                     }
                                 }
+
                                 template.Skills.Add(skill);
                             }
+
                             break;
                         case "revive":
                             template.Revives = new List<int>();
                             foreach (WzImageProperty revive in property.WzProperties) {
-                                template.Revives.Add(((WzIntProperty)revive).Value);
+                                template.Revives.Add(((WzIntProperty) revive).Value);
                             }
+
                             break;
                         case "speak":
                             break;
@@ -508,9 +516,7 @@ namespace NineToFive.Wz {
                             break;
                     }
                 }
-                
             }
-
         }
 
         public static void PrintDirectory() {
@@ -520,7 +526,7 @@ namespace NineToFive.Wz {
                     foreach (WzImageProperty property in info.WzProperties) {
                         if (uniqueProperties.All(name => name != property.Name)) {
                             uniqueProperties.Add(property.Name);
-                            Log.Info($"{property.Name, 25} = {property.GetType()}, from ({image.Name})");
+                            Log.Info($"{property.Name,25} = {property.GetType()}, from ({image.Name})");
                         }
                     }
                 }
