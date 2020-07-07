@@ -25,7 +25,6 @@ namespace NineToFive {
 
         public void Dispose() {
             Users.Clear();
-            if (Username == null) return;
             try {
                 User?.Dispose();
                 Log.Info($"'{Username}' disconnected");

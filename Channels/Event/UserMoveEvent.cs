@@ -13,7 +13,7 @@ namespace NineToFive.Event {
             var latest = Movements[^1];
             var user = Client.User;
             user.Location = latest.Location;
-            user.Field.BroadcastPacketExclude(user,GetUserRemoteMove(user, Origin, Velocity, Movements));
+            user.Field.BroadcastPacketExclude(user, GetUserRemoteMove(user, Origin, Velocity, Movements));
         }
 
         private static byte[] GetUserRemoteMove(User user, Vector2 origin, Vector2 velocity, List<Movement> moves) {
@@ -23,7 +23,7 @@ namespace NineToFive.Event {
             w.WriteShort((short) origin.Y);
             w.WriteShort((short) velocity.X);
             w.WriteShort((short) velocity.Y);
-            w.WriteSByte((sbyte) moves.Count);
+            w.WriteByte((byte) moves.Count);
             foreach (var move in moves) {
                 move.Encode(move, w);
             }

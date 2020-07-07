@@ -44,11 +44,12 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            Client.User.Client = Client;
-            Client.Id = Client.User.AccountId;
+            User user = Client.User;
+            user.Client = Client;
+            Client.Id = user.AccountId;
             Client.SetChannel(Server.Worlds[World.ActiveWorld].Channels.First(ch => ch.Port == Client.Channel.Port).Id);
-            Client.World.Users.TryAdd(Client.User.CharacterStat.Id, Client.User);
-            Client.User.SetField(Client.User.CharacterStat.FieldId);
+            Client.World.Users.AddOrUpdate(user.CharacterStat.Id, id => user, (id, user) => user);
+            user.SetField(user.CharacterStat.FieldId);
         }
     }
 }

@@ -19,19 +19,19 @@ goto start
 
 :start_central
 echo Starting Central server
-start /d "bin\Release\Common\netcoreapp3.1" cmd /k "title Central Server & Common.exe"
+start /d "bin\Debug\Common\netcoreapp3.1" cmd /k "title Central Server & Common.exe"
 ping 127.0.0.1 -n 2 > nul
 if /I "%OPT%"=="c" goto start
 
 :start_login
 echo Starting Login server
-start /d "bin\Release\Login\netcoreapp3.1" cmd /k "title Login Server & Login.exe"
+start /d "bin\Debug\Login\netcoreapp3.1" cmd /k "title Login Server & Login.exe"
 ping 127.0.0.1 -n 2 > nul
 if /I "%OPT%"=="l" goto start
 
 :start_channel
 echo Starting Channel server
-start /d "bin\Release\Channels\netcoreapp3.1" cmd /k "title Channel Server & Channels.exe --world=0 --channels=0-2"
+start /d "bin\Debug\Channels\netcoreapp3.1" cmd /k "title Channel Server & Channels.exe --world=0 --channels=0-2"
 ping 127.0.0.1 -n 2 > nul
 if /I "%OPT%"=="ch" goto start
 

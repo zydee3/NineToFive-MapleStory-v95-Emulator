@@ -1,7 +1,6 @@
 ﻿using System;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
-using NineToFive.Packets;
 using NineToFive.SendOps;
 
 namespace NineToFive.Event {
@@ -20,31 +19,38 @@ namespace NineToFive.Event {
 
         public override void OnHandle() {
             User user = Client.User;
-            if (_msg.StartsWith("!pb")) {
-                string[] sp = _msg.Split(" ");
-                if (sp.Length < 3) {
-                    Console.WriteLine("[command] /pb : not enough information");
+
+            string[] sp = _msg.Split(" ");
+            switch (sp[0]) {
+                case "!pb": {
+                    if (sp.Length < 3) {
+                        user.SendMessage("[command] !pb : not enough information");
+                        return;
+                    }
+
+                    using Packet w = new Packet();
+                    for (int i = 1; i < sp.Length; i++) {
+                        byte sb = byte.Parse(sp[i]);
+                        w.WriteByte(sb);
+                    }
+
+                    Console.WriteLine(w.ToArrayString(true));
+
+                    Client.Session.Write(w.ToArray());
                     return;
                 }
-
-                using Packet w = new Packet();
-                for (int i = 1; i < sp.Length; i++) {
-                    sbyte sb = sbyte.Parse(sp[i]);
-                    w.WriteSByte(sb);
+                case "!mypos": {
+                    user.SendMessage($"Pos{user.Location} , Vel{user.Velocity}");
+                    return;
                 }
-
-                Console.WriteLine(w.ToArrayString(true));
-
-                Client.Session.Write(w.ToArray());
-                return;
-            } else if (_msg.Equals("!mypos")) {
-                string msg = $"Pos{user.Location}";
-                Client.Session.Write(CWvsPackets.GetBroadcastMessage(null, false, 5, msg, null));
-                return;
+                case "!debug":
+                    user.IsDebugging = !user.IsDebugging;
+                    user.SendMessage($"Debug: {(user.IsDebugging ? "Enabled" : "Disabled")}");
+                    return;
             }
 
-            user.Field.BroadcastPacket(user, GetChatLogMsg($"{user.CharacterStat.Username} : {_msg}"));
-            // user.Field.BroadcastPacket(user, GetUserMsg(user.CharacterStat.Id, _msg, _shout));
+            // user.Field.BroadcastPacket(user, GetChatLogMsg($"{user.CharacterStat.Username} : {_msg}"));
+            user.Field.BroadcastPacket(user, GetUserMsg(user.CharacterStat.Id, _msg, _shout));
         }
 
         /// <summary>

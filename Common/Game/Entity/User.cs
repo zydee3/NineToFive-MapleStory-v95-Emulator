@@ -55,13 +55,13 @@ namespace NineToFive.Game.Entity {
         }
 
         public void Dispose() {
-            Save();
             Log.Info($"Saved user '{CharacterStat.Username}'");
             if (Field != null) {
                 Field.RemoveLife(this);
                 Field = null;
             }
 
+            Save();
             Client.World.Users.TryRemove(CharacterStat.Id, out _);
         }
 
@@ -69,6 +69,7 @@ namespace NineToFive.Game.Entity {
         public Client Client { get; set; }
         public byte GradeCode { get; set; }
         public bool IsHidden { get; set; }
+        public bool IsDebugging { get; set; }
 
         public Field Field {
             get => _field;
@@ -152,6 +153,10 @@ namespace NineToFive.Game.Entity {
             w.WriteLong(DateTime.Now.ToFileTime()); // paramFieldInit.ftServer
             Client.Session.Write(w.ToArray());
         }
+
+        public void SendMessage(string msg, byte type = 5) {
+            Client.Session.Write(CWvsPackets.GetBroadcastMessage(this, true, type, $"[NineToFive] {msg}", null));
+        }
     }
 
     public class AvatarLook : IPacketSerializer<User> {
@@ -197,7 +202,7 @@ namespace NineToFive.Game.Entity {
     public class GW_CharacterStat : IPacketSerializer<User> {
         public uint Id { get; set; }
         public string Username { get; set; }
-        public sbyte Level { get; set; } = 1;
+        public byte Level { get; set; } = 1;
         public short Job { get; set; }
         public short Str { get; set; } = 4;
         public short Dex { get; set; } = 4;
@@ -218,7 +223,7 @@ namespace NineToFive.Game.Entity {
             if (r == null) return;
             Id = r.GetUInt32("character_id");
             Username = r.GetString("username");
-            Level = r.GetSByte("level");
+            Level = r.GetByte("level");
             Job = r.GetInt16("job");
             Str = r.GetInt16("str");
             Dex = r.GetInt16("dex");
@@ -248,7 +253,7 @@ namespace NineToFive.Game.Entity {
             p.WriteLong();
             p.WriteLong();
 
-            p.WriteSByte(Level);
+            p.WriteByte(Level);
             p.WriteShort(Job);
             p.WriteShort(Str);
             p.WriteShort(Dex);

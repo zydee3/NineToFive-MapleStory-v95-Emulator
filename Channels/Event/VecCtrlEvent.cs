@@ -9,13 +9,14 @@ namespace NineToFive.Event {
         public VecCtrlEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
+            var user = Client.User;
             p.WriteLong();
             p.ReadByte();
             p.WriteLong();
             p.ReadInt();
             p.ReadInt();
             p.ReadInt();
-            
+
             Origin = new Vector2(p.ReadShort(), p.ReadShort());
             Velocity = new Vector2(p.ReadShort(), p.ReadShort());
             byte count = p.ReadByte();
@@ -23,6 +24,7 @@ namespace NineToFive.Event {
                 byte type = p.ReadByte();
                 Movement move = new Movement(type);
                 move.Decode(move, p);
+                if (user.IsDebugging) user.SendMessage($"{move.Type} : Pos{move.Location}, Vel{move.Velocity}");
                 Movements.Add(move);
             }
 
