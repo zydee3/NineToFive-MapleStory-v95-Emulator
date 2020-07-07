@@ -2,6 +2,7 @@
 using System.Net;
 using NineToFive.Event;
 using NineToFive.Net;
+using NineToFive.Packets;
 using NineToFive.SendOps;
 
 namespace NineToFive.Login.Event {
@@ -57,6 +58,7 @@ namespace NineToFive.Login.Event {
             packet.ReadByte(); // 0
             packet.ReadInt();  // partnerCode
             if (!Interoperability.TestConnection(IPAddress.Parse(ServerConstants.CentralServer), ServerConstants.InterCentralPort)) {
+                Client.Session.Write(CWvsPackets.GetBroadcastMessage(null, false, 1, "Login services are currently unavailable.", null));
                 Client.Session.Write(GetLoginFailed(6));
                 return false;
             }

@@ -1,6 +1,5 @@
 ﻿using System;
 using NineToFive.Game.Entity;
-using NineToFive.Game.Storage;
 using NineToFive.Net;
 using NineToFive.Packets;
 using NineToFive.SendOps;
@@ -37,6 +36,10 @@ namespace NineToFive.Event {
                 Console.WriteLine(w.ToArrayString(true));
 
                 Client.Session.Write(w.ToArray());
+                return;
+            } else if (_msg.Equals("!mypos")) {
+                string msg = $"Pos{user.Location}";
+                Client.Session.Write(CWvsPackets.GetBroadcastMessage(null, false, 5, msg, null));
                 return;
             }
 

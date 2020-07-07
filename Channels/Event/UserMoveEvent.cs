@@ -10,7 +10,9 @@ namespace NineToFive.Event {
         public UserMoveEvent(Client client) : base(client) { }
 
         public override void OnHandle() {
+            var latest = Movements[^1];
             var user = Client.User;
+            user.Location = latest.Location;
             user.Field.BroadcastPacketExclude(user,GetUserRemoteMove(user, Origin, Velocity, Movements));
         }
 

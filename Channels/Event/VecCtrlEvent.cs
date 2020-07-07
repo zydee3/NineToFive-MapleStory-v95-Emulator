@@ -9,9 +9,10 @@ namespace NineToFive.Event {
         public VecCtrlEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
-            p.ReadInt();
-            p.ReadInt();
+            p.WriteLong();
             p.ReadByte();
+            p.WriteLong();
+            p.ReadInt();
             p.ReadInt();
             p.ReadInt();
             
@@ -25,7 +26,7 @@ namespace NineToFive.Event {
                 Movements.Add(move);
             }
 
-            return false;
+            return true;
         }
 
         public Vector2 Origin { get; set; }
