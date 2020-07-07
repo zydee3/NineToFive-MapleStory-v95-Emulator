@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using System.Runtime.Serialization;
 using NineToFive.Event.Data;
-using NineToFive.Game.Entity;
 using NineToFive.Net;
 using NineToFive.SendOps;
 
@@ -13,12 +13,14 @@ namespace NineToFive.Event {
             var latest = Movements[^1];
             var user = Client.User;
             user.Location = latest.Location;
-            user.Field.BroadcastPacketExclude(user, GetUserRemoteMove(user, Origin, Velocity, Movements));
+            user.Velocity = latest.Velocity;
+            user.Field.BroadcastPacketExclude(user, GetUserRemoteMove(user.CharacterStat.Id, Origin, Velocity, Movements));
         }
 
-        private static byte[] GetUserRemoteMove(User user, Vector2 origin, Vector2 velocity, List<Movement> moves) {
+        private static byte[] GetUserRemoteMove(uint characterId, Vector2 origin, Vector2 velocity, List<Movement> moves) {
             using Packet w = new Packet();
             w.WriteShort((short) CUserRemote.OnMove);
+            w.WriteUInt(characterId);
             w.WriteShort((short) origin.X);
             w.WriteShort((short) origin.Y);
             w.WriteShort((short) velocity.X);

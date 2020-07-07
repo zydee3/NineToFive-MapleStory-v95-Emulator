@@ -1,16 +1,14 @@
 ﻿using System.Numerics;
-using log4net;
 using NineToFive.Net;
 
 namespace NineToFive.Event {
     public class PortalCollisionEvent : PacketEvent {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(PortalCollisionEvent));
-        
         private byte _ptrField;
         private string _name;
         private Vector2 _location;
-        
+
         public PortalCollisionEvent(Client client) : base(client) { }
+
         public override bool OnProcess(Packet p) {
             _ptrField = p.ReadByte();
             _name = p.ReadString();
@@ -19,7 +17,7 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            Log.Info($"{_ptrField}, {_name}, {_location.ToString()}");
+            if (Client.User.IsDebugging) Client.User.SendMessage($"{_ptrField}, {_name}, {_location.ToString()}");
         }
     }
 }

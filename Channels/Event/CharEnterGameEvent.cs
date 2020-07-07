@@ -30,7 +30,7 @@ namespace NineToFive.Event {
             // get belonging account
             int accountId = rchar.GetInt32("account_id");
             using DatabaseQuery qacc = Database.Table("accounts");
-            using MySqlDataReader racc = qacc.Select().Where("account_id", "=", rchar.GetInt32("account_id")).ExecuteReader();
+            using MySqlDataReader racc = qacc.Select().Where("account_id", "=", accountId).ExecuteReader();
             if (!racc.Read()) throw new InvalidOperationException("Failure to find account : " + accountId);
             // check if IP address of the associated account belongs to the current session
             IPAddress lastKnownIp = IPAddress.Parse(racc.GetString("last_known_ip"));
@@ -39,6 +39,7 @@ namespace NineToFive.Event {
             }
 
             Client.User = new User(rchar);
+            Client.Username = racc.GetString("username");
             Log.Info($"{Client.User.CharacterStat.Username} is on channel {Client.Channel.Id}");
             return true;
         }

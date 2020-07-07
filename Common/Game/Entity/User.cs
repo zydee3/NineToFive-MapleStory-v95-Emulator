@@ -88,7 +88,7 @@ namespace NineToFive.Game.Entity {
 
             using DatabaseQuery deleteItems = Database.Table("items");
             count = deleteItems.Delete().ExecuteNonQuery();
-            Log.Info($"Deleted {count} items from {CharacterStat.Username}'s inventories");
+            Log.Info($"Cleaned up {count} items from {CharacterStat.Username}'s");  
 
             using DatabaseQuery insertItems = Database.Table("items");
             foreach (var inventory in Inventories.Values) {

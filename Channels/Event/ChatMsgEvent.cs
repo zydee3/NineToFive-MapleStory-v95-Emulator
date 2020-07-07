@@ -39,13 +39,24 @@ namespace NineToFive.Event {
                     Client.Session.Write(w.ToArray());
                     return;
                 }
-                case "!mypos": {
+                case "!mypos":
                     user.SendMessage($"Pos{user.Location} , Vel{user.Velocity}");
                     return;
-                }
                 case "!debug":
                     user.IsDebugging = !user.IsDebugging;
                     user.SendMessage($"Debug: {(user.IsDebugging ? "Enabled" : "Disabled")}");
+                    return;
+                case "!map":
+                    if (sp.Length != 2) {
+                        user.SendMessage("[command] !map : not enough arguments");
+                        return;
+                    }
+
+                    if (!int.TryParse(sp[1], out int fieldId)) {
+                        user.SendMessage($"[command] !map : {sp[1]}");
+                        return;
+                    }
+                    user.SetField(in fieldId, false);
                     return;
             }
 
