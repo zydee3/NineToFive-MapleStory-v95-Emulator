@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using log4net;
 using NineToFive.Event;
-using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
 using NineToFive.SendOps;
@@ -38,7 +37,8 @@ namespace NineToFive.Login.Event {
 
         public override void OnHandle() {
             Client.User = new User() {
-                AccountId = Client.Id
+                AccountId = Client.Id,
+                GradeCode = Client.GradeCode,
             };
 
             Client.User.CharacterStat.Username = _username;
