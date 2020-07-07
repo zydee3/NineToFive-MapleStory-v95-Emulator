@@ -49,9 +49,7 @@ namespace NineToFive.Wz {
             field.Footholds = new Foothold[t.Footholds.Length];
             t.Footholds.CopyTo(field.Footholds, 0);
 
-            field.Portals = new Portal[t.Portals.Length];
-            t.Portals.CopyTo(field.Portals, 0);
-
+            field.Portals.AddRange(t.Portals);
             field.BackgroundMusic = t.BackgroundMusic;
             field.OnFirstUserEnter = t.OnFirstUserEnter;
             field.OnUserEnter = t.OnUserEnter;
@@ -340,7 +338,7 @@ namespace NineToFive.Wz {
                 portals.Add(portal);
             }
 
-            template.Portals = portals.ToArray();
+            template.Portals = portals;
         }
     }
 }

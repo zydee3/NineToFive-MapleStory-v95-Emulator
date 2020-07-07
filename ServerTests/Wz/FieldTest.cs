@@ -19,7 +19,7 @@ namespace ServerTests.Wz {
             }
 
             Console.WriteLine($"Loaded {field.SpawnPoints.Count} spawn points.");
-            Console.WriteLine($"Loaded {field.Portals.Length} Portals");
+            Console.WriteLine($"Loaded {field.Portals.Count} Portals");
             Console.WriteLine($"Time elapsed Loading Field({fieldId}): {watch.Elapsed}.");
         }
     }

@@ -19,7 +19,7 @@ namespace NineToFive.Game.Entity.Meta {
         public Dictionary<EntityType, Dictionary<int, FieldLifeEntry>> Life { get; }
 
         public Foothold[] Footholds { get; set; }
-        public Portal[] Portals { get; set; }
+        public List<Portal> Portals { get; set; }
 
         public string BackgroundMusic { get; set; }
         public string OnFirstUserEnter { get; set; }

@@ -43,6 +43,9 @@ namespace NineToFive.Net {
 
         #endregion
 
+        // CField, CCashShop, CITC
+        OnTransferFieldRequest = 41,
+        
         CWvsContext_OnCheckOpBoardHasNew = 192,
         CWvsContext_OnUiMenu = 218,
 

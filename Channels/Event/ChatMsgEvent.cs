@@ -56,7 +56,8 @@ namespace NineToFive.Event {
                         user.SendMessage($"[command] !map : {sp[1]}");
                         return;
                     }
-                    user.SetField(in fieldId, false);
+
+                    user.SetField(in fieldId, characterData: false);
                     return;
             }
 

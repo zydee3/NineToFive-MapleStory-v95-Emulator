@@ -23,6 +23,7 @@ namespace NineToFive.Game {
 
             LifePools = new Dictionary<EntityType, LifePool<Life>>();
             SpawnPoints = new List<SpawnPoint>();
+            Portals = new List<Portal>();
             foreach (EntityType type in Enum.GetValues(typeof(EntityType))) {
                 LifePools.Add(type, new LifePool<Life>());
             }
@@ -33,7 +34,7 @@ namespace NineToFive.Game {
         public int Id { get; }
         public uint ChannelId { get; }
         public Foothold[] Footholds { get; set; }
-        public Portal[] Portals { get; set; }
+        public List<Portal> Portals { get; }
         public string BackgroundMusic { get; set; }
         public string OnFirstUserEnter { get; set; }
         public string OnUserEnter { get; set; }
@@ -83,6 +84,12 @@ namespace NineToFive.Game {
             return LifePools[EntityType.Player].Values.Cast<User>().Select(u => u.Client);
         }
 
+        public T GetLife<T>(EntityType type, uint uniqueId) where T : Life {
+            T life = LifePools[type][uniqueId] as T;
+            if (life?.EntityType != type) throw new InvalidOperationException($"Type mismatch. Entity is {life.EntityType} but {type} is specified");
+            return life;
+        }
+
         public void AddLife(Life life) {
             if (life.PoolId != 0) {
                 Log.Info("Life already exists in a field");
@@ -103,6 +110,10 @@ namespace NineToFive.Game {
 
             if (life is User user) {
                 user.Field = null;
+                if (LifePools[EntityType.Player].Count == 0) {
+                    Log.Info($"There are no more players in field {Id} channel {user.Client.Channel}");
+                }
+
                 // todo broadcast OnLeaveField
             }
         }

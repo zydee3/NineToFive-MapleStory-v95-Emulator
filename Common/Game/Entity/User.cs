@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Game.Storage;
@@ -88,7 +90,7 @@ namespace NineToFive.Game.Entity {
 
             using DatabaseQuery deleteItems = Database.Table("items");
             count = deleteItems.Delete().ExecuteNonQuery();
-            Log.Info($"Cleaned up {count} items from {CharacterStat.Username}'s");  
+            Log.Info($"Cleaned up {count} items from {CharacterStat.Username}'s");
 
             using DatabaseQuery insertItems = Database.Table("items");
             foreach (var inventory in Inventories.Values) {
@@ -101,9 +103,22 @@ namespace NineToFive.Game.Entity {
             Log.Info($"Successfully saved {count} items in {CharacterStat.Username}'s inventories");
         }
 
-        public void SetField(in int fieldId, bool characterData = true) {
+        /// <summary>
+        /// changes the user's field
+        /// <para>a portal is typically specified when the character is transferring to a new field via entering a portal</para>
+        /// </summary>
+        /// <param name="fieldId">destination field</param>
+        /// <param name="portal">source portal</param>
+        /// <param name="characterData">to re-encode character data (a refresh essentially)</param>
+        public void SetField(in int fieldId, Portal portal = null, bool characterData = true) {
             Field?.RemoveLife(this);
             Field = Client.Channel.GetField(fieldId);
+            if (portal != null) {
+                var destPortal = Field.Portals.First(p => p.Name.Equals(portal.Name));
+                Location = new Vector2(destPortal.X, destPortal.Y);
+                // CharacterStat.Portal = portal.Id;
+            }
+
             Field.AddLife(this);
 
             using Packet w = new Packet();

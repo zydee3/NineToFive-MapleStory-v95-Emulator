@@ -20,6 +20,7 @@ namespace NineToFive {
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
                 [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
+                [(short) ReceiveOperations.OnTransferFieldRequest] = typeof(TransferFieldEvent)
             };
         }
 
