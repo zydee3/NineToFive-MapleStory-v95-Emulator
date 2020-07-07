@@ -23,7 +23,7 @@ namespace NineToFive.Event {
 
         public override void OnHandle() {
             var user = Client.User;
-            user.Field.BroadcastSkip(GetUserEmotionChanged(user.CharacterStat.Id, _emotion, _duration, _byItemOption), Client.Id);
+            user.Field.BroadcastPacketExclude(user, GetUserEmotionChanged(user.CharacterStat.Id, _emotion, _duration, _byItemOption));
         }
 
         private static byte[] GetUserEmotionChanged(uint characterId, int emotion, int duration, bool byItemOption) {

@@ -33,7 +33,8 @@ namespace NineToFive.Util {
                 "exp", user.CharacterStat.Exp,
                 "popularity", user.CharacterStat.Popularity,
                 "field_id", user.CharacterStat.FieldId,
-                "portal", user.CharacterStat.Portal
+                "portal", user.CharacterStat.Portal,
+                "gm_level", user.GradeCode,
             };
         }
 

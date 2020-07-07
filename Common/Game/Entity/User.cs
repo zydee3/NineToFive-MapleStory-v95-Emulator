@@ -67,6 +67,8 @@ namespace NineToFive.Game.Entity {
 
         public uint AccountId { get; set; }
         public Client Client { get; set; }
+        public byte GradeCode { get; set; }
+        public bool IsHidden { get; set; }
 
         public Field Field {
             get => _field;

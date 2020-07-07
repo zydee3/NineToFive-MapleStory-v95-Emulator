@@ -125,24 +125,29 @@ namespace NineToFive.Net {
         /// <param name="buffer">packet buffer to send</param>
         /// <param name="port">destination port on the specified server</param>
         /// <param name="address">ip address of the specified server</param>
-        /// <returns>response information in regard to the packet sent, if no response</returns>
+        /// <returns>response information in regard to the packet sent, null if no response</returns>
         public static byte[] GetPacketResponse(byte[] buffer, int port, string address = "127.0.0.1") {
-            using TcpClient client = new TcpClient(address, port);
-            NetworkStream stream = client.GetStream();
-            // send packet request
-            buffer = SimpleCrypto.Encrypt(buffer);
-            stream.Write(buffer, 0, buffer.Length);
+            try {
+                using TcpClient client = new TcpClient(address, port);
+                NetworkStream stream = client.GetStream();
+                // send packet request
+                buffer = SimpleCrypto.Encrypt(buffer);
+                stream.Write(buffer, 0, buffer.Length);
 
-            // get response length
-            buffer = new byte[4];
-            int count = stream.Read(buffer, 0, buffer.Length);
-            if (count == 0) return null; // no response
+                // get response length
+                buffer = new byte[4];
+                int count = stream.Read(buffer, 0, buffer.Length);
+                if (count == 0) return null; // no response
 
-            // read response packet
-            buffer = new byte[BitConverter.ToInt32(buffer)];
-            count = stream.Read(buffer);
-            if (count == 0) throw new OperationCanceledException("Not enough data received");
-            return buffer;
+                // read response packet
+                buffer = new byte[BitConverter.ToInt32(buffer)];
+                count = stream.Read(buffer);
+                if (count == 0) throw new OperationCanceledException("Not enough data received");
+                return buffer;
+            } catch {
+                // connection probably failed
+                return null;
+            }
         }
     }
 }

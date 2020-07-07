@@ -1,11 +1,84 @@
 ﻿using System;
 using System.Linq;
-using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
+using NineToFive.SendOps;
 
 namespace NineToFive.Packets {
+    public static class CWvsPackets {
+        public static byte[] GetBroadcastMessage(in User user, bool whisper, byte type, string msg, in Item item) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnBroadcastMsg);
+            w.WriteByte(type);
+            switch (type) {
+                default: throw new InvalidOperationException("unhandled type : " + type);
+                case 0: // blue: [Notice] {msg}
+                case 1: // popup: {msg}
+                case 5: // pink: {msg}
+                case 6: // CUtilDlg::Notice
+                case 7: // CUtilDlgEx::CUtilDlgEx
+                case 18:
+                    w.WriteString(msg);
+                    break;
+                case 2:  // field megaphone (blue): {username} : {msg}
+                case 3:  // megaphone
+                case 20: // skull megaphone
+                    msg = $"{user.CharacterStat.Username} : {msg}";
+                    if (type == 2) goto case 0;
+                    w.WriteString(msg);
+                    w.WriteByte(user.Client.Channel.Id);
+                    w.WriteBool(whisper);
+                    break;
+                case 4:
+                    if (w.WriteBool(msg != null)) {
+                        w.WriteString(msg);
+                    }
+
+                    break;
+                case 8: // item megaphone
+                case 9:
+                    w.WriteString(msg);
+                    w.WriteByte(user.Client.Channel.Id);
+                    if (type == 9) break;
+                    w.WriteBool(whisper);
+                    if (w.WriteBool(item != null)) {
+                        item!.Encode(item, w);
+                    }
+
+                    break;
+                case 10: // multi-line megaphone
+                    w.WriteString(msg);
+                    byte count = w.WriteByte();
+                    if (count > 2) w.WriteString(msg);
+                    if (count > 3) w.WriteString(msg);
+                    w.WriteByte(user.Client.Channel.Id);
+                    w.WriteBool(whisper);
+                    break;
+                case 11: // CField::BlowWeather
+                    w.WriteString(msg);
+                    w.WriteInt(item.Id);
+                    break;
+                case 12:
+                    w.WriteInt(item.Id);
+                    w.WriteString(msg);
+                    item.Encode(item, w);
+                    break;
+                case 13: // {name} duplicated an item from a twin dragons egg congrats
+                case 14: // {name} got an item from the twin dragons egg congrats
+                    w.WriteString(msg);
+                    item.Encode(item, w);
+                    break;
+            }
+
+            if (type == 6 || type == 7 || type == 18) {
+                // CUtilDlg speaker
+                w.WriteInt(2000);
+            }
+            return w.ToArray();
+        }
+    }
+
     public static class UserPackets {
         public static void EncodeCharacterData(User user, Packet w, long dwCharFlag) {
             w.WriteLong(dwCharFlag);
@@ -177,7 +250,7 @@ namespace NineToFive.Packets {
             if ((dwCharFlag & 0x80000) == 0x80000) {
                 // CharacterData::InitQuestExFromRawStr
                 for (int i = 0; i < w.WriteShort(); i++) {
-                    w.WriteShort(); // nQuestID
+                    w.WriteShort();  // nQuestID
                     w.WriteString(); // rawStr
                 }
             }

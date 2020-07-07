@@ -13,6 +13,9 @@ namespace NineToFive.Interopation.Event {
             string username = r.ReadString();
             string password = r.ReadString();
             byte[] machineId = r.ReadBytes(16);
+            
+            // todo remove! when login is working as intended
+            Log.Info($"login request {username} {password}");
 
             Server.Clients.TryGetValue(username, out Client client);
             byte loginResult = ClientTryLogin(ref client, ref username, ref password);
@@ -20,9 +23,9 @@ namespace NineToFive.Interopation.Event {
             using Packet w = new Packet();
             w.WriteByte(loginResult);
             if (loginResult == 1) {
+                client.MachineId = machineId;
                 // successful login, encode client data
                 client.Encode(client, w);
-                Log.Info($"{client.Username} has logged-in");
                 Server.Clients.TryAdd(username, client);
             }
 
@@ -40,6 +43,7 @@ namespace NineToFive.Interopation.Event {
                 client.Username = r.GetString("username");
                 client.Password = r.GetString("password");
                 client.Gender = r.GetByte("gender");
+                client.GradeCode = r.GetByte("gm_level");
                 // im so angry why does DBNull exist i want to smash my keyboard i can't believe GetString can't simply return null...
                 // someone really thought DBNull had to exist to make the lives of everyone inconvenient by one extra getter method
                 int spwOrdinal = r.GetOrdinal("second_password");

@@ -39,6 +39,7 @@ namespace NineToFive {
             p.WriteString(t.Username);
             p.WriteString(t.Password);
             p.WriteByte(t.Gender);
+            p.WriteByte(t.GradeCode);
             if (p.WriteBool(t.MachineId != null)) {
                 p.WriteBytes(t.MachineId);
             }
@@ -57,6 +58,7 @@ namespace NineToFive {
             t.Username = p.ReadString();
             t.Password = p.ReadString();
             t.Gender = p.ReadByte();
+            t.GradeCode = p.ReadByte();
             if (p.ReadBool()) {
                 t.MachineId = p.ReadBytes(16);
             }
@@ -74,6 +76,7 @@ namespace NineToFive {
         public string Username { get; set; }
         public string Password { get; set; }
         public byte Gender { get; set; }
+        public byte GradeCode { get; set; }
         public User User { get; set; }
         public byte[] MachineId { get; set; }
         public string SecondaryPassword { get; set; }

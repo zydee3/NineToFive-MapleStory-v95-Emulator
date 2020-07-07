@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Net;
-using log4net;
 using NineToFive.Event;
 using NineToFive.Net;
 using NineToFive.SendOps;
@@ -74,9 +73,11 @@ namespace NineToFive.Login.Event {
 
             p.WriteUInt(client.Id);
             p.WriteByte(client.Gender);
-            p.WriteByte();  // nGradeCode
-            p.WriteShort(); // nPurchaseExp
-            p.WriteByte();  // bManager,bTester,bSubTester 
+            // nGradeCode, nPurchaseExp, (bManager, bTester, bSubTester)
+            p.WriteByte();
+            p.WriteShort(client.GradeCode);
+            p.WriteByte();
+
             p.WriteString(client.Username);
             p.WriteByte(); // nVIPGrade
             p.WriteByte(); // nPurchaseExp

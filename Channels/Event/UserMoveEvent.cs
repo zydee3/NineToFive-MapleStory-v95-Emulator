@@ -11,7 +11,7 @@ namespace NineToFive.Event {
 
         public override void OnHandle() {
             var user = Client.User;
-            user.Field.BroadcastSkip(GetUserRemoteMove(user, Origin, Velocity, Movements), Client.Id);
+            user.Field.BroadcastPacketExclude(user,GetUserRemoteMove(user, Origin, Velocity, Movements));
         }
 
         private static byte[] GetUserRemoteMove(User user, Vector2 origin, Vector2 velocity, List<Movement> moves) {

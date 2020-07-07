@@ -4,7 +4,7 @@ using NineToFive.Util;
 
 namespace NineToFive.Event.Data {
     public class Movement : IPacketSerializer<Movement> {
-        public byte Type { get; set; }
+        public byte Type { get; }
 
         public Movement(in byte type) {
             Type = type;
