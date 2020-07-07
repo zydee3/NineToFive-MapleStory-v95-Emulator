@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using log4net;
 using log4net.Config;
+using log4net.Util.TypeConverters;
 using NineToFive.Event;
 using NineToFive.Game;
 using NineToFive.Net;
@@ -17,10 +18,18 @@ namespace NineToFive {
         public ChannelServer(int port) : base(port) {
             _director = new EventDirector {
                 [(short) ReceiveOperations.Login_OnEnterGamePacket] = typeof(CharEnterGameEvent),
+
+                [(short) ReceiveOperations.OnTransferFieldRequest] = typeof(TransferFieldEvent),
+
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
+                [(short) ReceiveOperations.User_OnEmotion] = typeof(EmotionChangeEvent),
+
                 [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
-                [(short) ReceiveOperations.OnTransferFieldRequest] = typeof(TransferFieldEvent)
+                [(short) ReceiveOperations.UserLocal_TryRegisterTeleport] = typeof(RegisterTeleportEvent),
+                
+                [(short) ReceiveOperations.Field_LogChatMsgSlash]  = typeof(ChatMsgSlashEvent),
+                [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
             };
         }
 

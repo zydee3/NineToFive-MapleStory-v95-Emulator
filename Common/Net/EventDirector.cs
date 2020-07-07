@@ -45,14 +45,19 @@ namespace NineToFive.Net {
 
         // CField, CCashShop, CITC
         OnTransferFieldRequest = 41,
-        
+
         CWvsContext_OnCheckOpBoardHasNew = 192,
         CWvsContext_OnUiMenu = 218,
 
         User_OnUserMove = 44,
         User_OnChatMsg = 54,
+        User_OnEmotion = 56,
 
         UserLocal_OnPortalCollision = 112,
+        UserLocal_TryRegisterTeleport = 113,
         UserLocal_OnResetNLCPQ = 251,
+        
+        Field_SendChatMsgSlash = 151,
+        Field_LogChatMsgSlash = 152,
     }
 }
