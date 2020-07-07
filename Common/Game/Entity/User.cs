@@ -82,7 +82,7 @@ namespace NineToFive.Game.Entity {
         public void Save() {
             using DatabaseQuery updateChars = Database.Table("characters");
             int count = updateChars.Update(Database.CreateUserParameters(this))
-                .Where("id", "=", CharacterStat.Id)
+                .Where("character_id", "=", CharacterStat.Id)
                 .ExecuteNonQuery();
             if (count == 0) throw new InvalidOperationException($"Failed to save character({CharacterStat.Username})");
 
