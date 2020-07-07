@@ -107,7 +107,7 @@ namespace NineToFive.Wz {
 
             mob.MonsterBan = t.MonsterBan;
             mob.HealOnDestroy = t.HealOnDestroy;
-            mob.SelfDestruction = mob.SelfDestruction;
+            mob.SelfDestruction = t.SelfDestruction;
 
             mob.Revives = t.Revives == null ? new int[0] : t.Revives.ToArray();
             mob.Skills = t.Skills == null ? new TemplateMob.Skill[0] : t.Skills.ToArray();
