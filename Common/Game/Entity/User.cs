@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using log4net;
 using MySql.Data.MySqlClient;
+using NineToFive.Constants;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
 using NineToFive.Packets;
@@ -11,14 +12,14 @@ using NineToFive.SendOps;
 using NineToFive.Util;
 
 namespace NineToFive.Game.Entity {
-    public class User : Life, IDisposable {
+    public class User : Life {
         private static readonly ILog Log = LogManager.GetLogger(typeof(User));
         public readonly AvatarLook AvatarLook;
         public readonly GW_CharacterStat CharacterStat;
         public readonly Dictionary<InventoryType, Inventory> Inventories;
         private Field _field;
 
-        public User(MySqlDataReader reader = null) : base(EntityType.Player) {
+        public User(MySqlDataReader reader = null) : base(EntityType.User) {
             Inventories = new Dictionary<InventoryType, Inventory>();
             foreach (InventoryType type in Enum.GetValues(typeof(InventoryType))) {
                 Inventories.Add(type, new Inventory(type));
@@ -56,14 +57,11 @@ namespace NineToFive.Game.Entity {
             }
         }
 
-        public void Dispose() {
-            Log.Info($"Saved user '{CharacterStat.Username}'");
-            if (Field != null) {
-                Field.RemoveLife(this);
-                Field = null;
-            }
-
+        public override void Dispose() {
             Save();
+            Log.Info($"Saved user '{CharacterStat.Username}'");
+
+            base.Dispose();
             Client.World.Users.TryRemove(CharacterStat.Id, out _);
         }
 
@@ -73,7 +71,7 @@ namespace NineToFive.Game.Entity {
         public bool IsHidden { get; set; }
         public bool IsDebugging { get; set; }
 
-        public Field Field {
+        public override Field Field {
             get => _field;
             set {
                 _field = value;
@@ -130,8 +128,8 @@ namespace NineToFive.Game.Entity {
                 w.WriteInt();
             }
 
-            w.WriteInt(Math.Abs(Field.VRRight) - Math.Abs(Field.VRLeft)); // nFieldWidth
-            w.WriteInt(Math.Abs(Field.VRBottom) - Math.Abs(Field.VRTop)); // nFieldHeight
+            w.WriteInt(Math.Abs(Field.VrRight) - Math.Abs(Field.VrLeft)); // nFieldWidth
+            w.WriteInt(Math.Abs(Field.VrBottom) - Math.Abs(Field.VrTop)); // nFieldHeight
             w.WriteByte(1);                                               // unknown
             w.WriteBool(characterData);
             short notifierCheck = w.WriteShort();
@@ -144,9 +142,9 @@ namespace NineToFive.Game.Entity {
 
             if (characterData) {
                 // CalcDamage::SetSeed
-                w.WriteInt(RNG.GetInt());
-                w.WriteInt(RNG.GetInt());
-                w.WriteInt(RNG.GetInt());
+                w.WriteInt(Randomizer.GetInt());
+                w.WriteInt(Randomizer.GetInt());
+                w.WriteInt(Randomizer.GetInt());
 
                 UserPackets.EncodeCharacterData(this, w, -1);
                 // CWvsContext::OnSetLogoutGiftConfig
@@ -279,7 +277,7 @@ namespace NineToFive.Game.Entity {
             p.WriteInt(MP);
             p.WriteInt(MaxMP);
             p.WriteShort(AP);
-            if (NineToFive.Job.IsExtendedSpJob(Job)) {
+            if (JobConstants.IsExtendedSpJob(Job)) {
                 byte advancements = (byte) (9 - Math.Min(9, 2218 - Job));
                 p.WriteByte(advancements);
                 for (byte i = 0; i < advancements; i++) {

@@ -1,8 +1,8 @@
-﻿using NineToFive.Event;
-using NineToFive.Net;
+﻿using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 using NineToFive.SendOps;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     /// <summary>
     /// <para>CLogin::SendCancelGenderPacket</para>
     /// <para>CLogin::SendSetGenderPacket</para>

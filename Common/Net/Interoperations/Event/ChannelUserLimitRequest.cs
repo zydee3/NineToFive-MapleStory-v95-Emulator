@@ -1,8 +1,7 @@
 ﻿using System;
 using NineToFive.Game;
-using NineToFive.Net;
 
-namespace NineToFive.Interopation.Event {
+namespace NineToFive.Net.Interoperations.Event {
     public static class ChannelUserLimitRequest {
         public static byte[] OnHandle(Packet r) {
             World world = Server.Worlds[r.ReadByte()];

@@ -57,7 +57,6 @@ namespace NineToFive.Game.Storage {
         }
 
         public override void Decode(Item item, Packet p) {
-            base.Decode(item, p);
         }
     }
 }

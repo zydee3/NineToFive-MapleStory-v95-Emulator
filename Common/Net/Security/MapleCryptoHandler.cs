@@ -12,8 +12,8 @@ namespace NineToFive.Security {
         /// Generates Initialization Vector keys and returns the handshake packet
         /// </summary>
         public byte[] Initialize() {
-            byte[] receiveIv = BitConverter.GetBytes(RNG.GetUInt());
-            byte[] sendIv = BitConverter.GetBytes(RNG.GetUInt());
+            byte[] receiveIv = BitConverter.GetBytes(Randomizer.GetUInt());
+            byte[] sendIv = BitConverter.GetBytes(Randomizer.GetUInt());
 
             En = new AesCryptograph(sendIv, unchecked((short) (0xFFFF - ServerConstants.GameVersion)));
             De = new AesCryptograph(receiveIv, ServerConstants.GameVersion);

@@ -3,10 +3,10 @@ using System.Linq;
 using System.Net;
 using log4net;
 using log4net.Config;
-using log4net.Util.TypeConverters;
 using NineToFive.Event;
 using NineToFive.Game;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 
 [assembly: XmlConfigurator(ConfigFile = "Resources/central-logger.xml")]
 

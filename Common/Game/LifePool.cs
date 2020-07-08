@@ -5,7 +5,7 @@ using NineToFive.Game.Entity;
 namespace NineToFive.Game {
     public class LifePool<T> where T : Life {
         private readonly Dictionary<uint, T> _pool = new Dictionary<uint, T>();
-        private int _uniqueId = 0;
+        private int _uniqueId;
 
         public Dictionary<uint, T>.ValueCollection Values => _pool.Values;
         public int Count => _pool.Count;

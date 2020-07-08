@@ -1,17 +1,16 @@
 ﻿using System;
 using log4net;
-using NineToFive.Event;
-using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 using NineToFive.SendOps;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     public class SelectEnterChannelEvent : PacketEvent {
         private static readonly ILog Log = LogManager.GetLogger(typeof(SelectEnterChannelEvent));
         private byte _worldId, _channelId;
         private int _address;
-        private byte[] _machineId; // not sure
+        private byte[] _machineId;
 
         public SelectEnterChannelEvent(Client client) : base(client) { }
 

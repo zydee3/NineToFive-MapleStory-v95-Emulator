@@ -9,8 +9,8 @@ namespace NineToFive.Game {
         public readonly ChannelSnapshot Snapshot = new ChannelSnapshot();
         private Dictionary<int, Field> _fields = new Dictionary<int, Field>();
 
-        public Dictionary<int, Field> Fields { get; set; }
-        
+        public Dictionary<int, Field> Fields { get; }
+
         public Channel(byte worldId, byte id, int port) {
             _worldId = worldId;
             Id = id;
@@ -27,10 +27,10 @@ namespace NineToFive.Game {
         public Field GetField(int fieldId) {
             _fields.TryGetValue(fieldId, out Field field);
             if (field != null) return field;
-            field = new Field(fieldId, Id);
+            field = new Field(fieldId);
             _fields.Add(fieldId, field);
             return field;
-        } 
+        }
     }
 
     /// <summary>
@@ -38,6 +38,7 @@ namespace NineToFive.Game {
     /// </summary>
     public class ChannelSnapshot {
         public DateTime Timestamp { get; set; }
+
         /// <summary>
         /// Last recorded value of user count 
         /// </summary>

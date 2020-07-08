@@ -2,9 +2,8 @@
 using System.Net;
 using log4net;
 using NineToFive.Game;
-using NineToFive.Net;
 
-namespace NineToFive.Interopation.Event {
+namespace NineToFive.Net.Interoperations.Event {
     public static class ChannelHostRequest {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ChannelHostRequest));
 
@@ -37,7 +36,6 @@ namespace NineToFive.Interopation.Event {
             response[0] = 1; // granted permission
             for (int i = min; i <= max; i++) {
                 Channel channel = world.Channels[i];
-                ChannelSnapshot snapshot = channel.Snapshot;
                 channel.HostAddress = address;
                 Log.Info($"Channel {i} in world {channel.World.Id} is now hosted by {channel.HostAddress}");
             }

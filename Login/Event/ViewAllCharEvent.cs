@@ -1,10 +1,8 @@
-﻿using NineToFive.Event;
-using NineToFive.Game;
-using NineToFive.Game.Entity;
+﻿using NineToFive.Game.Entity;
 using NineToFive.Net;
 using NineToFive.SendOps;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     public class ViewAllCharEvent : PacketEvent {
         public ViewAllCharEvent(Client client) : base(client) { }
 
@@ -13,26 +11,29 @@ namespace NineToFive.Login.Event {
             if (a == 1) {
                 p.ReadString();
                 byte[] machineId = p.ReadBytes(16); // CSystemInfo::GetMachineId
-                p.ReadInt(); // CSystemInfo::GetGameRoomClient
+                p.ReadInt();                        // CSystemInfo::GetGameRoomClient
                 p.ReadByte();
-                
+
+                if (!machineId.IsEqual(Client.MachineId)) {
+                    return false;
+                }
                 if (machineId.Length != Client.MachineId.Length) return false;
                 for (byte i = 0; i < machineId.Length; i++) {
                     if (machineId[i] != Client.MachineId[i]) return false;
                 }
             }
-            
+
             return true;
         }
 
         public override void OnHandle() {
-            Client.Session.Write(GetViewAllCharFail(1));
+            Client.Session.Write(GetViewAllCharSuccess(Client));
         }
 
         private static byte[] GetViewAllCharSuccess(Client client) {
             using Packet p = new Packet();
             p.WriteShort((short) CLogin.OnViewAllCharResult);
-            p.WriteByte(0);
+            p.WriteByte();
 
             p.WriteByte();
             p.WriteByte((byte) client.Users.Count);
@@ -41,6 +42,7 @@ namespace NineToFive.Login.Event {
                 user.AvatarLook.Encode(user, p);
                 p.WriteBool(false); // rankings
             }
+
             return p.ToArray();
         }
 

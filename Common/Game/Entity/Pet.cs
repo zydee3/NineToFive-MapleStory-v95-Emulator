@@ -1,9 +1,7 @@
-﻿namespace NineToFive.Game.Entity {
+﻿using NineToFive.Constants;
+
+namespace NineToFive.Game.Entity {
     public class Pet : Life {
-        private int ID { get; set; }
-        
-        public Pet(int ID, int itemId) : base(EntityType.Pet) {
-            this.ID = ID;
-        }
+        public Pet() : base(EntityType.Pet) { }
     }
 }

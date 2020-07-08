@@ -1,9 +1,8 @@
 ﻿using System.Net;
 using log4net;
 using NineToFive.Game;
-using NineToFive.Net;
 
-namespace NineToFive.Interopation.Event {
+namespace NineToFive.Net.Interoperations.Event {
     public static class ClientMigrateSocketRequest {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ClientMigrateSocketRequest));
 

@@ -1,11 +1,10 @@
 ﻿using System;
-using NineToFive.Event;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
 using NineToFive.SendOps;
 using NineToFive.Util;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     public class NewCharEvent : PacketEvent {
         private string _username;
         private int _jobIndex;
@@ -112,7 +111,7 @@ namespace NineToFive.Login.Event {
     /// As listed in game files under <code>UI/Login.img/newChar*</code>
     /// <para>Called via <code>CLogin::GetSelectedAL</code></para>
     /// </summary>
-    enum AvatarSel : int {
+    enum AvatarSel {
         Face = 0,
         Hair = 1,
         HairColor = 2,

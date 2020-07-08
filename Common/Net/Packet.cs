@@ -173,12 +173,6 @@ namespace NineToFive.Net {
             return this;
         }
 
-        public Packet WriteIPAddress(IPAddress value) {
-            Writer.Write(value.GetAddressBytes());
-            if (Position > Size) Size = Position;
-            return this;
-        }
-
         #endregion
 
         #region read methods
@@ -201,7 +195,6 @@ namespace NineToFive.Net {
 
         public ushort ReadUShort() {
             return Reader.ReadUInt16();
-            ;
         }
 
         public int ReadInt() {
@@ -230,11 +223,6 @@ namespace NineToFive.Net {
                 result[i] = (char) Reader.ReadByte();
             }
             return new string(result);
-        }
-
-        public IPAddress ReadIPAddress() {
-            IPAddress result = new IPAddress(Reader.ReadBytes(4));
-            return result;
         }
 
         #endregion

@@ -5,10 +5,9 @@ using NineToFive.Game.Entity;
 using NineToFive.Wz;
 
 namespace ServerTests.Wz {
-    public class MobTest {
+    public static class MobTest {
         public static void Test() {
-
-            Mob Mob = new Mob(9001005);
+            Mob mob = new Mob(9001005);
         }
     }
 }

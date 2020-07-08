@@ -4,52 +4,42 @@ using System.Linq;
 using log4net;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
-using MapleLib.WzLib.WzStructure.Data;
+using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Resources;
 
 namespace NineToFive.Wz {
     public static class MapWz {
-        private const string WzName = "Map";
         private static readonly ILog Log = LogManager.GetLogger(typeof(MapWz));
+        private static readonly WzFile WzFile = WzProvider.Load("Map");
 
-        /// <summary>
-        /// Sets the the field variables of the field being passed in.
-        /// </summary>
-        /// <param name="field">Field to be initialized</param>
-        /// <param name="MapProperties">List of WzImageProperty loaded from the Field's Image from Wz.</param>
-        /// <param name="benchmark">Average time to create template and set: 00:00:00.2348726</param>
-        public static void SetField(Field field) {
-            if (field == null) return;
-
+        public static void CopyTemplate(Field field) {
             int fieldId = field.Id;
             if (!WzCache.FieldTemplates.TryGetValue(fieldId, out TemplateField t)) {
-                string pathToMapImage = $"Map/Map{fieldId / 100000000}/{fieldId.ToString().PadLeft(9, '0')}.img";
-                List<WzImageProperty> fieldProperties = WzProvider.GetWzProperties(WzProvider.Load("Map"), pathToMapImage);
-                t = new TemplateField();
-                SetTemplateField(t, ref fieldProperties);
+                InitializeTemplate(out t, fieldId);
                 WzCache.FieldTemplates.Add(fieldId, t);
             }
 
-            if (t == null) throw new NullReferenceException($"Unable to load field: {fieldId}");
-
             // Create spawn points only where monsters exist.
-            Dictionary<int, FieldLifeEntry> mobEntries = t.Life[EntityType.Mob];
-            foreach (Foothold foothold in t.Footholds) {
-                if (mobEntries.TryGetValue(foothold.ID, out FieldLifeEntry entry)) {
-                    field.SpawnPoints.Add(new SpawnPoint(field, entry.ID));
-                }
+            List<TemplateLife> mobs = t.Life[EntityType.Mob];
+            foreach (var mob in mobs) {
+                field.SpawnPoints.Add(new SpawnPoint(mob));
             }
 
-            //todo: load npcs and reactors from template.Life
-            field.FieldLimits = new bool[Enum.GetNames(typeof(FieldLimitType)).Length];
-            t.FieldLimits.CopyTo(field.FieldLimits, 0);
+            foreach (var pair in t.Life) {
+                if (!pair.Key.IsTemplate()) continue;
+                foreach (var lifeEntry in pair.Value) {
+                    field.AddLife(lifeEntry.Create());
+                }
+            }
 
             field.Footholds = new Foothold[t.Footholds.Length];
             t.Footholds.CopyTo(field.Footholds, 0);
 
             field.Portals.AddRange(t.Portals);
+
+            field.FieldLimit = t.FieldLimit;
             field.BackgroundMusic = t.BackgroundMusic;
             field.OnFirstUserEnter = t.OnFirstUserEnter;
             field.OnUserEnter = t.OnUserEnter;
@@ -60,69 +50,25 @@ namespace NineToFive.Wz {
             field.Fly = t.Fly;
             field.MobCount = t.MobCount;
             field.MobRate = t.MobRate;
-
-            field.VRBottom = t.VRBottom;
-            field.VRTop = t.VRTop;
-            field.VRLeft = t.VRLeft;
-            field.VRRight = t.VRRight;
-
-            Server.Worlds[0].Channels[field.ChannelId].Fields.Add(fieldId, field);
+            field.VrBottom = t.VRBottom;
+            field.VrTop = t.VRTop;
+            field.VrLeft = t.VRLeft;
+            field.VrRight = t.VRRight;
         }
 
-        /// <summary>
-        /// Sets the Template of the field.
-        /// </summary>
-        /// <param name="Field">Field to be initialized</param>
-        /// <param name="mapProperties">List of WzImageProperty loaded from the Field's Image from Wz.</param>
-        public static void SetTemplateField(TemplateField template, ref List<WzImageProperty> mapProperties) {
-            foreach (WzImageProperty node in mapProperties) {
-                if (node == null) continue;
-
-                switch (node.Name) {
-                    case "back": { }
-                        break;
-                    case "clock": { }
-                        break;
-                    case "foothold":
-                        LoadFootholds(template, node);
-                        break;
-                    case "info":
-                        LoadInfo(template, node);
-                        break;
-                    case "ladderRope": { }
-                        break;
-                    case "life":
-                        if (template.LoadLife) LoadLife(template, node);
-                        break;
-                    case "miniMap":
-                        break;
-                    case "portal":
-                        if (template.LoadPortals) LoadPortals(template, node);
-                        break;
-                    case "reactor": { }
-                        break;
-                    default:
-                        if (!int.TryParse(node.Name, out int _)) {
-                            Log.Info($"Unhandled Map Node: {node.Name,10}({node.GetType()})");
-                        }
-
-                        break;
-                }
-            }
+        private static void InitializeTemplate(out TemplateField templateField, int fieldId) {
+            string imgPath = $"Map/Map{fieldId / 100000000}/{fieldId.ToString().PadLeft(9, '0')}.img";
+            WzObject wzObject = WzFile.GetObjectFromPath(imgPath, false);
+            if (wzObject == null) throw new NullReferenceException($"No map data : {imgPath}");
+            templateField = new TemplateField(fieldId);
+            LoadInfo(in templateField, (WzImageProperty) wzObject["info"]);
+            LoadFootholds(in templateField, (WzImageProperty) wzObject["foothold"]);
+            LoadLife(in templateField, (WzImageProperty) wzObject["life"]);
+            LoadPortals(in templateField, (WzImageProperty) wzObject["portal"]);
+            // todo back, clock, reactor
         }
 
-        public static void PrintDirectory(WzImageProperty parent) {
-            foreach (WzImageProperty internalProperty in parent.WzProperties) {
-                Log.Info($"--{internalProperty.Name}({internalProperty.GetType()})\n----{internalProperty.WzValue}");
-                if (internalProperty.Name == "fieldLimit") {
-                    foreach (FieldLimitType type in Enum.GetValues(typeof(FieldLimitType))) {
-                        Log.Info($"{type} : {type.Check((int) internalProperty.WzValue)}");
-                    }
-                }
-            }
-        }
-
-        private static void LoadFootholds(TemplateField template, WzImageProperty footholdsImage) {
+        private static void LoadFootholds(in TemplateField template, WzImageProperty footholdsImage) {
             Dictionary<uint, Foothold> footholds = new Dictionary<uint, Foothold>();
 
             foreach (WzImageProperty collection in footholdsImage.WzProperties) {
@@ -159,7 +105,7 @@ namespace NineToFive.Wz {
                             }
                         }
 
-                        foothold.ID = childId;
+                        foothold.Id = childId;
                         foothold.SetEndPoints();
                         footholds.Add((uint) childId, foothold);
                     }
@@ -169,143 +115,55 @@ namespace NineToFive.Wz {
             template.Footholds = footholds.Select(entry => entry.Value).ToArray();
         }
 
-        private static void LoadLife(TemplateField template, WzImageProperty lifeImage) {
-            foreach (WzImageProperty life in lifeImage.WzProperties) {
-                if (!int.TryParse(life.Name, out int id)) continue;
-
-                EntityType? type = null;
-                FieldLifeEntry fieldLife = new FieldLifeEntry();
-
-                foreach (WzImageProperty property in life.WzProperties) {
-                    switch (property.Name) {
-                        case "id":
-                            if (int.TryParse(((WzStringProperty) property).Value, out int lifeId)) {
-                                fieldLife.ID = lifeId;
-                            }
-
-                            break;
-                        case "type":
-                            string value = ((WzStringProperty) property).Value;
-                            switch (value) {
-                                case "m":
-                                    type = EntityType.Mob;
-                                    break;
-                                case "n":
-                                    type = EntityType.Npc;
-                                    break;
-                                case "r":
-                                    type = EntityType.Reactor;
-                                    break;
-                                default:
-                                    Log.Info($"Unhandled Entity Type: {value}");
-                                    break;
-                            }
-
-                            break;
-                        case "mobTime":
-                            fieldLife.MobTime = ((WzIntProperty) property).Value;
-                            break;
-                        case "f":
-                            fieldLife.Flipped = ((WzIntProperty) property).Value == 1;
-                            break;
-                        case "hide":
-                            fieldLife.Hidden = ((WzIntProperty) property).Value == 1;
-                            break;
-                        case "fh":
-                            fieldLife.FootholdID = ((WzIntProperty) property).Value;
-                            break;
-                        case "cy":
-                            fieldLife.Cy = ((WzIntProperty) property).Value;
-                            break;
-                        case "rx0":
-                            fieldLife.Rx0 = ((WzIntProperty) property).Value;
-                            break;
-                        case "rx1":
-                            fieldLife.Rx1 = ((WzIntProperty) property).Value;
-                            break;
-                        case "x":
-                            fieldLife.X = ((WzIntProperty) property).Value;
-                            break;
-                        case "y":
-                            fieldLife.Y = ((WzIntProperty) property).Value;
-                            break;
-                        default:
-                            Log.Info($"Unhandled Field/Life Property: {property.Name,10}({property.PropertyType})");
-                            break;
-                    }
+        private static void LoadLife(in TemplateField template, WzImageProperty lifeProperty) {
+            foreach (WzImageProperty entry in lifeProperty.WzProperties) {
+                string type = (entry["type"] as WzStringProperty)?.Value;
+                TemplateLife life = type switch {
+                    "m" => new TemplateLife(EntityType.Mob),
+                    "n" => new TemplateLife(EntityType.Npc),
+                    "r" => new TemplateLife(EntityType.Reactor),
+                    _   => null
+                };
+                if (life == null) {
+                    Log.Warn($"Unknown life type '{type}'");
+                    continue;
                 }
 
-                if (type.HasValue) {
-                    if (template.Life.TryGetValue(type.Value, out Dictionary<int, FieldLifeEntry> fieldLifeEntries)) {
-                        fieldLifeEntries.Add((type == EntityType.Mob ? fieldLife.FootholdID : fieldLife.ID), fieldLife);
-                    } else {
-                        Log.Info($"Unable to add field life entry: id={id}, type={type}");
-                    }
-                }
+                // not default
+                life.Id = int.Parse((entry["id"] as WzStringProperty)!.Value);
+                life.FootholdId = (entry["fh"] as WzIntProperty)!.Value;
+                life.Cy = (entry["cy"] as WzIntProperty)!.Value;
+                life.Rx0 = (entry["rx0"] as WzIntProperty)!.Value;
+                life.Rx1 = (entry["rx1"] as WzIntProperty)!.Value;
+                life.X = (entry["x"] as WzIntProperty)!.Value;
+                life.Y = (entry["y"] as WzIntProperty)!.Value;
+                // can default
+                life.MobTime = (entry["mobTime"] as WzIntProperty)?.Value ?? 1;
+                life.Flipped = (entry["f"] as WzIntProperty)?.Value == 1;
+                life.Hidden = (entry["hide"] as WzIntProperty)?.Value == 1;
+                
+                template.Life[life.Type].Add(life);
             }
         }
 
-        private static void LoadInfo(TemplateField template, WzImageProperty infoImage) {
-            foreach (WzImageProperty property in infoImage.WzProperties) {
-                switch (property.Name) {
-                    case "bgm":
-                        template.BackgroundMusic = ((WzStringProperty) property).Value;
-                        break;
-                    case "fieldLimit":
-                        template.FieldLimits = new bool[Enum.GetNames(typeof(FieldLimitType)).Length];
-                        foreach (FieldLimitType type in Enum.GetValues(typeof(FieldLimitType))) {
-                            template.FieldLimits[(int) type] = type.Check((int) property.WzValue);
-                        }
-
-                        break;
-                    case "forcedReturn":
-                        template.ForcedReturn = ((WzIntProperty) property).Value;
-                        break;
-                    case "returnMap":
-                        break;
-                    case "mobRate":
-                        template.MobRate = ((WzFloatProperty) property).Value;
-                        break;
-                    case "onFirstUserEnter":
-                        template.OnFirstUserEnter = ((WzStringProperty) property).Value;
-                        break;
-                    case "onUserEnter":
-                        template.OnUserEnter = ((WzStringProperty) property).Value;
-                        break;
-                    case "fly":
-                        template.Fly = ((WzIntProperty) property).Value == 1;
-                        break;
-                    case "swim":
-                        template.Swim = ((WzIntProperty) property).Value == 1;
-                        break;
-                    case "town":
-                        template.Town = ((WzIntProperty) property).Value == 1;
-                        break;
-                    case "VRBottom":
-                        template.VRBottom = ((WzIntProperty) property).Value;
-                        break;
-                    case "VRLeft":
-                        template.VRLeft = ((WzIntProperty) property).Value;
-                        break;
-                    case "VRRight":
-                        template.VRRight = ((WzIntProperty) property).Value;
-                        break;
-                    case "VRTop":
-                        template.VRTop = ((WzIntProperty) property).Value;
-                        break;
-                    case "cloud":
-                    case "hideMinimap":
-                    case "mapMark":
-                    case "version":
-                        break;
-                    default:
-                        Log.Info($"Unhandled Map/Info Property: {property.Name,10}({property.GetType()})");
-                        break;
-                }
-            }
+        private static void LoadInfo(in TemplateField template, WzImageProperty infoImage) {
+            template.BackgroundMusic = (infoImage["bgm"] as WzStringProperty)?.Value;
+            template.FieldLimit = (uint) ((infoImage["fieldLimit"] as WzIntProperty)?.Value ?? 0);
+            template.ForcedReturn = (infoImage["forcedReturn"] as WzIntProperty)?.Value ?? template.FieldId;
+            template.ReturnMap = (infoImage["returnMap"] as WzIntProperty)?.Value ?? template.FieldId;
+            template.MobRate = (infoImage["mobRate"] as WzFloatProperty)?.Value ?? 1f;
+            template.OnFirstUserEnter = (infoImage["onFirstUserEnter"] as WzStringProperty)?.Value;
+            template.OnUserEnter = (infoImage["onUserEnter"] as WzStringProperty)?.Value;
+            template.Fly = (infoImage["fly"] as WzIntProperty)?.Value == 1;
+            template.Swim = (infoImage["swim"] as WzIntProperty)?.Value == 1;
+            template.Town = (infoImage["town"] as WzIntProperty)?.Value == 1;
+            template.VRBottom = (infoImage["VRBottom"] as WzIntProperty)?.Value ?? 0;
+            template.VRLeft = (infoImage["VRLeft"] as WzIntProperty)?.Value ?? 0;
+            template.VRRight = (infoImage["VRRight"] as WzIntProperty)?.Value ?? 0;
+            template.VRTop = (infoImage["VRTop"] as WzIntProperty)?.Value ?? 0;
         }
 
-        private static void LoadPortals(TemplateField template, WzImageProperty portalImage) {
+        private static void LoadPortals(in TemplateField template, WzImageProperty portalImage) {
             List<Portal> portals = new List<Portal>();
             foreach (WzImageProperty portalNode in portalImage.WzProperties) {
                 Portal portal = new Portal();
@@ -315,7 +173,7 @@ namespace NineToFive.Wz {
                             portal.Name = ((WzStringProperty) property).Value;
                             break;
                         case "pt":
-                            portal.TargetPortalID = ((WzIntProperty) property).Value;
+                            portal.TargetPortalId = ((WzIntProperty) property).Value;
                             break;
                         case "tm":
                             portal.TargetMap = ((WzIntProperty) property).Value;

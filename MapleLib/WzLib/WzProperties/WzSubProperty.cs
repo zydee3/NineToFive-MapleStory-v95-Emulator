@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using MapleLib.WzLib.Util;
@@ -82,10 +83,12 @@ namespace MapleLib.WzLib.WzProperties
             get
             {
 
-                foreach (WzImageProperty iwp in properties)
-                    if (iwp.Name.ToLower() == name.ToLower())
+                foreach (WzImageProperty iwp in properties) {
+                    if (iwp.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) {
                         return iwp;
-                //throw new KeyNotFoundException("A wz property with the specified name was not found");
+                    }
+                }
+
                 return null;
             }
             set

@@ -3,41 +3,6 @@ using System.Collections.Generic;
 
 namespace NineToFive.Game.Entity.Meta {
     public class TemplateMob {
-
-        public class Ban {
-            public int Type { get; set; }
-            public int TargetFieldID { get; set; }
-            public string TargetPortalName { get; set; }
-            
-            public string Message { get; set; }
-            public int MessageType { get; set; }
-
-            public Ban() {
-                
-            }
-        }
-
-        public class LoseItem {
-            public int ID { get; set; }
-            public string Message { get; set; }
-            public int MessageType { get; set; }
-            public bool Drop { get; set; }
-            public int Prop { get; set; }
-            public int X { get; set; }
-
-            public LoseItem() {
-                
-            }
-        }
-
-        public class Skill {
-            public int ID { get; set; }
-            public int NextID { get; set; }
-            public int Action { get; set; }
-            public int EffectAfter { get; set; }
-            public int Level { get; set; }
-        }
-
         public Ban MonsterBan { get; set; }
         public List<LoseItem> LoseItems { get; set; }
         public List<int> DamagedBySelectedSkill { get; set; }
@@ -46,13 +11,13 @@ namespace NineToFive.Game.Entity.Meta {
         public List<Skill> Skills { get; set; }
         public Tuple<int, int> HealOnDestroy { get; set; }
         public int SelfDestruction { get; set; }
-        
-        public int ID { get; set; }
-        
+
+        public int Id { get; set; }
+
         public int BodyAttack { get; set; }
         public int Level { get; set; }
-        public int MaxHP { get; set; }
-        public int MaxMP { get; set; }
+        public int MaxHp { get; set; }
+        public int MaxMp { get; set; }
         public int Speed { get; set; }
         public int PADamage { get; set; }
         public int PDDamage { get; set; }
@@ -86,8 +51,8 @@ namespace NineToFive.Game.Entity.Meta {
         public int Invincible { get; set; }
         public int UpperMostLayer { get; set; }
         public int NoRegen { get; set; }
-        public int HideHP { get; set; }
-        public int MBookID { get; set; }
+        public int HideHp { get; set; }
+        public int MBookId { get; set; }
         public int NoDoom { get; set; }
         public int FixedDamage { get; set; }
         public int RemoveQuest { get; set; }
@@ -112,18 +77,41 @@ namespace NineToFive.Game.Entity.Meta {
         public int Phase { get; set; }
         public int DualGauge { get; set; }
         public int Disable { get; set; }
-        
+
         public float Fs { get; set; }
-        
+
         public string PartyReward { get; set; }
         public string Buff { get; set; }
-        public string DefaultHP { get; set; }
-        public string DefaultMP { get; set; }
+        public string DefaultHp { get; set; }
+        public string DefaultMp { get; set; }
         public string Link { get; set; }
         public string MobType { get; set; }
         public string ElemAttr { get; set; }
-        public TemplateMob() {
-            
+
+        public class Ban {
+            public int Type { get; set; }
+            public int TargetFieldId { get; set; }
+            public string TargetPortalName { get; set; }
+
+            public string Message { get; set; }
+            public int MessageType { get; set; }
+        }
+
+        public class LoseItem {
+            public int Id { get; set; }
+            public string Message { get; set; }
+            public int MessageType { get; set; }
+            public bool Drop { get; set; }
+            public int Prop { get; set; }
+            public int X { get; set; }
+        }
+
+        public class Skill {
+            public int Id { get; set; }
+            public int NextId { get; set; }
+            public int Action { get; set; }
+            public int EffectAfter { get; set; }
+            public int Level { get; set; }
         }
     }
 }

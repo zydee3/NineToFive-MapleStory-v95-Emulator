@@ -2,8 +2,8 @@
 using log4net;
 using log4net.Config;
 using NineToFive.Event;
-using NineToFive.Login.Event;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 
 [assembly: XmlConfigurator(ConfigFile = "Resources/central-logger.xml")]
 

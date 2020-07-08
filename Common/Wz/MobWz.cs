@@ -33,8 +33,8 @@ namespace NineToFive.Wz {
 
             mob.BodyAttack = t.BodyAttack;
             mob.Level = t.Level;
-            mob.MaxHP = t.MaxHP;
-            mob.MaxMP = t.MaxMP;
+            mob.MaxHP = t.MaxHp;
+            mob.MaxMP = t.MaxMp;
             mob.Speed = t.Speed;
             mob.PADamage = t.PADamage;
             mob.PDDamage = t.PDDamage;
@@ -68,8 +68,8 @@ namespace NineToFive.Wz {
             mob.Invincible = t.Invincible;
             mob.UpperMostLayer = t.UpperMostLayer;
             mob.NoRegen = t.NoRegen;
-            mob.HideHP = t.HideHP;
-            mob.MBookID = t.MBookID;
+            mob.HideHP = t.HideHp;
+            mob.MBookID = t.MBookId;
             mob.NoDoom = t.NoDoom;
             mob.FixedDamage = t.FixedDamage;
             mob.RemoveQuest = t.RemoveQuest;
@@ -99,8 +99,8 @@ namespace NineToFive.Wz {
 
             mob.PartyReward = t.PartyReward;
             mob.Buff = t.Buff;
-            mob.DefaultHP = t.DefaultHP;
-            mob.DefaultMP = t.DefaultMP;
+            mob.DefaultHP = t.DefaultHp;
+            mob.DefaultMP = t.DefaultMp;
             mob.Link = t.Link;
             mob.MobType = t.MobType;
             mob.ElemAttr = t.ElemAttr;
@@ -139,16 +139,16 @@ namespace NineToFive.Wz {
                             template.MpRecovery = ((WzIntProperty) property).Value;
                             break;
                         case "maxHP":
-                            template.MaxHP = ((WzIntProperty) property).Value;
+                            template.MaxHp = ((WzIntProperty) property).Value;
                             break;
                         case "maxMP":
-                            template.MaxMP = ((WzIntProperty) property).Value;
+                            template.MaxMp = ((WzIntProperty) property).Value;
                             break;
                         case "defaultHP":
-                            template.DefaultHP = ((WzStringProperty) property).Value;
+                            template.DefaultHp = ((WzStringProperty) property).Value;
                             break;
                         case "defaultMP":
-                            template.DefaultMP = ((WzStringProperty) property).Value;
+                            template.DefaultMp = ((WzStringProperty) property).Value;
                             break;
                         case "speed":
                             template.Speed = ((WzIntProperty) property).Value;
@@ -265,10 +265,10 @@ namespace NineToFive.Wz {
                             template.NoRegen = ((WzIntProperty) property).Value;
                             break;
                         case "hideHP":
-                            template.HideHP = ((WzIntProperty) property).Value;
+                            template.HideHp = ((WzIntProperty) property).Value;
                             break;
                         case "mbookID":
-                            template.MBookID = ((WzIntProperty) property).Value;
+                            template.MBookId = ((WzIntProperty) property).Value;
                             break;
                         case "noDoom":
                             template.NoDoom = ((WzIntProperty) property).Value;
@@ -361,7 +361,7 @@ namespace NineToFive.Wz {
                                         foreach (WzImageProperty targetProperty in banProperty.WzProperties) {
                                             switch (targetProperty.Name) {
                                                 case "field":
-                                                    template.MonsterBan.TargetFieldID = ((WzIntProperty) targetProperty).Value;
+                                                    template.MonsterBan.TargetFieldId = ((WzIntProperty) targetProperty).Value;
                                                     break;
                                                 case "portal":
                                                     template.MonsterBan.TargetPortalName = ((WzStringProperty) targetProperty).Value;
@@ -396,7 +396,7 @@ namespace NineToFive.Wz {
                                 foreach (WzImageProperty loseProperty in items.WzProperties) {
                                     switch (loseProperty.Name) {
                                         case "id":
-                                            loseItem.ID = ((WzIntProperty) loseProperty).Value;
+                                            loseItem.Id = ((WzIntProperty) loseProperty).Value;
                                             break;
                                         case "loseMsg":
                                             loseItem.Message = ((WzStringProperty) loseProperty).Value;
@@ -485,10 +485,10 @@ namespace NineToFive.Wz {
                                             skill.Level = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "skill":
-                                            skill.ID = ((WzIntProperty) monsterSkill).Value;
+                                            skill.Id = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "skillAfter":
-                                            skill.NextID = ((WzIntProperty) monsterSkill).Value;
+                                            skill.NextId = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         default:
                                             Log.Info($"Unhandled MonsterSkill Property: {monsterSkill.Name} ({monsterSkill.GetType()})");

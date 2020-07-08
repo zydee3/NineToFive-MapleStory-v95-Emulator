@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Net;
-using NineToFive.Event;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 using NineToFive.Packets;
 using NineToFive.SendOps;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     class CheckPasswordEvent : PacketEvent {
         private byte[] _machineId;
         private string _username, _password;

@@ -1,9 +1,9 @@
-﻿using NineToFive.Event;
-using NineToFive.Game;
+﻿using NineToFive.Game;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 using NineToFive.SendOps;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     public class WorldListEvent : PacketEvent {
         public WorldListEvent(Client client) : base(client) { }
 

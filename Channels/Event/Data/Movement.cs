@@ -16,7 +16,7 @@ namespace NineToFive.Event.Data {
         public short Fh { get; set; }
         public short FhFallStart { get; set; }
         public short Elapsed { get; set; }
-        public byte SN { get; set; }
+        public byte Sn { get; set; }
         public byte MoveAction { get; set; }
 
         public void Encode(Movement t, Packet p) {
@@ -59,7 +59,7 @@ namespace NineToFive.Event.Data {
                     p.WriteShort(t.Fh);
                     break;
                 case 9:
-                    p.WriteByte(t.SN);
+                    p.WriteByte(t.Sn);
                     break;
                 case 11:
                     p.WriteShort((short) t.Velocity.X);
@@ -112,7 +112,7 @@ namespace NineToFive.Event.Data {
                     t.Fh = p.ReadShort();
                     break;
                 case 9:
-                    t.SN = p.ReadByte();
+                    t.Sn = p.ReadByte();
                     break;
                 case 11:
                     t.Velocity = new Vector2(p.ReadShort(), p.ReadShort());

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
-using System.Runtime.Serialization;
 using NineToFive.Event.Data;
 using NineToFive.Net;
 using NineToFive.SendOps;
@@ -14,6 +13,7 @@ namespace NineToFive.Event {
             var user = Client.User;
             user.Location = latest.Location;
             user.Velocity = latest.Velocity;
+            user.Fh = latest.Fh;
             user.Field.BroadcastPacketExclude(user, GetUserRemoteMove(user.CharacterStat.Id, Origin, Velocity, Movements));
         }
 

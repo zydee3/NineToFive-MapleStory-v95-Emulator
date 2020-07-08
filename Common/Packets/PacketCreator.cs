@@ -101,7 +101,7 @@ namespace NineToFive.Packets {
                 user.CharacterStat.Encode(user, w);
                 w.WriteByte(); // nPvPExp
                 if (w.WriteBool(true)) {
-                    w.WriteString("");
+                    w.WriteString();
                 }
             }
 
@@ -195,7 +195,7 @@ namespace NineToFive.Packets {
                 // CharacterData::SetQuest 
                 for (int i = 0; i < w.WriteShort(); i++) {
                     w.WriteShort();
-                    w.WriteString("");
+                    w.WriteString();
                 }
             }
 

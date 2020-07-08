@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using NineToFive.Constants;
 using NineToFive.Game.Entity;
 using NineToFive.Util;
 using NineToFive.Wz;
@@ -16,10 +17,10 @@ namespace NineToFive.Game {
     /// </summary>
     public class Field : PacketBroadcaster {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Field));
+        public static readonly int InvalidField = 999999999;
 
-        public Field(int id, uint channelId) {
+        public Field(int id) {
             Id = id;
-            ChannelId = channelId;
 
             LifePools = new Dictionary<EntityType, LifePool<Life>>();
             SpawnPoints = new List<SpawnPoint>();
@@ -28,11 +29,10 @@ namespace NineToFive.Game {
                 LifePools.Add(type, new LifePool<Life>());
             }
 
-            MapWz.SetField(this);
+            MapWz.CopyTemplate(this);
         }
 
         public int Id { get; }
-        public uint ChannelId { get; }
         public Foothold[] Footholds { get; set; }
         public List<Portal> Portals { get; }
         public string BackgroundMusic { get; set; }
@@ -43,15 +43,15 @@ namespace NineToFive.Game {
         public bool Town { get; set; }
         public bool Swim { get; set; }
         public bool Fly { get; set; }
-        public int VRTop { get; set; }
-        public int VRBottom { get; set; }
-        public int VRLeft { get; set; }
-        public int VRRight { get; set; }
+        public int VrTop { get; set; }
+        public int VrBottom { get; set; }
+        public int VrLeft { get; set; }
+        public int VrRight { get; set; }
         public int MobCount { get; set; }
         public float MobRate { get; set; }
         public List<SpawnPoint> SpawnPoints { get; }
         public Dictionary<EntityType, LifePool<Life>> LifePools { get; }
-        public bool[] FieldLimits { get; set; }
+        public uint FieldLimit { get; set; }
 
         /// <summary>
         /// Calculates the projected position on a foothold directly under the provided argument.
@@ -62,10 +62,10 @@ namespace NineToFive.Game {
             int smallestYDistance = 999999;
             Foothold foundFoothold = null;
             foreach (Foothold foothold in Footholds) {
-                (int X, int Y) = position;
-                if (foothold.LeftEndPoint.Item1 <= X && foothold.RightEndPoint.Item1 >= X) {
-                    int distanceFromUpperY = Y - Math.Max(foothold.Y1, foothold.Y2);
-                    int distanceFromLowerY = Y - Math.Min(foothold.Y1, foothold.Y2);
+                (int x, int y) = position;
+                if (foothold.LeftEndPoint.Item1 <= x && foothold.RightEndPoint.Item1 >= x) {
+                    int distanceFromUpperY = y - Math.Max(foothold.Y1, foothold.Y2);
+                    int distanceFromLowerY = y - Math.Min(foothold.Y1, foothold.Y2);
 
                     if (distanceFromUpperY >= 0 && distanceFromUpperY < smallestYDistance) {
                         smallestYDistance = distanceFromUpperY;
@@ -81,41 +81,53 @@ namespace NineToFive.Game {
         }
 
         public override IEnumerable<Client> GetClients() {
-            return LifePools[EntityType.Player].Values.Cast<User>().Select(u => u.Client);
+            return LifePools[EntityType.User].Values.Cast<User>().Select(u => u.Client);
         }
 
         public T GetLife<T>(EntityType type, uint uniqueId) where T : Life {
             T life = LifePools[type][uniqueId] as T;
-            if (life?.EntityType != type) throw new InvalidOperationException($"Type mismatch. Entity is {life.EntityType} but {type} is specified");
+            if (life?.Type != type) throw new InvalidOperationException($"Type mismatch. Entity is {life.Type} but {type} is specified");
             return life;
         }
 
+        /// <summary>
+        /// adds the life to their respective entity pool
+        /// </summary>
         public void AddLife(Life life) {
             if (life.PoolId != 0) {
                 Log.Info("Life already exists in a field");
                 return;
             }
 
-            if (life is User user) {
-                user.Field = this;
-                // todo broadcast OnEnterField
-            }
-
-            LifePools[life.EntityType].AddLife(life);
+            life.Field = this;
+            LifePools[life.Type].AddLife(life);
         }
 
+        /// <summary>
+        /// removes the life from the field if it exists and zeroes the <see cref="Life.PoolId"/>
+        /// <para>Sends the <see cref="Life.LeaveFieldPacket"/> to everybody in the field</para>
+        /// </summary>
         public void RemoveLife(Life life) {
-            if (!LifePools[life.EntityType].RemoveLife(life)) return;
+            if (!LifePools[life.Type].RemoveLife(life)) return;
             life.PoolId = 0;
+            life.Field = null;
 
             if (life is User user) {
-                user.Field = null;
-                if (LifePools[EntityType.Player].Count == 0) {
+                if (LifePools[EntityType.User].Count == 0) {
                     Log.Info($"There are no more players in field {Id} channel {user.Client.Channel}");
                 }
-
-                // todo broadcast OnLeaveField
             }
+
+            BroadcastPacket(life.LeaveFieldPacket());
+        }
+
+        /// <summary>
+        /// summons the life at its defined position
+        /// <para>Sends the <see cref="Life.EnterFieldPacket"/> to everybody in the field</para>
+        /// </summary>
+        public void SummonLife(Life create) {
+            AddLife(create);
+            BroadcastPacket(create.EnterFieldPacket());
         }
     }
 }

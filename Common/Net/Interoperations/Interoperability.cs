@@ -5,11 +5,11 @@ using System.Net.Sockets;
 using System.Threading;
 using log4net;
 using NineToFive.Game;
-using NineToFive.Interopation.Event;
+using NineToFive.Net.Interoperations.Event;
 using NineToFive.Net.Security;
 using NineToFive.Util;
 
-namespace NineToFive.Net {
+namespace NineToFive.Net.Interoperations {
     public class Interoperability {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Interoperability));
         private static readonly SimpleCrypto SimpleCrypto = new SimpleCrypto();
@@ -78,6 +78,7 @@ namespace NineToFive.Net {
                 Interoperability instance = new Interoperability(port);
                 instance._server.Start();
                 while (true) ServerAcceptClients(instance);
+                // ReSharper disable once FunctionNeverReturns
             }
 
             new Thread(StartSocket).Start();

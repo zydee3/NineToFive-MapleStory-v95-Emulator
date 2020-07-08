@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using NineToFive.Game;
-using NineToFive.Net;
 
-namespace NineToFive.Interopation.Event {
+namespace NineToFive.Net.Interoperations.Event {
     public static class WorldInformationRequest {
         public static byte[] OnHandle() {
             using Packet w = new Packet();

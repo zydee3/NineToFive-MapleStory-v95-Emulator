@@ -2,10 +2,9 @@
 using System.Net;
 using log4net;
 using MySql.Data.MySqlClient;
-using NineToFive.Net;
 using NineToFive.Util;
 
-namespace NineToFive.Interopation.Event {
+namespace NineToFive.Net.Interoperations.Event {
     public static class ClientAuthRequest {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ClientAuthRequest));
 

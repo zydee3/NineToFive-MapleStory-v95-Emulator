@@ -61,7 +61,7 @@ namespace NineToFive {
         public static readonly List<uint> Fields = new List<uint>();
     }
 
-    public static class Job {
+    public static class JobConstants {
         public static bool IsExtendedSpJob(int jobId) => !(jobId / 1000 != 3 && jobId / 100 != 22 && jobId != 2001);
         public static bool IsEvanJob(int jobId) => jobId / 100 == 22 || jobId == 2001;
 
@@ -121,7 +121,7 @@ namespace NineToFive {
                 jobId = skillId / 100;
             }
 
-            return Job.IsBeginnerJob(jobId);
+            return JobConstants.IsBeginnerJob(jobId);
         }
 
         private static bool IsFieldAttackObjSkill(int skillId) {
@@ -139,19 +139,19 @@ namespace NineToFive {
                    && !IsCommonSkill(skillId)
                    && !IsNoviceSkill(skillId)
                    && !IsFieldAttackObjSkill(skillId)
-                   && Job.GetJobLevel(GetSkillRootFromSkill(skillId)) != 4;
+                   && JobConstants.GetJobLevel(GetSkillRootFromSkill(skillId)) != 4;
         }
     }
 
     public static class ItemConstants {
-        public static string GetItemCategory(int ItemID) {
-            if (ItemID >= 2000000 && ItemID <= 2500002) return "Consume";
-            if (ItemID >= 4000000 && ItemID <= 4320000) return "Etc";
-            if (ItemID >= 5010000 && ItemID <= 5990000) return "Cash";
-            if (ItemID >= 3010000 && ItemID <= 3995000) return "Install";
-            if (ItemID >= 5000000 && ItemID <= 5000107) return "Pet";
-            if (ItemID >= 9000000 && ItemID <= 9114000) return "Special";
-            if (ItemID >= 1 && ItemID <= 31004) return "ItemOption";
+        public static string GetItemCategory(int itemId) {
+            if (itemId >= 2000000 && itemId <= 2500002) return "Consume";
+            if (itemId >= 4000000 && itemId <= 4320000) return "Etc";
+            if (itemId >= 5010000 && itemId <= 5990000) return "Cash";
+            if (itemId >= 3010000 && itemId <= 3995000) return "Install";
+            if (itemId >= 5000000 && itemId <= 5000107) return "Pet";
+            if (itemId >= 9000000 && itemId <= 9114000) return "Special";
+            if (itemId >= 1 && itemId <= 31004) return "ItemOption";
             return "";
         }
 
@@ -311,12 +311,189 @@ namespace NineToFive {
         }
     }
 
-    public enum EntityType {
-        Npc,
-        Mob,
-        Player,
-        Reactor,
-        Summon,
-        Pet
+    public enum Jobs {
+        Beginner = 0,
+        Warrior = 100,
+        Fighter = 110,
+        Crusader = 111,
+        Hero = 112,
+        Page = 120,
+        WhiteKnight = 121,
+        Paladin = 122,
+        Spearman = 130,
+        DragonKnight = 131,
+        DarkKnight = 132,
+        Magician = 200,
+        FirePoisonI = 210,
+        FirePoisonII = 211,
+        FirePoisonIII = 212,
+        IceLightningI = 220,
+        IceLightningII = 221,
+        IceLightningIII = 222,
+        Cleric = 230,
+        Priest = 231,
+        Bishop = 232,
+        Archer = 300,
+        Hunter = 310,
+        Ranger = 311,
+        BowMaster = 312,
+        CrossBowman = 320,
+        Sniper = 321,
+        Marksman = 322,
+        Rogue = 400,
+        Assassin = 410,
+        Hermit = 411,
+        NightLord = 412,
+        Bandit = 420,
+        ChiefBandit = 421,
+        Shadower = 422,
+        BladeRecruit = 430,
+        BladeAcolyte = 431,
+        BladeSpecialist = 432,
+        BladeLord = 433,
+        DualBlade = 434,
+        Brawler = 510,
+        Marauder = 511,
+        Buccaneer = 512,
+        Gunslinger = 520,
+        Outlaw = 521,
+        Corsair = 522,
+        CannonShooter = 501,
+        Cannoneer = 530,
+        CannonTrooper = 531,
+        CannonMaster = 532,
+        CygnusBeginner = 1000,
+        DawnWarriorI = 1100,
+        DawnWarriorII = 1110,
+        DawnWarriorIII = 1111,
+        DawnWarriorIV = 1112,
+        BlazeWizardI = 1200,
+        BlazeWizardII = 1210,
+        BlazeWizardIII = 1211,
+        BlazeWizardIV = 1212,
+        WindArcherI = 1300,
+        WindArcherII = 1310,
+        WindArcherIII = 1311,
+        WindArcherIV = 1312,
+        NightWalkerI = 1400,
+        NightWalkerII = 1410,
+        NightWalkerIII = 1411,
+        NightWalkerIV = 1412,
+        ThunderBreakerI = 1500,
+        ThunderBreakerII = 1510,
+        ThunderBreakerIII = 1511,
+        ThunderBreakerIV = 1512,
+        AranBeginner = 2000,
+        AranI = 2100,
+        AranII = 2110,
+        AranIII = 2111,
+        AranIV = 2112,
+        EvanBeginner = 2001,
+        EvanI = 2200,
+        EvanII = 2210,
+        EvanIII = 2211,
+        EvanIV = 2212,
+        EvanV = 2213,
+        EvanVI = 2214,
+        EvanVII = 2215,
+        EvanVIII = 2216,
+        EvanIX = 2217,
+        EvanX = 2218,
+        MercedesBeginner = 2002,
+        MercedesI = 2300,
+        MercedesII = 2310,
+        MercedesIII = 2311,
+        MercedesIV = 2312,
+        PhantomBeginner = 2003,
+        PhantomI = 2400,
+        PhantomII = 2410,
+        PhantomIII = 2411,
+        PhantomIV = 2412,
+        LuminousBeginner = 2004,
+        LuminousI = 2700,
+        LuminousII = 2710,
+        LuminousIII = 2711,
+        LuminousIV = 2712,
+        DemonsBeginner = 3001,
+        DemonSlayerI = 3100,
+        DemonSlayerII = 3110,
+        DemonSlayerIII = 3111,
+        DemonSlayerIV = 3112,
+        DemonAvengerI = 3101,
+        DemonAvengerII = 3120,
+        DemonAvengerIII = 3121,
+        DemonAvengerIV = 3122,
+        ResistanceBeginner = 3000,
+        BattleMageI = 3200,
+        BattleMageII = 3210,
+        BattleMageIII = 3211,
+        BattleMageIV = 3212,
+        WildHunterI = 3300,
+        WildHunterII = 3310,
+        WildHunterIII = 3311,
+        WildHunterIV = 3312,
+        MechanicI = 3500,
+        MechanicII = 3510,
+        MechanicIII = 3511,
+        MechanicIV = 3512,
+        XenonBeginner = 3002,
+        XenonI = 3600,
+        XenonII = 3610,
+        XenonIII = 3611,
+        XenonIV = 3612,
+        MihileBeginner = 5000,
+        MihileI = 5100,
+        MihileII = 5110,
+        MihileIII = 5111,
+        MihileIV = 5112,
+        KaiserBeginner = 6000,
+        KaiserI = 6100,
+        KaiserII = 6110,
+        KaiserIII = 6111,
+        KaiserIV = 6112,
+        AngelicBusterBeginner = 6001,
+        AngelicBusterI = 6500,
+        AngelicBusterII = 6510,
+        AngelicBusterIII = 6511,
+        AngelicbusterIV = 6512,
+        ZeroI = 10000,
+        ZeroII = 10100,
+        ZeroIII = 10110,
+        ZeroIV = 10112,
+        KinesisBeginner = 14000,
+        KinesisI = 14200,
+        KinesisII = 14210,
+        KinesisIII = 14211,
+        KinesisIV = 14212,
+        PathFinderI = 301,
+        PathFinderII = 330,
+        PathFinderIII = 331,
+        PathFinderIV = 332,
+        CadenaBeginner = 6002,
+        CadenaI = 6400,
+        CadenaII = 6410,
+        CadenaIII = 6411,
+        CadenaIV = 6412,
+        IlliumI = 15000,
+        IlliumII = 15200,
+        IlliumIII = 15211,
+        IlliumIV = 15212,
+        ArkBeginner = 15001,
+        ArkI = 15500,
+        ArkII = 15510,
+        ArkIII = 15511,
+        ArkIV = 15512,
+        HoyoungBeginner = 16000,
+        HoyoungI = 16400,
+        HoyoungII = 16410,
+        HoyoungIII = 16411,
+        HoyoungIV = 16412,
+        AdeleBeginner = 15002,
+        AdeleI = 15100,
+        AdeleII = 15110,
+        AdeleIII = 15111,
+        AdeleIV = 15112,
+        GM = 900,
+        Manager = 800
     }
 }

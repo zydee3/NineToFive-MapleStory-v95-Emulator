@@ -2,12 +2,12 @@
 using System.Linq;
 using System.Net;
 using log4net;
-using NineToFive.Event;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 using NineToFive.SendOps;
 using NineToFive.Util;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     public class SelectCharEvent : PacketEvent {
         private static readonly ILog Log = LogManager.GetLogger(typeof(SelectCharEvent));
 

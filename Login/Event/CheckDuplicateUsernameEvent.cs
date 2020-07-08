@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using log4net;
-using NineToFive.Event;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations;
 using NineToFive.SendOps;
 
-namespace NineToFive.Login.Event {
+namespace NineToFive.Event {
     public class CheckDuplicateUsernameEvent : PacketEvent {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(CheckDuplicateUsernameEvent));
         private string _username;
         private byte _result;
 

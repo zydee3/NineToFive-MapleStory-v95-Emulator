@@ -49,7 +49,7 @@ namespace NineToFive.Event {
             user.Client = Client;
             Client.Id = user.AccountId;
             Client.SetChannel(Server.Worlds[World.ActiveWorld].Channels.First(ch => ch.Port == Client.Channel.Port).Id);
-            Client.World.Users.AddOrUpdate(user.CharacterStat.Id, id => user, (id, user) => user);
+            Client.World.Users.AddOrUpdate(user.CharacterStat.Id, id => user, (id, u) => user);
             user.SetField(user.CharacterStat.FieldId);
         }
     }

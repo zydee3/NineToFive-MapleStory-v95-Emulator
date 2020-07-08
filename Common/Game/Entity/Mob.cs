@@ -1,9 +1,17 @@
 ﻿using System;
+using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
     public class Mob : Life {
+        public Tuple<int, int> HealOnDestroy;
+        public int SelfDestruction;
+
+        public Mob(int id) : base(id, EntityType.Mob) {
+            MobWz.SetMob(this);
+        }
+
         public int Level { get; set; }
         public int HP { get; set; }
         public int MaxHP { get; set; }
@@ -23,8 +31,6 @@ namespace NineToFive.Game.Entity {
         public int[] DamagedBySelectedMob { get; set; }
         public int[] Revives { get; set; }
         public TemplateMob.Skill[] Skills { get; set; }
-        public Tuple<int, int> HealOnDestroy;
-        public int SelfDestruction;
 
         public int BodyAttack { get; set; }
         public int Pushed { get; set; }
@@ -85,9 +91,5 @@ namespace NineToFive.Game.Entity {
         public string Link { get; set; }
         public string MobType { get; set; }
         public string ElemAttr { get; set; }
-
-        public Mob(int id) : base(id, EntityType.Mob) {
-            MobWz.SetMob(this);
-        }
     }
 }

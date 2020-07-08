@@ -100,36 +100,32 @@ namespace MapleLib.WzLib
         /// <summary>
         /// Returns a WzImage or a WzDirectory with the given name
         /// </summary>
-        /// <param name="name">The name of the img or dir to find</param>
+        /// <param name="search">The name of the img or dir to find</param>
         /// <returns>A WzImage or WzDirectory</returns>
-        public new WzObject this[string name]
+        public new WzObject this[string search]
         {
             get
             {
-                string nameLower = name.ToLower();
-
-                foreach (WzImage i in images)
-                    if (i.Name.ToLower() == nameLower)
+                foreach (WzImage i in images) {
+                    if (i.Name.Equals(search, StringComparison.OrdinalIgnoreCase)) {
                         return i;
-                foreach (WzDirectory d in subDirs)
-                    if (d.Name.ToLower() == nameLower)
-                        return d;
+                    }
+                }
 
-                //throw new KeyNotFoundException("No wz image or directory was found with the specified name");
+                foreach (WzDirectory d in subDirs) {
+                    if (d.Name.Equals(search, StringComparison.OrdinalIgnoreCase)) {
+                        return d;
+                    }
+                }
+
                 return null;
             }
-            set
-            {
-                if (value != null)
-                {
-                    value.Name = name;
-                    if (value is WzDirectory)
-                        AddDirectory((WzDirectory)value);
-                    else if (value is WzImage)
-                        AddImage((WzImage)value);
-                    else
-                        throw new ArgumentException("Value must be a Directory or Image");
-                }
+            set {
+                if (value == null) return;
+                value.Name = search;
+                if (value is WzDirectory d) AddDirectory(d);
+                else if (value is WzImage i) AddImage(i);
+                else throw new ArgumentException("Value must be a Directory or Image");
             }
         }
 

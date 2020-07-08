@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace NineToFive.Util {
-    public static class RNG {
+    public static class Randomizer {
         private static readonly Random Rand = new Random();
 
         public static int GetInt() {

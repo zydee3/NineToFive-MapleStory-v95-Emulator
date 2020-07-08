@@ -9,7 +9,6 @@ using NineToFive.Security;
 namespace NineToFive.Net {
     public class ClientSession : IDisposable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ClientSession));
-        private readonly object _lock = new object();
 
         private MapleCryptoHandler _cipher = new MapleCryptoHandler();
         private ServerListener _server;
