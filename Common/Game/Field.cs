@@ -118,7 +118,7 @@ namespace NineToFive.Game {
                 }
             }
 
-            BroadcastPacket(life.LeaveFieldPacket());
+            // BroadcastPacket(life.LeaveFieldPacket());
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace NineToFive.Game {
         /// </summary>
         public void SummonLife(Life create) {
             AddLife(create);
-            BroadcastPacket(create.EnterFieldPacket());
+            // BroadcastPacket(create.EnterFieldPacket());
         }
     }
 }

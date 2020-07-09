@@ -8,7 +8,7 @@ using NineToFive.Game;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
 
-[assembly: XmlConfigurator(ConfigFile = "Resources/central-logger.xml")]
+[assembly: XmlConfigurator(ConfigFile = "logger-config.xml")]
 
 namespace NineToFive {
     public sealed class ChannelServer : ServerListener {

@@ -35,6 +35,7 @@ CREATE TABLE `characters` (
   `popularity` smallint(5) unsigned NOT NULL DEFAULT '0',
   `field_id` int(10) unsigned NOT NULL DEFAULT '10000',
   `portal` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `gm_level` tinyint(3) unsigned not null default '0',
   PRIMARY KEY (`character_id`) USING BTREE,
   UNIQUE KEY `username_UNIQUE` (`username`),
   KEY `FK_char_account_id_idx` (`account_id`),
