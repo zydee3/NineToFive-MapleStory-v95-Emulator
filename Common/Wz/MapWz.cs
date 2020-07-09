@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using log4net;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
@@ -141,7 +142,7 @@ namespace NineToFive.Wz {
                 life.MobTime = (entry["mobTime"] as WzIntProperty)?.Value ?? 1;
                 life.Flipped = (entry["f"] as WzIntProperty)?.Value == 1;
                 life.Hidden = (entry["hide"] as WzIntProperty)?.Value == 1;
-                
+
                 template.Life[life.Type].Add(life);
             }
         }
@@ -165,34 +166,17 @@ namespace NineToFive.Wz {
 
         private static void LoadPortals(in TemplateField template, WzImageProperty portalImage) {
             List<Portal> portals = new List<Portal>();
-            foreach (WzImageProperty portalNode in portalImage.WzProperties) {
-                Portal portal = new Portal();
-                foreach (WzImageProperty property in portalNode.WzProperties) {
-                    switch (property.Name) {
-                        case "pn":
-                            portal.Name = ((WzStringProperty) property).Value;
-                            break;
-                        case "pt":
-                            portal.TargetPortalId = ((WzIntProperty) property).Value;
-                            break;
-                        case "tm":
-                            portal.TargetMap = ((WzIntProperty) property).Value;
-                            break;
-                        case "tn":
-                            portal.TargetPortalName = ((WzStringProperty) property).Value;
-                            break;
-                        case "x":
-                            portal.X = ((WzIntProperty) property).Value;
-                            break;
-                        case "y":
-                            portal.Y = ((WzIntProperty) property).Value;
-                            break;
-                        default:
-                            Log.Info($"Unhandled Portal Property: {property.Name}");
-                            break;
-                    }
-                }
-
+            foreach (WzImageProperty entry in portalImage.WzProperties) {
+                if (!byte.TryParse(entry.Name, out byte id)) continue;
+                Portal portal = new Portal(id) {
+                    Name = (entry["pn"] as WzStringProperty)?.Value,
+                    TargetPortalId = (entry["pt"] as WzIntProperty)?.Value ?? 0,
+                    TargetMap = (entry["tm"] as WzIntProperty)?.Value ?? Field.InvalidField,
+                    TargetPortalName = (entry["tn"] as WzStringProperty)?.Value,
+                    Location = new Vector2(
+                        (entry["x"] as WzIntProperty)!.Value,
+                        (entry["y"] as WzIntProperty)!.Value)
+                };
                 portals.Add(portal);
             }
 

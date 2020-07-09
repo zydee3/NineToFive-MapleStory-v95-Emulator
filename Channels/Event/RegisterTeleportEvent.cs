@@ -25,13 +25,12 @@ namespace NineToFive.Event {
             if (portal == null) return;
             var tPortal = user.Field.Portals.First(p => p.Name.Equals(portal.TargetPortalName));
             if (tPortal == null) return;
-            Vector2 tPortalLocation = new Vector2(tPortal.X, tPortal.Y);
             if (user.IsDebugging) {
                 user.SendMessage($"User-Dist[{Vector2.Distance(_userLocation, user.Location)}]");
-                user.SendMessage($"Source[Dist{Vector2.Distance(_userLocation, _portalLocation)}], Target[Dist{Vector2.Distance(_userLocation, tPortalLocation)}] cy={_cy}");
+                user.SendMessage($"Source[Dist{Vector2.Distance(_userLocation, _portalLocation)}], Target[Dist{Vector2.Distance(_userLocation, tPortal.Location)}] cy={_cy}");
             }
 
-            user.Location = tPortalLocation;
+            user.Location = tPortal.Location;
         }
     }
 }

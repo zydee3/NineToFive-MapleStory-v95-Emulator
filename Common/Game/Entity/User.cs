@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Constants;
@@ -113,8 +112,8 @@ namespace NineToFive.Game.Entity {
             Field = Client.Channel.GetField(fieldId);
             if (portal != null) {
                 var destPortal = Field.Portals.First(p => p.Name.Equals(portal.Name));
-                Location = new Vector2(destPortal.X, destPortal.Y);
-                // CharacterStat.Portal = portal.Id;
+                Location = destPortal.Location;
+                CharacterStat.Portal = portal.Id;
             }
 
             Field.AddLife(this);
