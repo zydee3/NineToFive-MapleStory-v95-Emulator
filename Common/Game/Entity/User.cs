@@ -13,9 +13,6 @@ using NineToFive.Util;
 namespace NineToFive.Game.Entity {
     public class User : Life {
         private static readonly ILog Log = LogManager.GetLogger(typeof(User));
-        public readonly AvatarLook AvatarLook;
-        public readonly GW_CharacterStat CharacterStat;
-        public readonly Dictionary<InventoryType, Inventory> Inventories;
         private Field _field;
 
         public User(MySqlDataReader reader = null) : base(EntityType.User) {
@@ -56,19 +53,14 @@ namespace NineToFive.Game.Entity {
             }
         }
 
-        public override void Dispose() {
-            Save();
-            Log.Info($"Saved user '{CharacterStat.Username}'");
-
-            base.Dispose();
-            Client.World.Users.TryRemove(CharacterStat.Id, out _);
-        }
-
         public uint AccountId { get; set; }
         public Client Client { get; set; }
         public byte GradeCode { get; set; }
         public bool IsHidden { get; set; }
         public bool IsDebugging { get; set; }
+        public AvatarLook AvatarLook { get; }
+        public GW_CharacterStat CharacterStat { get; }
+        public Dictionary<InventoryType, Inventory> Inventories { get; }
 
         public override Field Field {
             get => _field;
@@ -76,6 +68,14 @@ namespace NineToFive.Game.Entity {
                 _field = value;
                 if (_field != null) CharacterStat.FieldId = _field.Id;
             }
+        }
+
+        public override void Dispose() {
+            Save();
+            Log.Info($"Saved user '{CharacterStat.Username}'");
+
+            base.Dispose();
+            Client.World.Users.TryRemove(CharacterStat.Id, out _);
         }
 
         public void Save() {
@@ -172,11 +172,6 @@ namespace NineToFive.Game.Entity {
     }
 
     public class AvatarLook : IPacketSerializer<User> {
-        public byte Gender { get; set; }
-        public byte Skin { get; set; }
-        public int Face { get; set; }
-        public int Hair { get; set; }
-
         public AvatarLook(MySqlDataReader r = null) {
             if (r == null) return;
             Gender = r.GetByte("gender");
@@ -184,6 +179,11 @@ namespace NineToFive.Game.Entity {
             Face = r.GetInt32("face");
             Hair = r.GetInt32("hair");
         }
+
+        public byte Gender { get; set; }
+        public byte Skin { get; set; }
+        public int Face { get; set; }
+        public int Hair { get; set; }
 
         public void Encode(User user, Packet p) {
             p.WriteByte(Gender);
@@ -212,25 +212,6 @@ namespace NineToFive.Game.Entity {
     }
 
     public class GW_CharacterStat : IPacketSerializer<User> {
-        public uint Id { get; set; }
-        public string Username { get; set; }
-        public byte Level { get; set; } = 1;
-        public short Job { get; set; }
-        public short Str { get; set; } = 4;
-        public short Dex { get; set; } = 4;
-        public short Int { get; set; } = 4;
-        public short Luk { get; set; } = 4;
-        public int HP { get; set; } = 50;
-        public int MaxHP { get; set; } = 50;
-        public int MP { get; set; } = 5;
-        public int MaxMP { get; set; } = 5;
-        public short AP { get; set; }
-        public short[] SP { get; set; } = new short[10];
-        public int Exp { get; set; }
-        public short Popularity { get; set; }
-        public int FieldId { get; set; } = 10000;
-        public byte Portal { get; set; }
-
         public GW_CharacterStat(MySqlDataReader r = null) {
             if (r == null) return;
             Id = r.GetUInt32("character_id");
@@ -251,6 +232,25 @@ namespace NineToFive.Game.Entity {
             FieldId = r.GetInt32("field_id");
             Portal = r.GetByte("portal");
         }
+
+        public uint Id { get; set; }
+        public string Username { get; set; }
+        public byte Level { get; set; } = 1;
+        public short Job { get; set; }
+        public short Str { get; set; } = 4;
+        public short Dex { get; set; } = 4;
+        public short Int { get; set; } = 4;
+        public short Luk { get; set; } = 4;
+        public int HP { get; set; } = 50;
+        public int MaxHP { get; set; } = 50;
+        public int MP { get; set; } = 5;
+        public int MaxMP { get; set; } = 5;
+        public short AP { get; set; }
+        public short[] SP { get; set; } = new short[10];
+        public int Exp { get; set; }
+        public short Popularity { get; set; }
+        public int FieldId { get; set; } = 10000;
+        public byte Portal { get; set; }
 
         public void Encode(User user, Packet p) {
             if (Id == 0) throw new InvalidOperationException("cannot encode a character which id is 0");

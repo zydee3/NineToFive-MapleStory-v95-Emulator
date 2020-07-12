@@ -1,6 +1,7 @@
 ﻿using System;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
+using NineToFive.Packets;
 using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
@@ -8,8 +9,16 @@ namespace NineToFive.Game.Entity {
         public Tuple<int, int> HealOnDestroy;
         public int SelfDestruction;
 
-        public Mob(int id) : base(id, EntityType.Mob) {
+        public Mob(int templateId) : base(templateId, EntityType.Mob) {
             MobWz.SetMob(this);
+        }
+
+        public override byte[] EnterFieldPacket() {
+            return MobPool.GetMobEnterField(this);
+        }
+
+        public override byte[] LeaveFieldPacket() {
+            return MobPool.GetMobLeaveField(this);
         }
 
         public int Level { get; set; }

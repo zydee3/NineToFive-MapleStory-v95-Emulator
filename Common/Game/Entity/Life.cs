@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using NineToFive.Constants;
+using NineToFive.Game.Entity.Meta;
 
 namespace NineToFive.Game.Entity {
     public class Life : IDisposable {
@@ -10,8 +11,8 @@ namespace NineToFive.Game.Entity {
             Velocity = new Vector2();
         }
 
-        protected Life(int id, EntityType entityType) : this(entityType) {
-            Id = id;
+        protected Life(int templateId, EntityType entityType) : this(entityType) {
+            TemplateId = templateId;
         }
 
         /// <summary>
@@ -34,8 +35,8 @@ namespace NineToFive.Game.Entity {
         }
 
         public virtual Field Field { get; set; }
-        public int Id { get; set; }
-        public uint PoolId { get; set; }
+        public int TemplateId { get; set; }
+        public uint Id { get; set; }
         public Vector2 Location { get; set; }
         public Vector2 Velocity { get; set; }
         public int Fh { get; set; }

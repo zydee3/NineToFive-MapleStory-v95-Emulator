@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Reflection;
+using System.Resources;
 using IniParser;
 using IniParser.Model;
 using log4net;
@@ -7,11 +11,18 @@ using NineToFive.Game.Storage;
 
 namespace NineToFive {
     public static class ServerConstants {
-        private const string FileName = "Resources/config.ini";
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ServerConstants));
+        private const string ResourcePath = "NineToFive.Resources.config.ini";
 
         static ServerConstants() {
             FileIniDataParser parser = new FileIniDataParser();
-            IniData config = parser.ReadFile(FileName);
+            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ResourcePath);
+            using var reader = new StreamReader(stream!);
+            var config = parser.ReadData(reader);
+
+            Directory.SetCurrentDirectory(config["project"]["RootDirectory"]);
+            Log.Info($"Working directory set : '{Directory.GetCurrentDirectory()}'");
+
             GameVersion = short.Parse(config["server"]["GameVersion"]);
             WorldCount = int.Parse(config["server"]["WorldCount"]);
             ChannelCount = int.Parse(config["server"]["ChannelCount"]);
@@ -24,7 +35,7 @@ namespace NineToFive {
             ChannelPort = int.Parse(config["sockets"]["ChannelPort"]);
 
             DatabaseConString = config["database"]["url"];
-            LogManager.GetLogger(typeof(ServerConstants)).Info("Configurations loaded");
+            Log.Info("Config loaded");
         }
 
         public static readonly short GameVersion;

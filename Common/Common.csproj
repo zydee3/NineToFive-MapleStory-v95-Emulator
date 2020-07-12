@@ -26,12 +26,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\config.ini">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="logger-config.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\config.ini" />
+    <EmbeddedResource Include="Resources\config.ini" />
   </ItemGroup>
 
 </Project>

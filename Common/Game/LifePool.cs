@@ -19,12 +19,12 @@ namespace NineToFive.Game {
 
         public void AddLife(T t) {
             int uniqueId = Interlocked.Increment(ref _uniqueId);
-            t.PoolId = unchecked((uint) uniqueId);
-            _pool.Add(t.PoolId, t);
+            t.Id = unchecked((uint) uniqueId);
+            _pool.Add(t.Id, t);
         }
 
         public bool RemoveLife(Life life) {
-            return _pool.Remove(life.PoolId);
+            return _pool.Remove(life.Id);
         }
     }
 }

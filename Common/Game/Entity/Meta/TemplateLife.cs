@@ -3,6 +3,14 @@ using System.Numerics;
 using NineToFive.Constants;
 
 namespace NineToFive.Game.Entity.Meta {
+    public struct Range2 {
+        public readonly int Low;
+        public readonly int High;
+        public Range2(int low, int high) {
+            Low = low;
+            High = high;
+        }
+    }
     /// <summary>
     /// This holds the data from map/life as a template for reference when initializing new fields. 
     /// </summary>
@@ -25,7 +33,9 @@ namespace NineToFive.Game.Entity.Meta {
 
         public Life Create() {
             Life life = Type switch {
-                EntityType.Npc     => new Npc(Id),
+                EntityType.Npc     => new Npc(Id) {
+                    HorizontalRange = new Range2(Rx0, Rx1)
+                },
                 EntityType.Mob     => new Mob(Id),
                 EntityType.Reactor => new Reactor(Id),
                 _                  => throw new InvalidOperationException($"cannot create life of type {Type}")

@@ -94,7 +94,7 @@ namespace NineToFive.Game {
         /// adds the life to their respective entity pool
         /// </summary>
         public void AddLife(Life life) {
-            if (life.PoolId != 0) {
+            if (life.Id != 0) {
                 Log.Info("Life already exists in a field");
                 return;
             }
@@ -104,21 +104,21 @@ namespace NineToFive.Game {
         }
 
         /// <summary>
-        /// removes the life from the field if it exists and zeroes the <see cref="Life.PoolId"/>
+        /// removes the life from the field if it exists and zeroes the <see cref="Life.Id"/>
         /// <para>Sends the <see cref="Life.LeaveFieldPacket"/> to everybody in the field</para>
         /// </summary>
         public void RemoveLife(Life life) {
             if (!LifePools[life.Type].RemoveLife(life)) return;
-            life.PoolId = 0;
+            life.Id = 0;
             life.Field = null;
 
             if (life is User user) {
                 if (LifePools[EntityType.User].Count == 0) {
-                    Log.Info($"There are no more players in field {Id} channel {user.Client.Channel}");
+                    Log.Info($"There are no more players in field {Id}, channel {user.Client.Channel.Id}");
                 }
             }
 
-            // BroadcastPacket(life.LeaveFieldPacket());
+            BroadcastPacket(life.LeaveFieldPacket());
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace NineToFive.Game {
         /// </summary>
         public void SummonLife(Life create) {
             AddLife(create);
-            // BroadcastPacket(create.EnterFieldPacket());
+            BroadcastPacket(create.EnterFieldPacket());
         }
     }
 }

@@ -20,7 +20,7 @@ namespace NineToFive.Wz {
         public static void SetMob(Mob mob) {
             if (mob == null) return;
 
-            int mobId = mob.Id;
+            int mobId = mob.TemplateId;
             if (!WzCache.MobTemplates.TryGetValue(mobId, out TemplateMob t)) {
                 string PathToMobImage = mobId.ToString().PadLeft(7, '0');
                 List<WzImageProperty> mobProperties = WzProvider.GetWzProperties(WzProvider.Load("Mob"), $"{PathToMobImage}.img");

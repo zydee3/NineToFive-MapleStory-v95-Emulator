@@ -6,8 +6,188 @@ using NineToFive.Net;
 using NineToFive.SendOps;
 
 namespace NineToFive.Packets {
+    public static class ReactorPool {
+        public static byte[] GetReactorChangeState(Reactor reactor) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CReactorPool.OnReactorChangeState);
+            w.WriteUInt(reactor.Id);
+            w.WriteByte(); // CReactorPool *pThis[4]
+            w.WriteShort((short) reactor.Location.X);
+            w.WriteShort((short) reactor.Location.Y);
+            w.WriteByte(); // CReactorPool *pThis[9]
+            w.WriteByte(); // CReactorPool *pThis[11]
+            return w.ToArray();
+        }
+
+        public static byte[] GetReactorMove(Reactor reactor) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CReactorPool.OnReactorMove);
+            w.WriteUInt(reactor.Id);
+            w.WriteShort((short) reactor.Location.X);
+            w.WriteShort((short) reactor.Location.Y);
+            return w.ToArray();
+        }
+
+        public static byte[] GetReactorEnterField(Reactor reactor) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CReactorPool.OnReactorEnterField);
+            w.WriteUInt(reactor.Id);
+            w.WriteInt(reactor.TemplateId);
+            w.WriteByte(); // CReactorPool *pThis[4] , // CReactorPool *pThis[3]
+            w.WriteShort((short) reactor.Location.X);
+            w.WriteShort((short) reactor.Location.Y);
+            w.WriteByte(); // CReactorPool *pThis[16] 
+            w.WriteString();
+            return w.ToArray();
+        }
+
+        public static byte[] GetReactorLeaveField(Reactor reactor) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CReactorPool.OnReactorLeaveField);
+            w.WriteUInt(reactor.Id);
+            return w.ToArray();
+        }
+    }
+
+    public static class NpcPool {
+        private static void InitNpc(Npc npc, Packet w) {
+            w.WriteShort((short) npc.Location.X);
+            w.WriteShort((short) npc.Location.Y);
+            w.WriteBool(false);           // bMove
+            w.WriteShort((short) npc.Fh);
+            w.WriteShort((short) npc.HorizontalRange.Low);
+            w.WriteShort((short) npc.HorizontalRange.High);
+            w.WriteBool(true); // bEnabled
+        }
+
+        public static byte[] GetNpcEnterField(Npc npc) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CNpcPool.OnNpcEnterField);
+            w.WriteUInt(npc.Id);
+            w.WriteInt(npc.TemplateId);
+            InitNpc(npc, w);
+            return w.ToArray();
+        }
+
+        public static byte[] GetNpcLeaveField(Npc npc) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CNpcPool.OnNpcLeaveField);
+            w.WriteUInt(npc.Id);
+            return w.ToArray();
+        }
+
+        public static byte[] GetNpcChangeController(Npc npc) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CNpcPool.OnNpcChangeController);
+            w.WriteBool(true); // bLocalNpc
+            w.WriteUInt(npc.Id);
+            return w.ToArray();
+        }
+
+        public static byte[] GetUpdateLimitedDisableInfo(Npc npc) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CNpcPool.OnUpdateLimitedDisableInfo);
+            for (byte i = 0; i < w.WriteByte(); i++) {
+                w.WriteInt();
+            }
+
+            return w.ToArray();
+        }
+
+        public static byte[] GetNpcImitateData(Npc npc, User user) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CNpcPool.OnNpcImitateData);
+            w.WriteByte(1);
+            w.WriteInt(npc.TemplateId);
+            w.WriteString(user.CharacterStat.Username);
+            npc.AvatarLook.Encode(null, w);
+            return w.ToArray();
+        }
+    }
+
+    public static class MobPool {
+        private static void InitMob(Mob mob, Packet w) {
+            w.WriteShort((short) mob.Location.X);
+            w.WriteShort((short) mob.Location.Y);
+            w.WriteByte();                // move action
+            w.WriteShort((short) mob.Fh); // cur fh
+            w.WriteShort((short) mob.Fh); // home fh
+            if (w.WriteBool(mob.SummonType != 0)) {
+                w.WriteInt(mob.SummonType);
+            }
+
+            w.WriteByte(); // carnival team
+            w.WriteInt((mob.HP / mob.MaxHP) * 100);
+            w.WriteInt(); // nEffectItemID
+        }
+
+        private static void SetMobLocal(Mob mob, Packet w, bool init) {
+            w.WriteInt(mob.TemplateId);
+            if (init) {
+                SetMobTemporaryStat(mob, w);
+            } else {
+                SetMobTemporaryStat(mob, w);
+                InitMob(mob, w);
+            }
+        }
+
+        private static void SetMobTemporaryStat(Mob mob, Packet w) {
+            // CMob::SetTemporaryStat flags
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            // MobStat::DecodeTemporary
+        }
+
+        public static byte[] GetMobEnterField(Mob mob) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CMobPool.OnMobEnterField);
+            w.WriteUInt(mob.Id);
+            w.WriteByte(); // nCalcDamageIndex
+            w.WriteInt(mob.TemplateId);
+
+            SetMobTemporaryStat(mob, w);
+            InitMob(mob, w);
+
+            return w.ToArray();
+        }
+
+        public static byte[] GetMobLeaveField(Mob mob) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CMobPool.OnMobLeaveField);
+            w.WriteUInt(mob.Id);
+            byte b = w.WriteByte(); // dead type
+            if (b == 4) w.WriteInt();
+            return w.ToArray();
+        }
+
+        public static byte[] GetMobChangeController(User user, Mob mob) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CMobPool.OnMobChangeController);
+            // nControllerLevel
+            byte controllerLevel = w.WriteByte();
+            // 1+ for CVecCtrlMob::SetMoveRandManSeed
+            // 2 for CMob::ChaseTarget
+            if (controllerLevel > 0) {
+                w.WriteInt();
+                w.WriteInt();
+                w.WriteInt();
+            }
+
+            w.WriteUInt(mob.Id);
+
+            if (controllerLevel > 0) {
+                w.ReadByte(); // nCalcDamageIndex
+                SetMobLocal(mob, w, false);
+            }
+
+            return w.ToArray();
+        }
+    }
+
     public static class CWvsPackets {
-        public static byte[] GetBroadcastMessage(in User user, bool whisper, byte type, string msg, in Item item) {
+        public static byte[] GetBroadcastMessage(User user, bool whisper, byte type, string msg, Item item) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnBroadcastMsg);
             w.WriteByte(type);
@@ -75,6 +255,7 @@ namespace NineToFive.Packets {
                 // CUtilDlg speaker
                 w.WriteInt(2000);
             }
+
             return w.ToArray();
         }
     }
