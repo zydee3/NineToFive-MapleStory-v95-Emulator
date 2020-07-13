@@ -1,21 +1,15 @@
-using System;
 using System.Diagnostics;
 using log4net;
-using NineToFive;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
 using NineToFive.Wz;
 
 namespace ServerTests {
-    class WzReaderTest {
+    public static class WzReaderTest {
         private static readonly ILog Log = LogManager.GetLogger(typeof(WzReaderTest));
 
-        static void Main(string[] args) {
-            
-        }
-
-        static void TestField() {
+        public static void TestField() {
             const int fieldId = 100000000;
             Stopwatch watch = new Stopwatch();
             watch.Start();
@@ -32,7 +26,7 @@ namespace ServerTests {
             Log.Debug($"Time elapsed Loading Field({fieldId}): {watch.Elapsed}.");
         }
 
-        static void TestItem() {
+        public static void TestItem() {
             Item cash = new Item(5010008, true);
             Item consume = new Item(2000011, true);
             Item etc = new Item(04000014, true);
@@ -40,11 +34,11 @@ namespace ServerTests {
             Item pet = new Item(5000029, true);
         }
 
-        static void MobTest() {
+        public static void TestMob() {
             Mob mob = new Mob(9001005);
         }
 
-        static void SkillTest() {
+        public static void TestSkill() {
             const int skillId = 2211006;
             const int jobId = 512;
             Stopwatch watch = new Stopwatch();
