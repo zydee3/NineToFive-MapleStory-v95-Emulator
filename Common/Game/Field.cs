@@ -91,7 +91,7 @@ namespace NineToFive.Game {
         }
 
         /// <summary>
-        /// adds the life to their respective entity pool
+        /// adds the life to their respective entity pool; silently add the life to the field
         /// </summary>
         public void AddLife(Life life) {
             if (life.Id != 0) {
@@ -122,7 +122,7 @@ namespace NineToFive.Game {
         }
 
         /// <summary>
-        /// summons the life at its defined position
+        /// summons the life at its defined position; Calls <see cref="AddLife"/> then broadcasts <see cref="Life.EnterFieldPacket"/>
         /// <para>Sends the <see cref="Life.EnterFieldPacket"/> to everybody in the field</para>
         /// </summary>
         public void SummonLife(Life create) {

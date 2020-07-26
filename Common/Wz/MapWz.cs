@@ -62,14 +62,14 @@ namespace NineToFive.Wz {
             WzObject wzObject = WzFile.GetObjectFromPath(imgPath, false);
             if (wzObject == null) throw new NullReferenceException($"No map data : {imgPath}");
             templateField = new TemplateField(fieldId);
-            LoadInfo(in templateField, (WzImageProperty) wzObject["info"]);
-            LoadFootholds(in templateField, (WzImageProperty) wzObject["foothold"]);
-            LoadLife(in templateField, (WzImageProperty) wzObject["life"]);
-            LoadPortals(in templateField, (WzImageProperty) wzObject["portal"]);
+            LoadInfo(templateField, (WzImageProperty) wzObject["info"]);
+            LoadFootholds(templateField, (WzImageProperty) wzObject["foothold"]);
+            LoadLife(templateField, (WzImageProperty) wzObject["life"]);
+            LoadPortals(templateField, (WzImageProperty) wzObject["portal"]);
             // todo back, clock, reactor
         }
 
-        private static void LoadFootholds(in TemplateField template, WzImageProperty footholdsImage) {
+        private static void LoadFootholds(TemplateField template, WzImageProperty footholdsImage) {
             Dictionary<uint, Foothold> footholds = new Dictionary<uint, Foothold>();
 
             foreach (WzImageProperty collection in footholdsImage.WzProperties) {
@@ -116,7 +116,7 @@ namespace NineToFive.Wz {
             template.Footholds = footholds.Select(entry => entry.Value).ToArray();
         }
 
-        private static void LoadLife(in TemplateField template, WzImageProperty lifeProperty) {
+        private static void LoadLife(TemplateField template, WzImageProperty lifeProperty) {
             foreach (WzImageProperty entry in lifeProperty.WzProperties) {
                 string type = (entry["type"] as WzStringProperty)?.Value;
                 TemplateLife life = type switch {
@@ -147,7 +147,7 @@ namespace NineToFive.Wz {
             }
         }
 
-        private static void LoadInfo(in TemplateField template, WzImageProperty infoImage) {
+        private static void LoadInfo(TemplateField template, WzImageProperty infoImage) {
             template.BackgroundMusic = (infoImage["bgm"] as WzStringProperty)?.Value;
             template.FieldLimit = (uint) ((infoImage["fieldLimit"] as WzIntProperty)?.Value ?? 0);
             template.ForcedReturn = (infoImage["forcedReturn"] as WzIntProperty)?.Value ?? template.FieldId;
@@ -164,7 +164,7 @@ namespace NineToFive.Wz {
             template.VRTop = (infoImage["VRTop"] as WzIntProperty)?.Value ?? 0;
         }
 
-        private static void LoadPortals(in TemplateField template, WzImageProperty portalImage) {
+        private static void LoadPortals(TemplateField template, WzImageProperty portalImage) {
             List<Portal> portals = new List<Portal>();
             foreach (WzImageProperty entry in portalImage.WzProperties) {
                 if (!byte.TryParse(entry.Name, out byte id)) continue;

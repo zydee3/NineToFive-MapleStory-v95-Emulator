@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using log4net;
 using NineToFive.Game;
@@ -59,9 +60,11 @@ namespace ServerTests {
             watch.Reset();
 
             watch.Start();
-            SS = SkillWz.GetSkills(SkillID => (SkillID > 0));
+            SS = SkillWz.GetSkills(SkillFilter);
             watch.Stop();
             Log.Debug($"Time Elapsed Loading Skills Using Predicate: {watch.Elapsed}");
         }
+
+        private static readonly Func<int, bool> SkillFilter = id => id > 0;
     }
 }

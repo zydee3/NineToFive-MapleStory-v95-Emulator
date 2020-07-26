@@ -29,7 +29,7 @@ namespace NineToFive.Event {
                 var ctx = new CmdScriptMan(Client, _msg);
                 try {
                     Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js",
-                        (V8ScriptEngine e) => e.AddHostObject("ctx", ctx)).Wait();
+                        (V8ScriptEngine e) => e.AddHostObject("Ctx", ctx)).Wait();
                     ctx.Dispose();
                 } catch (FileNotFoundException) {
                     user.SendMessage($"Invalid command : '{ctx.Name}'");

@@ -53,7 +53,7 @@ namespace NineToFive.Packets {
         private static void InitNpc(Npc npc, Packet w) {
             w.WriteShort((short) npc.Location.X);
             w.WriteShort((short) npc.Location.Y);
-            w.WriteBool(false);           // bMove
+            w.WriteBool(false); // bMove
             w.WriteShort((short) npc.Fh);
             w.WriteShort((short) npc.HorizontalRange.Low);
             w.WriteShort((short) npc.HorizontalRange.High);
@@ -261,6 +261,93 @@ namespace NineToFive.Packets {
     }
 
     public static class UserPackets {
+        public static void EncodeUserRemoteInit(User user, Packet w) {
+            w.WriteByte();
+            w.WriteString();
+            w.WriteString();
+
+            w.WriteShort();
+            w.WriteByte();
+            w.WriteShort();
+            w.WriteByte();
+
+            #region SecondaryStat::DecodeForRemote
+
+            w.WriteLong();
+            w.WriteLong();
+            w.WriteByte();
+            w.WriteByte();
+
+            #endregion
+
+            w.WriteShort();
+            user.AvatarLook.Encode(user, w);
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt(); // chair
+            w.WriteShort();
+            w.WriteShort();
+            w.WriteByte();
+            w.WriteShort((short) user.Fh);
+            w.WriteByte();
+
+            w.WriteByte(); // CPet::Init_0
+
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            if (w.WriteByte() > 0) {
+                w.WriteInt();
+                w.WriteString();
+                w.WriteByte();
+                w.WriteByte();
+                w.WriteByte();
+                w.WriteByte();
+                w.WriteByte();
+            }
+
+            if (w.WriteByte() > 0) {
+                w.WriteString();
+            }
+
+            if (w.WriteByte() > 0) {
+                w.WriteLong();
+                w.WriteLong();
+                w.WriteInt();
+                // CUserPool::OnCoupleRecordAdd
+            }
+
+            if (w.WriteByte() > 0) {
+                w.WriteLong();
+                w.WriteLong();
+                w.WriteInt();
+                // CUserPool::OnFriendRecordAdd
+            }
+
+            if (w.WriteByte() > 0) {
+                w.WriteInt();
+                w.WriteInt();
+                w.WriteInt();
+                // CUserPool::OnMarriageRecordAdd
+            }
+
+            byte bCharFlag = w.WriteByte();
+            // if ((bCharFlag & 1) == 1) // CUser::LoadDarkForceEffect 
+            // if ((bCharFlag & 2) == 2) // CDragon::CreateEffect 
+            // if ((bCharFlag & 4) == 4) // CUser::LoadSwallowingEffect 
+            if (w.WriteByte() > 0) {
+                for (int i = 0; i < w.WriteInt(); i++) {
+                    w.WriteInt();
+                    // CUserPool::OnNewYearCardRecordAdd
+                }
+            }
+
+            w.WriteInt();
+        }
+
         public static void EncodeCharacterData(User user, Packet w, long dwCharFlag) {
             w.WriteLong(dwCharFlag);
             w.WriteByte();

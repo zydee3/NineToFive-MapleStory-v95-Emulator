@@ -45,11 +45,18 @@ namespace NineToFive.Net {
             _server = null;
         }
 
+        private void DisposeIfNecessary() {
+            if (_socket?.Connected == true) return;
+            Dispose();
+        }
+        
         private void BeginReadPacketHeader() {
+            DisposeIfNecessary();
             _socket.GetStream().BeginRead(_packetHeader, 0, _packetHeader.Length, EndReadPacketHeader, null);
         }
 
         private void EndReadPacketHeader(IAsyncResult ar) {
+            DisposeIfNecessary();
             int size;
             try {
                 size = _socket.GetStream().EndRead(ar);
@@ -77,6 +84,7 @@ namespace NineToFive.Net {
         }
 
         private void BeginReadPacketBody(IAsyncResult ar) {
+            DisposeIfNecessary();
             int size;
             try {
                 size = _socket.GetStream().EndRead(ar);

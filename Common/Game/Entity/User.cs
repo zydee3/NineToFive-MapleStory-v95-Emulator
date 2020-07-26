@@ -22,7 +22,7 @@ namespace NineToFive.Game.Entity {
             }
 
             AvatarLook = new AvatarLook(reader);
-            CharacterStat = new GW_CharacterStat(reader);
+            CharacterStat = new CharacterStat(reader);
             if (reader == null) return;
             AccountId = reader.GetUInt32("account_id");
             using DatabaseQuery q = Database.Table("items");
@@ -59,7 +59,7 @@ namespace NineToFive.Game.Entity {
         public bool IsHidden { get; set; }
         public bool IsDebugging { get; set; }
         public AvatarLook AvatarLook { get; }
-        public GW_CharacterStat CharacterStat { get; }
+        public CharacterStat CharacterStat { get; }
         public Dictionary<InventoryType, Inventory> Inventories { get; }
 
         public override Field Field {
@@ -78,6 +78,21 @@ namespace NineToFive.Game.Entity {
             Client.World.Users.TryRemove(CharacterStat.Id, out _);
         }
 
+        public override byte[] EnterFieldPacket() {
+            using Packet w = new Packet();
+            w.WriteShort((short) CUserPool.OnUserEnterField);
+            w.WriteUInt(CharacterStat.Id);
+            UserPackets.EncodeUserRemoteInit(this, w);
+            return w.ToArray();
+        }
+
+        public override byte[] LeaveFieldPacket() {
+            using Packet w = new Packet();
+            w.WriteShort((short) CUserPool.OnUserLeaveField);
+            w.WriteUInt(CharacterStat.Id);
+            return w.ToArray();
+        }
+
         public void Save() {
             using DatabaseQuery updateChars = Database.Table("characters");
             int count = updateChars.Update(Database.CreateUserParameters(this))
@@ -87,7 +102,7 @@ namespace NineToFive.Game.Entity {
 
             using DatabaseQuery deleteItems = Database.Table("items");
             count = deleteItems.Delete().ExecuteNonQuery();
-            Log.Info($"Cleaned up {count} items from {CharacterStat.Username}'s");
+            Log.Info($"Cleaned up {count} items from {CharacterStat.Username}");
 
             using DatabaseQuery insertItems = Database.Table("items");
             foreach (var inventory in Inventories.Values) {
@@ -97,7 +112,7 @@ namespace NineToFive.Game.Entity {
             }
 
             count = insertItems.ExecuteNonQuery();
-            Log.Info($"Successfully saved {count} items in {CharacterStat.Username}'s inventories");
+            Log.Info($"Successfully saved {count} items for {CharacterStat.Username}");
         }
 
         /// <summary>
@@ -115,8 +130,6 @@ namespace NineToFive.Game.Entity {
                 Location = destPortal.Location;
                 CharacterStat.Portal = portal.Id;
             }
-
-            Field.AddLife(this);
 
             using Packet w = new Packet();
             w.WriteShort((short) CStage.OnSetField);
@@ -164,6 +177,17 @@ namespace NineToFive.Game.Entity {
 
             w.WriteLong(DateTime.Now.ToFileTime()); // paramFieldInit.ftServer
             Client.Session.Write(w.ToArray());
+            
+            Field.AddLife(this);
+            // let people know this person entered the field
+            Field.BroadcastPacketExclude(this, EnterFieldPacket());
+            // let this person know other things are in the field
+            foreach (EntityType type in Enum.GetValues(typeof(EntityType))) {
+                foreach (Life life in Field.LifePools[type].Values) {
+                    if (life == this) continue;
+                    Client.Session.Write(life.EnterFieldPacket());
+                }
+            }
         }
 
         public void SendMessage(string msg, byte type = 5) {
@@ -211,8 +235,8 @@ namespace NineToFive.Game.Entity {
         public void Decode(User user, Packet p) { }
     }
 
-    public class GW_CharacterStat : IPacketSerializer<User> {
-        public GW_CharacterStat(MySqlDataReader r = null) {
+    public class CharacterStat : IPacketSerializer<User> {
+        public CharacterStat(MySqlDataReader r = null) {
             if (r == null) return;
             Id = r.GetUInt32("character_id");
             Username = r.GetString("username");

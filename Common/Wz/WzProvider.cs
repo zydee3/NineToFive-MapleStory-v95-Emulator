@@ -12,10 +12,10 @@ namespace NineToFive.Wz {
         /// <param name="TargetWz">Name of File.wz to be loaded.</param>
         /// <returns>WzFile if found, else null.</returns>
         public static WzFile Load(string TargetWz) {
-            string path = $"../../../../Wz/{TargetWz}.wz"; //wtf this is so troll
+            string path = $"{Directory.GetCurrentDirectory()}/Wz/{TargetWz}.wz";
 
             if (!File.Exists(path)) {
-                throw new FileNotFoundException($"Could not locate {TargetWz}");
+                throw new FileNotFoundException($"Could not locate WZ file '{TargetWz}'");
             }
 
             WzFile wz = new WzFile(path, WzMapleVersion.GMS);
