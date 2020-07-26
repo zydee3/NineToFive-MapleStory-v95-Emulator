@@ -27,9 +27,10 @@ namespace NineToFive.Scripting {
 
     public static class Scriptable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Scriptable));
-        private const string Root = "Resources/Scripts";
+        private static readonly string Root;
 
         static Scriptable() {
+            Root  = $"{Directory.GetCurrentDirectory()}/Resources/Scripts";
             Directory.CreateDirectory($"{Root}/Commands");
             Directory.CreateDirectory($"{Root}/Npc");
         }
@@ -41,9 +42,12 @@ namespace NineToFive.Scripting {
             }
 
             using var engine = new V8ScriptEngine();
+            // required for async execution, functions need to have the 'async' modifer
             engine.AddHostType(typeof(Task));
             engine.AddHostType(typeof(TaskScripting));
+            // typically for Console.WriteLine debugging
             engine.AddHostType(typeof(Console));
+            // converting string to integer
             engine.AddHostType(typeof(Convert));
             consumer?.Invoke(engine);
 
