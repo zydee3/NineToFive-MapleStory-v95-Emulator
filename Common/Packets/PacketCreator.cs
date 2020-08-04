@@ -415,7 +415,7 @@ namespace NineToFive.Packets {
             }
 
             if ((dwCharFlag & 2) == 2) {
-                w.WriteUInt(user.Money); // money
+                w.WriteUInt(user.Money);
             }
 
             if ((dwCharFlag & 0x80) == 0x80) {
