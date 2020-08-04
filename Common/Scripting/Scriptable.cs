@@ -35,7 +35,7 @@ namespace NineToFive.Scripting {
             Directory.CreateDirectory($"{Root}/Npc");
         }
 
-        public static async Task<object> RunScriptAsync(string path, Action<V8ScriptEngine> consumer = null) {
+        public static async Task<object> RunScriptAsync(string path, ScriptManager manager) {
             path = $"{Root}/{path}";
             if (!File.Exists(path)) {
                 throw new FileNotFoundException(path);
@@ -47,9 +47,9 @@ namespace NineToFive.Scripting {
             engine.AddHostType(typeof(TaskScripting));
             // typically for Console.WriteLine debugging
             engine.AddHostType(typeof(Console));
-            // converting string to integer
-            engine.AddHostType(typeof(Convert));
-            consumer?.Invoke(engine);
+            
+            engine.AddHostObject("Host", new ExtendedHostFunctions());
+            engine.AddHostObject("Ctx", manager);
 
             string text = await File.ReadAllTextAsync(path);
             engine.Execute(text);

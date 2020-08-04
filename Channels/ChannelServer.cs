@@ -5,6 +5,7 @@ using log4net;
 using log4net.Config;
 using NineToFive.Event;
 using NineToFive.Game;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
 
@@ -21,6 +22,8 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.OnTransferFieldRequest] = typeof(TransferFieldEvent),
 
+                [(short) ReceiveOperations.CWvsContext_OnStatChanged] = typeof(AbilityUpEvent),
+                
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
                 [(short) ReceiveOperations.User_OnEmotion] = typeof(EmotionChangeEvent),

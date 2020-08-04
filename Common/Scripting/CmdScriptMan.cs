@@ -22,5 +22,11 @@ namespace NineToFive.Scripting {
 
         public string Name { get; }
         public string[] Args { get; private set; }
+
+        public int ArgAsInt(int idx) => int.Parse(Args[idx]);
+        public uint ArgAsUInt(int idx) => uint.Parse(Args[idx]);
+        public override void Print(string message) {
+            Console.WriteLine($"[{Name}] : {message}");
+        }
     }
 }

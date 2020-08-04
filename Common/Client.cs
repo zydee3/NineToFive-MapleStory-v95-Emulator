@@ -26,8 +26,8 @@ namespace NineToFive {
         public void Dispose() {
             Users.Clear();
             try {
+                Log.Info($"'{Username}' : {User?.CharacterStat.Username} disconnected");
                 User?.Dispose();
-                Log.Info($"'{Username}' disconnected");
             } catch (Exception e) {
                 Log.Error($"Failure to disconnect '{Username}'", e);
             }

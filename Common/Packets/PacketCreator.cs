@@ -112,7 +112,8 @@ namespace NineToFive.Packets {
             w.WriteByte();                // move action
             w.WriteShort((short) mob.Fh); // cur fh
             w.WriteShort((short) mob.Fh); // home fh
-            if (w.WriteBool(mob.SummonType != 0)) {
+            w.WriteByte((byte) mob.SummonType);
+            if (mob.SummonType == -3 || mob.SummonType >= 0) {
                 w.WriteInt(mob.SummonType);
             }
 
@@ -144,7 +145,7 @@ namespace NineToFive.Packets {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobEnterField);
             w.WriteUInt(mob.Id);
-            w.WriteByte(); // nCalcDamageIndex
+            w.WriteByte(1); // nCalcDamageIndex
             w.WriteInt(mob.TemplateId);
 
             SetMobTemporaryStat(mob, w);
@@ -187,6 +188,28 @@ namespace NineToFive.Packets {
     }
 
     public static class CWvsPackets {
+        public static byte[] GetStatChanged(User user, uint dwcharFlag) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnStatChanged);
+            w.WriteBool(true);
+            user.CharacterStat.EncodeChangeStat(user, w, dwcharFlag);
+            if (w.WriteBool(false)) {
+                w.WriteByte();
+            }
+
+            if (w.WriteBool(false)) {
+                w.WriteInt(); // nTotalHp
+                w.WriteInt(); // nTotalMp
+                // CBattleRecordMan::SetBattleRecoveryInfo
+            }
+
+            if ((dwcharFlag & 0x400) == 0x400) ; // CWvsContext::CheckDarkForce
+            if ((dwcharFlag & 0x1000) == 0x1000) ; // CWvsContext::CheckDragonFury
+            if ((dwcharFlag & 0x40000) == 0x40000) ; // CWvsContext::CheckQuestCompleteByMeso
+            
+            return w.ToArray();
+        }
+
         public static byte[] GetBroadcastMessage(User user, bool whisper, byte type, string msg, Item item) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnBroadcastMsg);

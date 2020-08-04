@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -103,7 +104,7 @@ namespace NineToFive.Net.Interoperations {
 
                 using Packet p = new Packet(buffer);
                 instance.OnInteroperationReceived(client, p);
-            } catch (SocketException) {
+            } catch (IOException) {
                 // forcibly closed or smth
             } catch (Exception e) {
                 Log.Error("Error while processing", e);

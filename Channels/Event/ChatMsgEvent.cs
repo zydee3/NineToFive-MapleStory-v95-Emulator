@@ -26,11 +26,9 @@ namespace NineToFive.Event {
             User user = Client.User;
 
             if (_msg.StartsWith("!")) {
-                var ctx = new CmdScriptMan(Client, _msg);
+                using var ctx = new CmdScriptMan(Client, _msg);
                 try {
-                    Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js",
-                        (V8ScriptEngine e) => e.AddHostObject("Ctx", ctx)).Wait();
-                    ctx.Dispose();
+                    Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js", ctx).Wait();
                 } catch (FileNotFoundException) {
                     user.SendMessage($"Invalid command : '{ctx.Name}'");
                 } catch (Exception e) {

@@ -13,5 +13,7 @@ namespace NineToFive.Scripting {
 
         public Client Client { get; private set; }
         public User User => Client.User;
+
+        public virtual void Print(string message) { }
     }
 }

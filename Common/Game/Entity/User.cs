@@ -13,7 +13,6 @@ using NineToFive.Util;
 namespace NineToFive.Game.Entity {
     public class User : Life {
         private static readonly ILog Log = LogManager.GetLogger(typeof(User));
-        private Field _field;
 
         public User(MySqlDataReader reader = null) : base(EntityType.User) {
             Inventories = new Dictionary<InventoryType, Inventory>();
@@ -63,10 +62,10 @@ namespace NineToFive.Game.Entity {
         public Dictionary<InventoryType, Inventory> Inventories { get; }
 
         public override Field Field {
-            get => _field;
+            get => base.Field;
             set {
-                _field = value;
-                if (_field != null) CharacterStat.FieldId = _field.Id;
+                base.Field = value;
+                if (value != null) CharacterStat.FieldId = value.Id;
             }
         }
 
@@ -102,7 +101,7 @@ namespace NineToFive.Game.Entity {
 
             using DatabaseQuery deleteItems = Database.Table("items");
             count = deleteItems.Delete().ExecuteNonQuery();
-            Log.Info($"Cleaned up {count} items from {CharacterStat.Username}");
+            Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} items");
 
             using DatabaseQuery insertItems = Database.Table("items");
             foreach (var inventory in Inventories.Values) {
@@ -112,7 +111,7 @@ namespace NineToFive.Game.Entity {
             }
 
             count = insertItems.ExecuteNonQuery();
-            Log.Info($"Successfully saved {count} items for {CharacterStat.Username}");
+            Log.Info($"[Save] {CharacterStat.Username} : Saved {count} items");
         }
 
         /// <summary>
@@ -177,7 +176,7 @@ namespace NineToFive.Game.Entity {
 
             w.WriteLong(DateTime.Now.ToFileTime()); // paramFieldInit.ftServer
             Client.Session.Write(w.ToArray());
-            
+
             Field.AddLife(this);
             // let people know this person entered the field
             Field.BroadcastPacketExclude(this, EnterFieldPacket());
@@ -276,6 +275,10 @@ namespace NineToFive.Game.Entity {
         public int FieldId { get; set; } = 10000;
         public byte Portal { get; set; }
 
+        public void SendUpdate(User user, uint dwcharFlags) {
+            user.Client.Session.Write(CWvsPackets.GetStatChanged(user, dwcharFlags));
+        }
+        
         public void Encode(User user, Packet p) {
             if (Id == 0) throw new InvalidOperationException("cannot encode a character which id is 0");
             p.WriteUInt(Id);
@@ -318,6 +321,45 @@ namespace NineToFive.Game.Entity {
             p.WriteByte(Portal);
             p.WriteInt();
             p.WriteShort();
+        }
+
+        public void EncodeChangeStat(User user, Packet p, uint dwcharFlag) {
+            p.WriteUInt(dwcharFlag);
+            if ((dwcharFlag & 1) == 1) p.WriteByte(user.AvatarLook.Skin);
+            if ((dwcharFlag & 4) == 4) p.WriteInt(user.AvatarLook.Face);
+            if ((dwcharFlag & 2) == 2) p.WriteInt(user.AvatarLook.Hair);
+            if ((dwcharFlag & 8) == 8) p.WriteLong(); // pet 1
+            if ((dwcharFlag & 0x80000) == 0x80000) p.WriteLong(); // pet 2
+            if ((dwcharFlag & 0x100000) == 0x100000) p.WriteLong(); // pet 3
+            if ((dwcharFlag & 0x10) == 0x10) p.WriteByte(Level);
+            if ((dwcharFlag & 0x20) == 0x20) p.WriteShort(Job);
+            if ((dwcharFlag & 0x40) == 0x40) p.WriteShort(Str);
+            if ((dwcharFlag & 0x80) == 0x80) p.WriteShort(Dex);
+            if ((dwcharFlag & 0x100) == 0x100) p.WriteShort(Int);
+            if ((dwcharFlag & 0x200) == 0x200) p.WriteShort(Luk);
+            if ((dwcharFlag & 0x400) == 0x400) p.WriteInt(HP);
+            if ((dwcharFlag & 0x800) == 0x800) p.WriteInt(MaxHP);
+            if ((dwcharFlag & 0x1000) == 0x1000) p.WriteInt(MP);
+            if ((dwcharFlag & 0x2000) == 0x2000) p.WriteInt(MaxMP);
+            if ((dwcharFlag & 0x4000) == 0x4000) p.WriteShort(AP);
+
+            if ((dwcharFlag & 0x8000) == 0x8000) {
+                if (JobConstants.IsExtendedSpJob(Job)) {
+                    byte advancements = (byte) (9 - Math.Min(9, 2218 - Job));
+                    p.WriteByte(advancements);
+                    for (byte i = 0; i < advancements; i++) {
+                        p.WriteByte(i);
+                        p.WriteByte((byte) SP[i]);
+                    }
+                } else {
+                    p.WriteShort(SP[0]);
+                }
+            }
+
+            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteInt(Exp);
+            if ((dwcharFlag & 0x20000) == 0x20000) p.WriteShort(Popularity);
+            if ((dwcharFlag & 0x40000) == 0x40000) p.WriteInt();
+            if ((dwcharFlag & 0x200000) == 0x200000) p.WriteInt(FieldId);
         }
 
         public void Decode(User user, Packet p) { }
