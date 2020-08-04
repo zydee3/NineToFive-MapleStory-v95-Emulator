@@ -26,7 +26,7 @@ namespace NineToFive.Game {
             SpawnPoints = new List<SpawnPoint>();
             Portals = new List<Portal>();
             foreach (EntityType type in Enum.GetValues(typeof(EntityType))) {
-                LifePools.Add(type, new LifePool<Life>());
+                LifePools.Add(type, new LifePool<Life>(type));
             }
 
             MapWz.CopyTemplate(this);

@@ -24,6 +24,7 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.CWvsContext_SendSkillUpRequest] = typeof(SkillUpEvent),
                 [(short) ReceiveOperations.CWvsContext_SendAbilityUpRequest] = typeof(AbilityUpEvent),
+                [(short) ReceiveOperations.CWvsContext_SendCharacterInfoRequest] = typeof(CharacterInfoEvent),
                 
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),

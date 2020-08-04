@@ -48,6 +48,7 @@ namespace NineToFive.Net {
 
         CWvsContext_SendAbilityUpRequest = 98,
         CWvsContext_SendSkillUpRequest = 102,
+        CWvsContext_SendCharacterInfoRequest = 109,
         CWvsContext_OnCheckOpBoardHasNew = 192,
         CWvsContext_OnUiMenu = 218,
 
