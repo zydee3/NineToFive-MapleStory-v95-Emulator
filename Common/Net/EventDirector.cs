@@ -46,7 +46,8 @@ namespace NineToFive.Net {
         // CField, CCashShop, CITC
         OnTransferFieldRequest = 41,
 
-        CWvsContext_OnStatChanged = 98,
+        CWvsContext_SendAbilityUpRequest = 98,
+        CWvsContext_SendSkillUpRequest = 102,
         CWvsContext_OnCheckOpBoardHasNew = 192,
         CWvsContext_OnUiMenu = 218,
 
@@ -57,6 +58,7 @@ namespace NineToFive.Net {
 
         UserLocal_OnPortalCollision = 112,
         UserLocal_TryRegisterTeleport = 113,
+        UserLocal_UpdatePassiveSkillData = 217, 
         UserLocal_OnResetNLCPQ = 251,
         
         Field_SendChatMsgSlash = 151,

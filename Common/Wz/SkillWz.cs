@@ -299,7 +299,7 @@ namespace NineToFive.Wz {
         /// <note>
         ///    Average benchmark time: 00:00:01.3542697
         /// </note>
-        public static Dictionary<int, Skill> GetSkills(Func<int, bool> predicate) {
+        public static Dictionary<int, Skill> GetSkills(Func<int, bool> predicate = null) {
             Dictionary<int, Skill> skillsRetrieved = new Dictionary<int, Skill>();
             WzFile _wz = WzProvider.Load(WzName);
 
@@ -311,7 +311,7 @@ namespace NineToFive.Wz {
                     
                     // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}
                     foreach (WzImageProperty skill in skills.WzProperties) {
-                        if (!int.TryParse(skill.Name, out int SkillID) || !predicate(SkillID)) continue;
+                        if (!int.TryParse(skill.Name, out int SkillID) || (predicate != null && !predicate(SkillID))) continue;
                         
                         // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
                         WzImageProperty image = skill.GetFromPath("common");

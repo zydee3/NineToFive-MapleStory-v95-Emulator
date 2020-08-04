@@ -22,7 +22,8 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.OnTransferFieldRequest] = typeof(TransferFieldEvent),
 
-                [(short) ReceiveOperations.CWvsContext_OnStatChanged] = typeof(AbilityUpEvent),
+                [(short) ReceiveOperations.CWvsContext_SendSkillUpRequest] = typeof(SkillUpEvent),
+                [(short) ReceiveOperations.CWvsContext_SendAbilityUpRequest] = typeof(AbilityUpEvent),
                 
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
@@ -30,6 +31,7 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
                 [(short) ReceiveOperations.UserLocal_TryRegisterTeleport] = typeof(RegisterTeleportEvent),
+                [(short) ReceiveOperations.UserLocal_UpdatePassiveSkillData] = typeof(UpdatePassiveSkillDataEvent),
                 
                 [(short) ReceiveOperations.Field_LogChatMsgSlash]  = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),

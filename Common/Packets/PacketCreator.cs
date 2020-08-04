@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NineToFive.Game.Entity;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
 using NineToFive.SendOps;
@@ -188,6 +190,22 @@ namespace NineToFive.Packets {
     }
 
     public static class CWvsPackets {
+        public static byte[] GetChangeSkillRecord(Dictionary<int, SkillRecord> skills) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnChangeSkillRecordResult);
+            w.WriteBool(true); // get_update_time
+            w.WriteShort((short) skills.Count);
+            foreach (var record in skills.Values) {
+                w.WriteInt(record.Id);
+                w.WriteInt(record.Level);
+                w.WriteInt(record.MasterLevel);
+                w.WriteLong(record.Expiration);
+            }
+
+            w.WriteByte();
+            return w.ToArray();
+        }
+
         public static byte[] GetStatChanged(User user, uint dwcharFlag) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnStatChanged);
@@ -203,10 +221,10 @@ namespace NineToFive.Packets {
                 // CBattleRecordMan::SetBattleRecoveryInfo
             }
 
-            if ((dwcharFlag & 0x400) == 0x400) ; // CWvsContext::CheckDarkForce
-            if ((dwcharFlag & 0x1000) == 0x1000) ; // CWvsContext::CheckDragonFury
+            if ((dwcharFlag & 0x400) == 0x400) ;     // CWvsContext::CheckDarkForce
+            if ((dwcharFlag & 0x1000) == 0x1000) ;   // CWvsContext::CheckDragonFury
             if ((dwcharFlag & 0x40000) == 0x40000) ; // CWvsContext::CheckQuestCompleteByMeso
-            
+
             return w.ToArray();
         }
 
@@ -416,15 +434,15 @@ namespace NineToFive.Packets {
                 var equipped = user.Inventories[InventoryType.Equipped];
                 var equips = user.Inventories[InventoryType.Equip];
 
-                foreach (var item in equipped.Items.Where(i => i.BagIndex > -100)) {
-                    // equipped cash
+                foreach (var item in equipped.Items.Where(i => i.BagIndex >= -99)) {
+                    // equipped regular
                     w.WriteShort(Math.Abs(item.BagIndex));
                     item.Encode(item, w);
                 }
 
                 w.WriteShort();
-                foreach (var item in equipped.Items.Where(i => i.BagIndex < -99)) {
-                    // equipped regular
+                foreach (var item in equipped.Items.Where(i => i.BagIndex <= -100)) {
+                    // equipped cash
                     w.WriteShort(Math.Abs(item.BagIndex));
                     item.Encode(item, w);
                 }

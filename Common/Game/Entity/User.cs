@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Microsoft.VisualBasic.CompilerServices;
 using MySql.Data.MySqlClient;
 using NineToFive.Constants;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
 using NineToFive.Packets;
@@ -22,6 +24,8 @@ namespace NineToFive.Game.Entity {
 
             AvatarLook = new AvatarLook(reader);
             CharacterStat = new CharacterStat(reader);
+            Skills = new Dictionary<int, SkillRecord>();
+
             if (reader == null) return;
             AccountId = reader.GetUInt32("account_id");
             using DatabaseQuery q = Database.Table("items");
@@ -60,6 +64,7 @@ namespace NineToFive.Game.Entity {
         public AvatarLook AvatarLook { get; }
         public CharacterStat CharacterStat { get; }
         public Dictionary<InventoryType, Inventory> Inventories { get; }
+        public Dictionary<int, SkillRecord> Skills { get; }
 
         public override Field Field {
             get => base.Field;
@@ -71,7 +76,7 @@ namespace NineToFive.Game.Entity {
 
         public override void Dispose() {
             Save();
-            Log.Info($"Saved user '{CharacterStat.Username}'");
+            Log.Info($"[Dispose] {CharacterStat.Username} : Completed save");
 
             base.Dispose();
             Client.World.Users.TryRemove(CharacterStat.Id, out _);
@@ -278,7 +283,7 @@ namespace NineToFive.Game.Entity {
         public void SendUpdate(User user, uint dwcharFlags) {
             user.Client.Session.Write(CWvsPackets.GetStatChanged(user, dwcharFlags));
         }
-        
+
         public void Encode(User user, Packet p) {
             if (Id == 0) throw new InvalidOperationException("cannot encode a character which id is 0");
             p.WriteUInt(Id);
@@ -328,8 +333,8 @@ namespace NineToFive.Game.Entity {
             if ((dwcharFlag & 1) == 1) p.WriteByte(user.AvatarLook.Skin);
             if ((dwcharFlag & 4) == 4) p.WriteInt(user.AvatarLook.Face);
             if ((dwcharFlag & 2) == 2) p.WriteInt(user.AvatarLook.Hair);
-            if ((dwcharFlag & 8) == 8) p.WriteLong(); // pet 1
-            if ((dwcharFlag & 0x80000) == 0x80000) p.WriteLong(); // pet 2
+            if ((dwcharFlag & 8) == 8) p.WriteLong();               // pet 1
+            if ((dwcharFlag & 0x80000) == 0x80000) p.WriteLong();   // pet 2
             if ((dwcharFlag & 0x100000) == 0x100000) p.WriteLong(); // pet 3
             if ((dwcharFlag & 0x10) == 0x10) p.WriteByte(Level);
             if ((dwcharFlag & 0x20) == 0x20) p.WriteShort(Job);
