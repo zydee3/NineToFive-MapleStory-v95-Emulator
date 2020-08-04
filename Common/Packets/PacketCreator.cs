@@ -415,7 +415,7 @@ namespace NineToFive.Packets {
             }
 
             if ((dwCharFlag & 2) == 2) {
-                w.WriteInt(); // money
+                w.WriteUInt(user.Money); // money
             }
 
             if ((dwCharFlag & 0x80) == 0x80) {
@@ -482,12 +482,14 @@ namespace NineToFive.Packets {
             }
 
             if ((dwCharFlag & 0x100) == 0x100) {
-                for (int i = 0; i < w.WriteShort(); i++) {
-                    int jobId = w.WriteInt();
-                    w.WriteInt();
-                    w.WriteLong();
+                var records = user.Skills.ToArray();
+                for (int i = 0; i < w.WriteShort((short) records.Length); i++) {
+                    var record = records[i].Value;
+                    int jobId = w.WriteInt(record.Id / 10000);
+                    w.WriteInt(record.Id);
+                    w.WriteLong(record.Expiration);
                     if (SkillConstants.IsSkillNeedMasterLevel(jobId)) {
-                        w.WriteInt();
+                        w.WriteInt(record.MasterLevel);
                     }
                 }
             }

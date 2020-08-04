@@ -10,7 +10,7 @@ CREATE TABLE `accounts` (
   PRIMARY KEY (`account_id`) USING BTREE,
   UNIQUE KEY `accounts_username_unique` (`username`),
   KEY `accounts_username_index` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=ascii COLLATE=ascii_bin;
 
 CREATE TABLE `characters` (
   `account_id` int(10) unsigned NOT NULL,
@@ -36,11 +36,12 @@ CREATE TABLE `characters` (
   `field_id` int(10) unsigned NOT NULL DEFAULT '10000',
   `portal` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `gm_level` tinyint(3) unsigned not null default '0',
+  `money` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`character_id`) USING BTREE,
   UNIQUE KEY `username_UNIQUE` (`username`),
   KEY `FK_char_account_id_idx` (`account_id`),
   CONSTRAINT `FK_char_account_id` FOREIGN KEY (`account_id`) REFERENCES `accounts` (`account_id`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=ascii COLLATE=ascii_bin;
 
 CREATE TABLE `items` (
   `generated_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -52,4 +53,13 @@ CREATE TABLE `items` (
   `cash_sn` bigint(20) unsigned NOT NULL,
   `date_expire` bigint(20) unsigned NOT NULL,
   PRIMARY KEY (`generated_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+
+CREATE TABLE  `skill_records` (
+  `character_id` int(10) unsigned NOT NULL,
+  `skill_id` int(10) unsigned NOT NULL,
+  `date_expire` bigint(20) unsigned NOT NULL,
+  `master_level` int(10) unsigned NOT NULL,
+  KEY `skill_records_user_id_idx` (`character_id`) USING BTREE,
+  CONSTRAINT `FK_skill_records_user_id` FOREIGN KEY (`character_id`) REFERENCES `characters` (`character_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;

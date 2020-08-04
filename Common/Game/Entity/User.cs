@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
-using Microsoft.VisualBasic.CompilerServices;
 using MySql.Data.MySqlClient;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
@@ -28,31 +27,45 @@ namespace NineToFive.Game.Entity {
 
             if (reader == null) return;
             AccountId = reader.GetUInt32("account_id");
-            using DatabaseQuery q = Database.Table("items");
-            using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
-            while (r.Read()) {
-                int itemId = r.GetInt32("item_id");
-                short bagIndex = r.GetInt16("bag_index");
-                InventoryType type = ItemConstants.GetInventoryType(itemId);
-                Item item;
+            Money = reader.GetUInt32("money");
 
-                if (type == InventoryType.Equip) {
-                    if (bagIndex < 0) {
-                        Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true));
-                        continue;
+            using (DatabaseQuery q = Database.Table("items")) {
+                using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
+                while (r.Read()) {
+                    int itemId = r.GetInt32("item_id");
+                    short bagIndex = r.GetInt16("bag_index");
+                    InventoryType type = ItemConstants.GetInventoryType(itemId);
+                    Item item;
+
+                    if (type == InventoryType.Equip) {
+                        if (bagIndex < 0) {
+                            Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true));
+                            continue;
+                        }
+
+                        item = new Equip(itemId);
+                    } else {
+                        item = new Item(itemId);
+                        item.Quantity = r.GetUInt16("quantity");
                     }
 
-                    item = new Equip(itemId);
-                } else {
-                    item = new Item(itemId);
-                    item.Quantity = r.GetUInt16("quantity");
+                    item.GeneratedId = r.GetUInt32("generated_id");
+                    item.BagIndex = bagIndex;
+                    item.CashItemSn = r.GetInt64("cash_sn");
+                    item.DateExpire = r.GetInt64("date_expire");
+                    Inventories[item.InventoryType][item.BagIndex] = item;
                 }
+            }
 
-                item.GeneratedId = r.GetUInt32("generated_id");
-                item.BagIndex = bagIndex;
-                item.CashItemSn = r.GetInt64("cash_sn");
-                item.DateExpire = r.GetInt64("date_expire");
-                Inventories[item.InventoryType][item.BagIndex] = item;
+            using (DatabaseQuery q = Database.Table("skill_records")) {
+                using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
+                while (r.Read()) {
+                    var record = new SkillRecord(r.GetInt32("skill_id"), r.GetInt32("level")) {
+                        Expiration = r.GetInt64("date_expire"),
+                        MasterLevel = r.GetInt32("master_level"),
+                    };
+                    Skills.Add(record.Id, record);
+                }
             }
         }
 
@@ -60,6 +73,7 @@ namespace NineToFive.Game.Entity {
         public Client Client { get; set; }
         public byte GradeCode { get; set; }
         public bool IsHidden { get; set; }
+        public uint Money { get; set; }
         public bool IsDebugging { get; set; }
         public AvatarLook AvatarLook { get; }
         public CharacterStat CharacterStat { get; }

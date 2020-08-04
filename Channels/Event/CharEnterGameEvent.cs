@@ -6,6 +6,7 @@ using MySql.Data.MySqlClient;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
+using NineToFive.Packets;
 using NineToFive.Util;
 
 namespace NineToFive.Event {
@@ -51,6 +52,7 @@ namespace NineToFive.Event {
             Client.SetChannel(Server.Worlds[World.ActiveWorld].Channels.First(ch => ch.Port == Client.Channel.Port).Id);
             Client.World.Users.AddOrUpdate(user.CharacterStat.Id, id => user, (id, u) => user);
             user.SetField(user.CharacterStat.FieldId);
+            user.Client.Session.Write(CWvsPackets.GetStatChanged(user, 0));
         }
     }
 }

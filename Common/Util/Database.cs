@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Game.Entity;
@@ -35,6 +36,7 @@ namespace NineToFive.Util {
                 "field_id", user.CharacterStat.FieldId,
                 "portal", user.CharacterStat.Portal,
                 "gm_level", user.GradeCode,
+                "money", user.Money,
             };
         }
 
