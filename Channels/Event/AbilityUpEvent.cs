@@ -14,19 +14,20 @@ namespace NineToFive.Event {
             p.ReadInt(); // get_update_time
             byte[] b = p.ReadBytes(4);
             _dwcharFlag = BitConverter.ToUInt32(b, 0);
-            if (Client.User.CharacterStat.AP < 1) return false;
-
-            return true;
+            return Client.User.CharacterStat.AP >= 1;
         }
 
         public override void OnHandle() {
             User user = Client.User;
             CharacterStat stat = user.CharacterStat;
+            UserAbility ability = (UserAbility) _dwcharFlag;
+            if (ability.GetFromUser(user) >= 32767) {
+                user.SendMessage("Cannot increase this ability anymore.");
+                return;
+            }
 
-            switch ((UserAbility) _dwcharFlag) {
-                default:
-                    Console.WriteLine($"unknown flag: {_dwcharFlag}");
-                    return;
+            switch (ability) {
+                default: return;
                 case UserAbility.Str:
                     stat.Str += 1;
                     break;
