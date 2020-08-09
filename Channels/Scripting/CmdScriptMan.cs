@@ -1,7 +1,9 @@
 ﻿using System;
+using log4net;
 
 namespace NineToFive.Scripting {
     public class CmdScriptMan : ScriptManager {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(CmdScriptMan));
         private string _message;
 
         public CmdScriptMan(Client client, string message) : base(client) {
@@ -27,7 +29,7 @@ namespace NineToFive.Scripting {
         public int ArgAsInt(int idx) => int.Parse(Args[idx]);
 
         public override void Print(string message) {
-            Console.WriteLine($"[{Name}] : {message}");
+            Log.Info($"[{Name}] : {message}");
         }
     }
 }
