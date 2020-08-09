@@ -2,7 +2,7 @@ const Libs = Host.lib('Common');
 const EntityType = Libs.NineToFive.Constants.EntityType;
 
 async function run() {
-    let user = Ctx.User;
+    let user = ctx.User;
 
     let pools = user.Field.LifePools.GetEnumerator();
     while (pools.MoveNext()) {
@@ -18,5 +18,5 @@ async function run() {
         }
         break;
     }
-    user.SendMessage("Drops cleared.")
+    user.SendMessage("Drops cleared.");
 }

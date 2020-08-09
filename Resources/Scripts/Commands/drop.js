@@ -1,15 +1,15 @@
 const Libs    = Host.lib('Common');
-const Drop      = Libs.NineToFive.Game.Entity.Drop;
+const Drop    = Libs.NineToFive.Game.Entity.Drop;
 
 async function run() {
-    let User = Ctx.User;
-    if (Ctx.Args.Length != 1) {
-        return User.SendMessage("[command] !drop <item id>");
+    let user = ctx.User;
+    if (ctx.Args.Length != 1) {
+        return user.SendMessage("[command] !drop <item id>");
     }
-    let n = parseInt(Ctx.Args[0]);
+    let n = parseInt(ctx.Args[0]);
     if (isNaN(n)) {
-        return User.SendMessage(`'${Ctx.Args[0]}' is not a valid number.`)
+        return user.SendMessage(`'${ctx.Args[0]}' is not a valid number.`)
     }
-    let drop = new Drop(Ctx.ArgAsInt(0), User);
-    User.Field.SummonLife(drop);
+    let drop = new Drop(ctx.ArgAsInt(0), user);
+    user.Field.SummonLife(drop);
 }

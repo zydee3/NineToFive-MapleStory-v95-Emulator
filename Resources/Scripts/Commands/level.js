@@ -1,13 +1,13 @@
 async function run() {
-    let User = Ctx.User;
-    if (Ctx.Args.Length != 1) {
-        return User.SendMessage("[command] !level <new level>");
+    let user = ctx.User;
+    if (ctx.Args.Length != 1) {
+        return user.SendMessage("[command] !level <new level>");
     }
-    let n = parseInt(Ctx.Args[0]);
+    let n = parseInt(ctx.Args[0]);
     if (isNaN(n) || n < 0 || n > 255) {
-        return User.SendMessage(`'${Ctx.Args[0]}' is not a valid level.`)
+        return user.SendMessage(`'${ctx.Args[0]}' is not a valid level.`)
     }
-    User.CharacterStat.Level = Ctx.ArgAsInt(0);
-    User.CharacterStat.SendUpdate(User, 0x10);
-    User.SendMessage(`Level is now ${User.CharacterStat.Level}`);
+    user.CharacterStat.Level = ctx.ArgAsInt(0);
+    user.CharacterStat.SendUpdate(user, 0x10);
+    user.SendMessage(`Level is now ${user.CharacterStat.Level}`);
 }

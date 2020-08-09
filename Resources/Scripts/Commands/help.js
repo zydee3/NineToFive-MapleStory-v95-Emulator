@@ -1,3 +1,3 @@
 async function run() {
-    Ctx.User.SendMessage("Nope.");
+    ctx.User.SendMessage("Nope.");
 }

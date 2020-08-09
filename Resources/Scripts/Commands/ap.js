@@ -1,13 +1,13 @@
 async function run() {
-    let User = Ctx.User;
-    if (Ctx.Args.Length != 1) {
-        return User.SendMessage("[command] !ap <new amount>");
+    let user = ctx.User;
+    if (ctx.Args.Length != 1) {
+        return user.SendMessage("[command] !ap <new amount>");
     }
-    let n = parseInt(Ctx.Args[0]);
+    let n = parseInt(ctx.Args[0]);
     if (isNaN(n) || n < 0 || n > 32767) {
-        return User.SendMessage(`'${Ctx.Args[0]}' is either too high, or too low.`)
+        return user.SendMessage(`'${ctx.Args[0]}' is either too high, or too low.`)
     }
-    User.CharacterStat.AP = Ctx.ArgAsInt(0);
-    User.CharacterStat.SendUpdate(User, 0x4000);
-    User.SendMessage(`AP is now ${User.CharacterStat.AP}`);
+    user.CharacterStat.AP = ctx.ArgAsInt(0);
+    user.CharacterStat.SendUpdate(user, 0x4000);
+    user.SendMessage(`AP is now ${user.CharacterStat.AP}`);
 }

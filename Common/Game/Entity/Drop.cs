@@ -11,7 +11,7 @@ namespace NineToFive.Game.Entity {
         }
 
         public override byte[] EnterFieldPacket() {
-            return DropPool.GetDropEnterField(this, 1);
+            return DropPool.GetDropEnterField(this, 2);
         }
 
         public override byte[] LeaveFieldPacket() {

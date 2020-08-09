@@ -1,5 +1,5 @@
 async function run() {
-    let User = Ctx.User;
-    User.CharacterStat.SendUpdate(User, 0);
-    User.SendMessage("Disposed.");
+    let user = ctx.User;
+    user.CharacterStat.SendUpdate(user, 0);
+    user.SendMessage("Disposed.");
 }

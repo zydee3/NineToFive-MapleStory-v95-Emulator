@@ -27,35 +27,15 @@ namespace NineToFive.Event {
             if (_msg.StartsWith("!")) {
                 using var ctx = new CmdScriptMan(Client, _msg);
                 try {
-                    switch (ctx.Name) {
-                        default:
-                            Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js", ctx).Wait();
-                            return;
-                        case "pb": {
-                            if (ctx.Args.Length < 3) {
-                                user.SendMessage("[command] !pb : not enough information");
-                                return;
-                            }
-
-                            using Packet w = new Packet();
-                            for (int i = 1; i < ctx.Args.Length; i++) {
-                                byte sb = byte.Parse(ctx.Args[i]);
-                                w.WriteByte(sb);
-                            }
-
-                            Console.WriteLine(w.ToArrayString(true));
-
-                            Client.Session.Write(w.ToArray());
-                            return;
-                        }
-                    }
+                    Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js", ctx).Wait();
+                    return;
                 } catch (Exception e) {
                     if (e is AggregateException ae) {
                         ae.Handle(x => {
                             if (x is FileNotFoundException) {
-                                user.SendMessage($"Invalid command : '{ctx.Name}'");
+                                user.SendMessage($"Invalid command : '{ctx.Prefix}{ctx.Name}'");
                             } else {
-                                Log.Error($"Failed to execute command '{ctx.Name}'", e);
+                                Log.Error($"Failed to execute command '{ctx.Prefix}{ctx.Name}'", e);
                                 user.SendMessage("The command is not working.");
                             }
 

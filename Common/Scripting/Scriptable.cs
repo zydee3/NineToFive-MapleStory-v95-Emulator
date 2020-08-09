@@ -49,9 +49,10 @@ namespace NineToFive.Scripting {
             engine.AddHostType(typeof(TaskScripting));
             // typically for Console.WriteLine debugging
             engine.AddHostType(typeof(Console));
-
+            // imports and reflection
             engine.AddHostObject("Host", new ExtendedHostFunctions());
-            engine.AddHostObject("Ctx", manager);
+            // script context
+            engine.AddHostObject("ctx", manager);
 
             string text = await File.ReadAllTextAsync(path);
             engine.Execute(text);

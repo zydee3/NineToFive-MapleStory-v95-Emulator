@@ -1,9 +1,9 @@
 async function run() {
-    let User = Ctx.User;
-    if (Ctx.Args.Length != 1) {
-        return User.SendMessage("[command] !map <map id>");
+    let user = ctx.User;
+    if (ctx.Args.Length != 1) {
+        return user.SendMessage("[command] !map <map id>");
     }
-    let fieldId = parseInt(Ctx.Args[0]);
-    if (isNaN(fieldId)) return User.SendMessage(`Invalid map : '${Ctx.Args[0]}'`);
-    User.SetField(Ctx.ArgAsInt(0));
+    let fieldId = parseInt(ctx.Args[0]);
+    if (isNaN(fieldId)) return user.SendMessage(`Invalid map : '${ctx.Args[0]}'`);
+    user.SetField(ctx.ArgAsInt(0));
 }
