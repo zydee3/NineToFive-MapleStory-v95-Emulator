@@ -42,7 +42,7 @@ namespace NineToFive.Event {
 
             if (_location != Vector2.Zero) user.Location = _location;
             var field = Client.Channel.GetField(portal.TargetMap);
-            portal = field.Portals.First(p => p.Name.Equals(portal.Name));
+            portal = field.Portals.FirstOrDefault(p => p.Name.Equals(portal.Name));
             user.SetField(field.Id, portal);
         }
     }
