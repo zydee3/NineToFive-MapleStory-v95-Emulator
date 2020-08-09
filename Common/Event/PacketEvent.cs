@@ -27,6 +27,10 @@ namespace NineToFive.Event {
             Log.Error($"================ {GetType().Name} ================", e);
         }
 
+        public virtual bool ShouldProcess() {
+            return Client.LoginStatus != 0;
+        }
+
         public virtual bool OnProcess(Packet p) {
             return false;
         }

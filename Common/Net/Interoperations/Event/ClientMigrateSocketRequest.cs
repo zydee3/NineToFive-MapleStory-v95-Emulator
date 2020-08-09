@@ -1,5 +1,4 @@
-﻿using System.Net;
-using log4net;
+﻿using log4net;
 using NineToFive.Game;
 
 namespace NineToFive.Net.Interoperations.Event {
@@ -7,17 +6,17 @@ namespace NineToFive.Net.Interoperations.Event {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ClientMigrateSocketRequest));
 
         public static byte[] OnHandle(Packet r) {
-            Client client = Server.AddClientIfAbsent(r.ReadString());
-            client.LastKnownIp = new IPAddress(r.ReadBytes(4));
-
             World world = Server.Worlds[r.ReadByte()];
             Channel channel = world.Channels[r.ReadByte()];
 
             using Packet w = new Packet();
-            if (w.WriteBool(channel.HostAddress != null)) {
-                Log.Info($"Channel address found {channel.HostAddress}");
+            // check if server end-point is unavailable
+            bool alive = channel.HostAddress != null && Interoperability.TestConnection(channel.HostAddress, channel.Port);
+            w.WriteBool(alive);
+            if (alive) {
                 w.WriteBytes(channel.HostAddress.GetAddressBytes());
             } else {
+                channel.HostAddress = null;
                 Log.Info($"No server is hosting channel {channel.Id} in world {world.Id}");
             }
 

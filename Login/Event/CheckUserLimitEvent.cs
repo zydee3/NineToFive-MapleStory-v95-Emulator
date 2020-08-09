@@ -1,10 +1,11 @@
 ﻿using NineToFive.Game;
 using NineToFive.Net;
+using NineToFive.SendOps;
 
 namespace NineToFive.Event {
     public class CheckUserLimitEvent : PacketEvent {
         private short _worldId;
-        
+
         public CheckUserLimitEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
@@ -26,7 +27,7 @@ namespace NineToFive.Event {
         /// <returns></returns>
         private static byte[] GetCheckUserLimitResult(byte a) {
             using Packet p = new Packet();
-            p.WriteShort((short) SendOps.CLogin.OnCheckUserLimitResult);
+            p.WriteShort((short) CLogin.OnCheckUserLimitResult);
             p.WriteByte(a);
             p.WriteByte();
             return p.ToArray();

@@ -128,7 +128,7 @@ namespace NineToFive.Net.Interoperations {
         /// <param name="port">destination port on the specified server</param>
         /// <param name="address">ip address of the specified server</param>
         /// <returns>response information in regard to the packet sent, null if no response</returns>
-        public static byte[] GetPacketResponse(byte[] buffer, int port, string address = "127.0.0.1") {
+        public static byte[] GetPacketResponse(byte[] buffer, int port, string address) {
             try {
                 using TcpClient client = new TcpClient(address, port);
                 NetworkStream stream = client.GetStream();

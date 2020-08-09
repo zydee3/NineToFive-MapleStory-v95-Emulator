@@ -50,7 +50,7 @@ namespace NineToFive.Event {
             w.WriteByte((byte) Interoperation.ChannelUserLimitRequest);
             w.WriteByte(_worldId);
             w.WriteByte(_channelId);
-            byte[] response = Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
+            byte[] response = Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer);
             if (response != null) {
                 Client.Channel.Snapshot.UserCount = BitConverter.ToInt32(response);
             }

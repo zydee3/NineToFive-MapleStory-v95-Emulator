@@ -9,20 +9,31 @@ namespace NineToFive.Net.Interoperations.Event {
         private static readonly ILog Log = LogManager.GetLogger(typeof(ClientAuthRequest));
 
         public static byte[] OnHandle(Packet r) {
+            bool updateRequest = r.ReadBool();
             string username = r.ReadString();
+            Server.Clients.TryGetValue(username, out Client client);
+
+            if (updateRequest && client != null) {
+                using DatabaseQuery query = Database.Table("accounts");
+                query.Update(
+                    "login_status", (client.LoginStatus = r.ReadByte()),
+                    "last_known_ip", r.ReadString()).ExecuteNonQuery();
+                return new byte[0]; // result not used
+            }
+
             string password = r.ReadString();
             byte[] machineId = r.ReadBytes(16);
-            
+
             // todo remove! when login is working as intended
             Log.Info($"login request {username} {password}");
 
-            Server.Clients.TryGetValue(username, out Client client);
             byte loginResult = ClientTryLogin(ref client, ref username, ref password);
 
             using Packet w = new Packet();
             w.WriteByte(loginResult);
             if (loginResult == 1) {
                 client.MachineId = machineId;
+                client.LoginStatus = 1;
                 // successful login, encode client data
                 client.Encode(client, w);
                 Server.Clients.TryAdd(username, client);
@@ -43,16 +54,27 @@ namespace NineToFive.Net.Interoperations.Event {
                 client.Password = r.GetString("password");
                 client.Gender = r.GetByte("gender");
                 client.GradeCode = r.GetByte("gm_level");
-                // im so angry why does DBNull exist i want to smash my keyboard i can't believe GetString can't simply return null...
-                // someone really thought DBNull had to exist to make the lives of everyone inconvenient by one extra getter method
+                client.LoginStatus = r.GetByte("login_status");
                 int spwOrdinal = r.GetOrdinal("second_password");
                 client.SecondaryPassword = r.IsDBNull(spwOrdinal) ? null : r.GetString(spwOrdinal);
                 int lastIpOrdinal = r.GetOrdinal("last_known_ip");
                 client.LastKnownIp = r.IsDBNull(lastIpOrdinal) ? null : IPAddress.Parse(r.GetString(lastIpOrdinal));
+            } else if (client.LoginStatus != 0) {
+                return 7;
             }
 
             // incorrect password
             return !password.Equals(client.Password, StringComparison.Ordinal) ? (byte) 4 : (byte) 1;
+        }
+
+        public static void RequestClientUpdate(Client client) {
+            using Packet w = new Packet();
+            w.WriteByte((byte) Interoperation.CheckPasswordRequest);
+            w.WriteBool(true);
+            w.WriteString(client.Username);
+            w.WriteByte(client.LoginStatus); // login_status
+            w.WriteString(client.Session.RemoteAddress.ToString());
+            Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer);
         }
     }
 }

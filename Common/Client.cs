@@ -6,6 +6,7 @@ using MySql.Data.MySqlClient;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
+using NineToFive.Net.Interoperations.Event;
 using NineToFive.Util;
 
 namespace NineToFive {
@@ -26,8 +27,13 @@ namespace NineToFive {
         public void Dispose() {
             Users.Clear();
             try {
-                Log.Info($"'{Username}' : {User?.CharacterStat.Username} disconnected");
                 User?.Dispose();
+
+                if (LoginStatus != 0) {
+                    LoginStatus = 0;
+                    ClientAuthRequest.RequestClientUpdate(this);
+                    Log.Info($"'{Username}' : {User?.CharacterStat.Username} disconnected");
+                }
             } catch (Exception e) {
                 Log.Error($"Failure to disconnect '{Username}'", e);
             }
@@ -39,6 +45,7 @@ namespace NineToFive {
             p.WriteString(t.Password);
             p.WriteByte(t.Gender);
             p.WriteByte(t.GradeCode);
+            p.WriteByte(t.LoginStatus);
             if (p.WriteBool(t.MachineId != null)) {
                 p.WriteBytes(t.MachineId);
             }
@@ -58,6 +65,7 @@ namespace NineToFive {
             t.Password = p.ReadString();
             t.Gender = p.ReadByte();
             t.GradeCode = p.ReadByte();
+            t.LoginStatus = p.ReadByte();
             if (p.ReadBool()) {
                 t.MachineId = p.ReadBytes(16);
             }
@@ -76,6 +84,13 @@ namespace NineToFive {
         public string Password { get; set; }
         public byte Gender { get; set; }
         public byte GradeCode { get; set; }
+
+        /// <summary>
+        /// <code>0    logged-out</code>
+        /// <code>1    logged-in</code>
+        /// </summary>
+        public byte LoginStatus { get; set; }
+
         public User User { get; set; }
         public byte[] MachineId { get; set; }
         public string SecondaryPassword { get; set; }

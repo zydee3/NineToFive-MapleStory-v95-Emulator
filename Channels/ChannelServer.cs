@@ -102,7 +102,7 @@ namespace NineToFive {
             w.WriteByte(world.Id);
             w.WriteByte(min);
             w.WriteByte(max);
-            if (Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort)[0] != 1) {
+            if (Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer)[0] != 1) {
                 throw new OperationCanceledException($"Denied permission to host channels from {min} to {max} in world {world.Id}");
             }
 

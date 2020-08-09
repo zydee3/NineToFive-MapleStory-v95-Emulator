@@ -16,6 +16,10 @@ namespace NineToFive.Event {
 
         public CharEnterGameEvent(Client client) : base(client) { }
 
+        public override bool ShouldProcess() {
+            return Client.LoginStatus == 0;
+        }
+
         public override void OnError(Exception e) {
             base.OnError(e);
             Client.Session.Dispose();
@@ -35,7 +39,7 @@ namespace NineToFive.Event {
             if (!racc.Read()) throw new InvalidOperationException("Failure to find account : " + accountId);
             // check if IP address of the associated account belongs to the current session
             IPAddress lastKnownIp = IPAddress.Parse(racc.GetString("last_known_ip"));
-            if (!lastKnownIp.Equals(Client.Session.RemoteAddress)) {
+            if (racc.GetByte("login_status") == 0 || !lastKnownIp.Equals(Client.Session.RemoteAddress)) {
                 throw new InvalidOperationException("Possible remote hack");
             }
 

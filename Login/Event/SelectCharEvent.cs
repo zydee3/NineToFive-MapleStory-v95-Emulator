@@ -4,8 +4,8 @@ using System.Net;
 using log4net;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
+using NineToFive.Net.Interoperations.Event;
 using NineToFive.SendOps;
-using NineToFive.Util;
 
 namespace NineToFive.Event {
     public class SelectCharEvent : PacketEvent {
@@ -38,7 +38,7 @@ namespace NineToFive.Event {
                 w.WriteByte((byte) Interoperation.ClientInitializeSPWRequest);
                 w.WriteString(Client.Username);
                 w.WriteString(_secondaryPassword);
-                Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
+                Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer);
             } else {
                 if (op == (int) ReceiveOperations.Login_OnSelectCharSPWPacket) {
                     _secondaryPassword = p.ReadString();
@@ -64,25 +64,13 @@ namespace NineToFive.Event {
                 // send a migration request to the central server to obtain the remote server's IP address
                 using Packet w = new Packet();
                 w.WriteByte((byte) Interoperation.MigrateClientRequest);
-                w.WriteString(Client.Username);
-                w.WriteBytes(Client.Session.RemoteAddress.GetAddressBytes());
-
                 w.WriteByte(Client.World.Id);
                 w.WriteByte(Client.Channel.Id);
-                using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
+                using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer));
                 if (r.ReadBool()) {
                     _remoteAddress = r.ReadBytes(4);
+                    Log.Info($"Channel {Client.Channel.Id} address found {new IPAddress(_remoteAddress)}");
                 }
-            }
-
-            // check if server end-point is unavailable
-            if (_remoteAddress == null || !Interoperability.TestConnection(new IPAddress(_remoteAddress), Client.Channel.Port)) {
-                if (_remoteAddress != null) {
-                    Log.Warn($"Failed to connect to channel server {Client.Channel.Id}");
-                }
-
-                Client.Session.Write(GetSelectCharFailed(6));
-                return false;
             }
 
             return true;
@@ -91,14 +79,8 @@ namespace NineToFive.Event {
         public override void OnHandle() {
             Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
 
-            // update account last known ip
-            using DatabaseQuery q = Database.Table("accounts");
-            int success = q.Update("last_known_ip", Client.Session.RemoteAddress.ToString())
-                .Where("account_id", "=", Client.Id).ExecuteNonQuery();
-            if (success == 0) throw new InvalidOperationException("Failure to update last known IP for client : " + Client.Id);
-
+            ClientAuthRequest.RequestClientUpdate(Client);
             Client.Session.Write(GetSelectChar(Client, _playerId, _remoteAddress));
-            Server.Clients.Remove(Client.Username);
         }
 
         private static byte[] GetSelectChar(Client client, uint characterId, byte[] address) {
@@ -134,7 +116,7 @@ namespace NineToFive.Event {
         /// <code>1 for   "You have entered an incorrect LOGIN ID."</code>
         /// <code>2 for   "You have entered an incorrect form of ID, or your account info hasn't been changed yet."</code>
         /// <code>3 for   "This account has not been verified."</code>
-        /// <code>11,13 for   success if : a != 34</code>
+        /// <code>11,13    success if : a != 34</code>
         /// <code>19 for   "An error occurred. Either your IP address is unable to connect or you have used up your available game time."</code>
         /// <code>25 for   "This account has not been verified."</code>
         /// <code>27 for   "PC방 프리미엄 적용 대상이 아닙니다. 넥슨 PC방 고객센터로 문의 비답니다."</code>

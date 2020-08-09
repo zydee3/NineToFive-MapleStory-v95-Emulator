@@ -20,7 +20,7 @@ namespace NineToFive.Event {
                 w.WriteByte((byte) Interoperation.ClientGenderUpdateRequest);
                 w.WriteString(Client.Username);
                 w.WriteByte(_gender);
-                Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort);
+                Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer);
             }
 
             Client.Session.Write(GetSetAccountResult(_gender, _success));

@@ -12,25 +12,8 @@ namespace NineToFive.Event {
 
         public CheckPasswordEvent(Client client) : base(client) { }
 
-        public byte GetAuthRequest() {
-            if (_username.Length < 4 || _password.Length < 4) {
-                return 5;
-            }
-
-            using Packet w = new Packet();
-            w.WriteByte((byte) Interoperation.CheckPasswordRequest);
-            w.WriteString(_username);
-            w.WriteString(_password);
-            w.WriteBytes(_machineId);
-
-            using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort));
-            if (r.Size == 0) return 6;
-            byte result = r.ReadByte();
-            // un-successful login
-            if (result != 1) return result;
-
-            Client.Decode(Client, r);
-            return result;
+        public override bool ShouldProcess() {
+            return Client.LoginStatus == 0;
         }
 
         public override void OnError(Exception e) {
@@ -64,6 +47,28 @@ namespace NineToFive.Event {
             }
 
             return true;
+        }
+
+        public byte GetAuthRequest() {
+            if (_username.Length < 4 || _password.Length < 4) {
+                return 5;
+            }
+
+            using Packet w = new Packet();
+            w.WriteByte((byte) Interoperation.CheckPasswordRequest);
+            w.WriteBool(false);
+            w.WriteString(_username);
+            w.WriteString(_password);
+            w.WriteBytes(_machineId);
+
+            using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer));
+            if (r.Size == 0) return 6;
+            byte result = r.ReadByte();
+            // un-successful login
+            if (result != 1) return result;
+
+            Client.Decode(Client, r);
+            return result;
         }
 
         internal static byte[] GetLoginSuccess(Client client) {

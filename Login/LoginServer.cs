@@ -47,7 +47,7 @@ namespace NineToFive {
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
                 try {
-                    if (handler.OnProcess(p)) {
+                    if (handler.ShouldProcess() && handler.OnProcess(p)) {
                         handler.OnHandle();
                     }
                 } catch (Exception e) {

@@ -30,7 +30,6 @@ namespace NineToFive.Net {
             try {
                 ClientSession session = new ClientSession(this, socket);
                 session.Client = new Client(session);
-                Log.Info($"TCP connection established : {session.RemoteAddress}");
             } catch (IOException) {
                 // probably disconnected when migrating sockets
             }
