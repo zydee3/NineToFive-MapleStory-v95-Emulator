@@ -75,15 +75,19 @@ namespace NineToFive.SendOps {
     public enum CField_KillCount : int {
         OnKillCountInfo                     = 178
     }
+    
+    public enum CField_Massacre : int {
+        OnMassacreIncGauge                  = 173
+    }
 
     public enum CField_MassacreResult : int {
         OnMassacreResult                    = 174
     }
 
-    public enum CField_Massacre : int {
-        OnMassacreIncGauge                  = 173
+    public enum CField_QuickslotKeyMappedMan : int {
+        OnInit = 175
     }
-
+    
     public enum CField_MonsterCarnivalRevive : int {
         OnEnter                             = 346,
         OnShowGameResult                    = 353
@@ -163,7 +167,6 @@ namespace NineToFive.SendOps {
         OnPetConsumeItemInit                = 399,
         OnPetConsumeMPItemInit              = 400,
     }
-
 
     public enum CITC : int {
         OnChargeParamResult                 = 410,

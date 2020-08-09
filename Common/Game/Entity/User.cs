@@ -24,6 +24,7 @@ namespace NineToFive.Game.Entity {
             AvatarLook = new AvatarLook(reader);
             CharacterStat = new CharacterStat(reader);
             Skills = new Dictionary<int, SkillRecord>();
+            KeyMap = new Dictionary<int, Tuple<byte, int>>(89);
 
             if (reader == null) return;
             AccountId = reader.GetUInt32("account_id");
@@ -78,6 +79,8 @@ namespace NineToFive.Game.Entity {
         public AvatarLook AvatarLook { get; }
         public CharacterStat CharacterStat { get; }
         public Dictionary<InventoryType, Inventory> Inventories { get; }
+        public Dictionary<int, Tuple<byte, int>> KeyMap { get; set; }
+        public int[] QuickslotKeyMap { get; set; }
         public Dictionary<int, SkillRecord> Skills { get; }
 
         public override Field Field {

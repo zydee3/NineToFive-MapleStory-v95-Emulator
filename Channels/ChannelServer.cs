@@ -35,6 +35,9 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
+
+                [(short) ReceiveOperations.CQuickslotKeyMappedMan_SaveQuickslotKeyMap] = typeof(SaveQuickSlotKeyMapEvent),
+                [(short) ReceiveOperations.CFuncKeyMappedMan_SaveFuncKeyMap] = typeof(SaveFuncKeyMapEvent),
             };
         }
 
@@ -51,7 +54,7 @@ namespace NineToFive {
             if (instance is PacketEvent handler) {
                 Log.Info($"Handled operation : {operation} | 0x{operation:X2} : {handler.GetType().Name}");
                 try {
-                    if (handler.OnProcess(p)) {
+                    if (handler.ShouldProcess() && handler.OnProcess(p)) {
                         handler.OnHandle();
                     }
                 } catch (Exception e) {

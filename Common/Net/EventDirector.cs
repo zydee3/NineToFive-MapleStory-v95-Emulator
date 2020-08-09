@@ -64,5 +64,8 @@ namespace NineToFive.Net {
         
         Field_SendChatMsgSlash = 151,
         Field_LogChatMsgSlash = 152,
+        
+        CQuickslotKeyMappedMan_SaveQuickslotKeyMap = 216,
+        CFuncKeyMappedMan_SaveFuncKeyMap = 159,
     }
 }
