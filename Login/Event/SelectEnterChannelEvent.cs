@@ -96,7 +96,7 @@ namespace NineToFive.Event {
                     p.WriteInt(); // nTotRank
                     p.WriteInt(); // nTotRankGap
                     p.WriteInt(); // nWorldRank
-                    p.WriteInt(); // nworldRankGap
+                    p.WriteInt(); // nWorldRankGap
                 }
             }
 

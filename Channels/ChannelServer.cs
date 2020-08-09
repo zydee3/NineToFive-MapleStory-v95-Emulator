@@ -5,7 +5,6 @@ using log4net;
 using log4net.Config;
 using NineToFive.Event;
 using NineToFive.Game;
-using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
 
@@ -25,7 +24,7 @@ namespace NineToFive {
                 [(short) ReceiveOperations.CWvsContext_SendSkillUpRequest] = typeof(SkillUpEvent),
                 [(short) ReceiveOperations.CWvsContext_SendAbilityUpRequest] = typeof(AbilityUpEvent),
                 [(short) ReceiveOperations.CWvsContext_SendCharacterInfoRequest] = typeof(CharacterInfoEvent),
-                
+
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
                 [(short) ReceiveOperations.User_OnEmotion] = typeof(EmotionChangeEvent),
@@ -33,8 +32,8 @@ namespace NineToFive {
                 [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
                 [(short) ReceiveOperations.UserLocal_TryRegisterTeleport] = typeof(RegisterTeleportEvent),
                 [(short) ReceiveOperations.UserLocal_UpdatePassiveSkillData] = typeof(UpdatePassiveSkillDataEvent),
-                
-                [(short) ReceiveOperations.Field_LogChatMsgSlash]  = typeof(ChatMsgSlashEvent),
+
+                [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
             };
         }

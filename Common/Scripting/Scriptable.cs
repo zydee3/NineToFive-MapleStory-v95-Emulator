@@ -30,7 +30,7 @@ namespace NineToFive.Scripting {
         private static readonly string Root;
 
         static Scriptable() {
-            Root  = $"{Directory.GetCurrentDirectory()}/Resources/Scripts";
+            Root = $"{Directory.GetCurrentDirectory()}/Resources/Scripts";
             Directory.CreateDirectory($"{Root}/Commands");
             Directory.CreateDirectory($"{Root}/Npc");
         }
@@ -41,13 +41,15 @@ namespace NineToFive.Scripting {
                 throw new FileNotFoundException(path);
             }
 
-            using var engine = new V8ScriptEngine();
+            using var engine = new V8ScriptEngine {
+                AllowReflection = true
+            };
             // required for async execution, functions need to have the 'async' modifer
             engine.AddHostType(typeof(Task));
             engine.AddHostType(typeof(TaskScripting));
             // typically for Console.WriteLine debugging
             engine.AddHostType(typeof(Console));
-            
+
             engine.AddHostObject("Host", new ExtendedHostFunctions());
             engine.AddHostObject("Ctx", manager);
 

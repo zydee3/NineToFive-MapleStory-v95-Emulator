@@ -86,7 +86,7 @@ namespace NineToFive.Game {
 
         public T GetLife<T>(EntityType type, uint uniqueId) where T : Life {
             T life = LifePools[type][uniqueId] as T;
-            if (life?.Type != type) throw new InvalidOperationException($"Type mismatch. Entity is {life.Type} but {type} is specified");
+            if (life != null && life.Type != type) throw new InvalidOperationException($"Type mismatch. Entity is {life.Type} but {type} is specified");
             return life;
         }
 
@@ -109,16 +109,16 @@ namespace NineToFive.Game {
         /// </summary>
         public void RemoveLife(Life life) {
             if (!LifePools[life.Type].RemoveLife(life)) return;
+            BroadcastPacket(life.LeaveFieldPacket());
+
             life.Id = 0;
             life.Field = null;
-
             if (life is User user) {
                 if (LifePools[EntityType.User].Count == 0) {
                     Log.Info($"There are no more players in field {Id}, channel {user.Client.Channel.Id}");
                 }
             }
 
-            BroadcastPacket(life.LeaveFieldPacket());
         }
 
         /// <summary>

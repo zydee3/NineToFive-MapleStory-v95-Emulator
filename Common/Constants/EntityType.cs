@@ -1,5 +1,5 @@
 ﻿namespace NineToFive.Constants {
-    public static class ETExtensions {
+    public static class TypeExtensions {
         public static bool IsTemplate(this EntityType type) {
             switch (type) {
                 case EntityType.Npc:
@@ -18,6 +18,7 @@
         User,
         Reactor,
         Summon,
-        Pet
+        Pet,
+        Drop,
     }
 }

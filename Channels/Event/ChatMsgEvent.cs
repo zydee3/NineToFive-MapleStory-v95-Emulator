@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using log4net;
-using Microsoft.ClearScript.V8;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
 using NineToFive.Scripting;
@@ -28,36 +27,45 @@ namespace NineToFive.Event {
             if (_msg.StartsWith("!")) {
                 using var ctx = new CmdScriptMan(Client, _msg);
                 try {
-                    Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js", ctx).Wait();
-                } catch (FileNotFoundException) {
-                    user.SendMessage($"Invalid command : '{ctx.Name}'");
+                    switch (ctx.Name) {
+                        default:
+                            Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js", ctx).Wait();
+                            return;
+                        case "pb": {
+                            if (ctx.Args.Length < 3) {
+                                user.SendMessage("[command] !pb : not enough information");
+                                return;
+                            }
+
+                            using Packet w = new Packet();
+                            for (int i = 1; i < ctx.Args.Length; i++) {
+                                byte sb = byte.Parse(ctx.Args[i]);
+                                w.WriteByte(sb);
+                            }
+
+                            Console.WriteLine(w.ToArrayString(true));
+
+                            Client.Session.Write(w.ToArray());
+                            return;
+                        }
+                    }
                 } catch (Exception e) {
-                    Log.Error($"Failed to execute command '{ctx.Name}'", e);
-                    user.SendMessage("The command is not working.");
+                    if (e is AggregateException ae) {
+                        ae.Handle(x => {
+                            if (x is FileNotFoundException) {
+                                user.SendMessage($"Invalid command : '{ctx.Name}'");
+                            } else {
+                                Log.Error($"Failed to execute command '{ctx.Name}'", e);
+                                user.SendMessage("The command is not working.");
+                            }
+
+                            return true;
+                        });
+                    }
                 }
 
                 return;
             }
-
-            // switch (sp[0]) {
-            //     case "!pb": {
-            //         if (sp.Length < 3) {
-            //             user.SendMessage("[command] !pb : not enough information");
-            //             return;
-            //         }
-            //
-            //         using Packet w = new Packet();
-            //         for (int i = 1; i < sp.Length; i++) {
-            //             byte sb = byte.Parse(sp[i]);
-            //             w.WriteByte(sb);
-            //         }
-            //
-            //         Console.WriteLine(w.ToArrayString(true));
-            //
-            //         Client.Session.Write(w.ToArray());
-            //         return;
-            //     }
-            // }
 
             // user.Field.BroadcastPacket(user, GetChatLogMsg($"{user.CharacterStat.Username} : {_msg}"));
             user.Field.BroadcastPacket(user, GetUserMsg(user.CharacterStat.Id, _msg, _shout));
