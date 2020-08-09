@@ -29,7 +29,8 @@ namespace NineToFive {
             try {
                 User?.Dispose();
 
-                if (LoginStatus != 0) {
+                // reset if client is logged-in, NOT during socket migration
+                if (LoginStatus == 1) {
                     LoginStatus = 0;
                     ClientAuthRequest.RequestClientUpdate(this);
                     Log.Info($"'{Username}' : {User?.CharacterStat.Username} disconnected");
@@ -88,6 +89,7 @@ namespace NineToFive {
         /// <summary>
         /// <code>0    logged-out</code>
         /// <code>1    logged-in</code>
+        /// <code>2    socket migrate</code>
         /// </summary>
         public byte LoginStatus { get; set; }
 

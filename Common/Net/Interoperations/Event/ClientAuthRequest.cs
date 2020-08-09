@@ -60,7 +60,13 @@ namespace NineToFive.Net.Interoperations.Event {
                 int lastIpOrdinal = r.GetOrdinal("last_known_ip");
                 client.LastKnownIp = r.IsDBNull(lastIpOrdinal) ? null : IPAddress.Parse(r.GetString(lastIpOrdinal));
             } else if (client.LoginStatus != 0) {
-                return 7;
+                using DatabaseQuery c = Database.Table("accounts");
+                using MySqlDataReader r = c.Select().Where("username", "=", username).ExecuteReader();
+                // account not found
+                if (!r.Read()) return 5;
+                if ((client.LoginStatus = r.GetByte("login_status")) != 0) {
+                    return 7;
+                }
             }
 
             // incorrect password

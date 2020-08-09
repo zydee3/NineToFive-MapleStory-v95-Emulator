@@ -79,6 +79,7 @@ namespace NineToFive.Event {
         public override void OnHandle() {
             Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
 
+            Client.LoginStatus = 2;
             ClientAuthRequest.RequestClientUpdate(Client);
             Client.Session.Write(GetSelectChar(Client, _playerId, _remoteAddress));
         }
