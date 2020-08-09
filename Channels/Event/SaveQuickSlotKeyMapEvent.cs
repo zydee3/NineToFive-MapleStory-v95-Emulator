@@ -1,5 +1,4 @@
 ﻿using log4net;
-using NineToFive.Game.Entity;
 using NineToFive.Net;
 using NineToFive.SendOps;
 
@@ -23,12 +22,12 @@ namespace NineToFive.Event {
             Client.User.QuickslotKeyMap = _keymap;
         }
 
-        public static byte[] GetQuickSlotInit(User user, byte[] keyMap = null) {
+        public static byte[] GetQuickSlotInit(byte[] quickSlot = null) {
             using Packet w = new Packet();
             w.WriteShort((short) CField_QuickslotKeyMappedMan.OnInit);
-            if (keyMap != null) {
-                w.WriteBool(true);
-                foreach (var id in user.QuickslotKeyMap) {
+            bool def = quickSlot == null;
+            if (!w.WriteBool(def)) {
+                foreach (var id in quickSlot!) {
                     w.WriteInt(id);
                 }
             }

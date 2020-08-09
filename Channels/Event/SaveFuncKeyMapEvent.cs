@@ -40,14 +40,14 @@ namespace NineToFive.Event {
             }
         }
 
-        private static byte[] GetKeyMappedInit(Dictionary<int, Tuple<byte, int>> keyMaps, bool saveDefault = false) {
+        private static byte[] GetKeyMappedInit(Dictionary<int, Tuple<byte, int>> keyMaps = null) {
             using Packet w = new Packet();
             w.WriteShort((short) CFuncKeyMappedMan.OnInit);
-            if (w.WriteBool(saveDefault)) {
+            if (w.WriteBool(keyMaps == null)) {
                 return w.ToArray();
             }
 
-            foreach (var pair in keyMaps) {
+            foreach (var pair in keyMaps!) {
                 var keyMap = pair.Value;
                 w.WriteByte(keyMap.Item1);
                 w.WriteInt(keyMap.Item2);
