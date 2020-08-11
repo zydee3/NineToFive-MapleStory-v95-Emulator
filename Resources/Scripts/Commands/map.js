@@ -1,6 +1,7 @@
 async function run() {
     let user = ctx.User;
     if (ctx.Args.Length != 1) {
+        user.SendMessage(`You are in map ${user.Field.Id}`);
         return user.SendMessage("[command] !map <map id>");
     }
     let fieldId = parseInt(ctx.Args[0]);
