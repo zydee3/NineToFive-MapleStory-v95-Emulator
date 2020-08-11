@@ -35,11 +35,8 @@ namespace NineToFive.Scripting {
             Directory.CreateDirectory($"{Root}/Npc");
         }
 
-        public static async Task<object> RunScriptAsync(V8ScriptEngine engine, string path = "", ScriptManager manager = null) {
-            engine ??= GetEngine(path, manager).Result;
-
-            // await engine.Script.run().ToTask();
-            return await engine.Evaluate("run();").ToTask();
+        public static async Task<object> RunScriptAsync(V8ScriptEngine engine, string function = "run();") {
+            return await engine.Evaluate(function).ToTask();
         }
 
         public static async Task<V8ScriptEngine> GetEngine(string path, ScriptManager manager) {
@@ -63,7 +60,7 @@ namespace NineToFive.Scripting {
 
             string text = await File.ReadAllTextAsync(path);
             engine.Execute(text);
-            
+
             return engine;
         }
     }
