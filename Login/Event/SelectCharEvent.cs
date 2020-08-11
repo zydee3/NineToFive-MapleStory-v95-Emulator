@@ -5,6 +5,7 @@ using log4net;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
 using NineToFive.Net.Interoperations.Event;
+using NineToFive.Packets;
 using NineToFive.SendOps;
 
 namespace NineToFive.Event {
@@ -70,6 +71,10 @@ namespace NineToFive.Event {
                 if (r.ReadBool()) {
                     _remoteAddress = r.ReadBytes(4);
                     Log.Info($"Channel {Client.Channel.Id} address found {new IPAddress(_remoteAddress)}");
+                } else {
+                    Client.Session.Write(GetSelectCharFailed(6));
+                    Client.Session.Write(CWvsPackets.GetBroadcastMessage(null, false, 1, "Server is unavailable.", null));
+                    return false;
                 }
             }
 
