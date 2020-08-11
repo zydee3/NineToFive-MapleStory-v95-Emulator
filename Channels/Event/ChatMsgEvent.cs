@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using log4net;
+using Microsoft.ClearScript.V8;
 using NineToFive.Game.Entity;
 using NineToFive.Net;
 using NineToFive.Scripting;
@@ -27,7 +28,8 @@ namespace NineToFive.Event {
             if (_msg.StartsWith("!")) {
                 using var ctx = new CmdScriptMan(Client, _msg);
                 try {
-                    Scriptable.RunScriptAsync($"Commands/{ctx.Name}.js", ctx).Wait();
+                    using V8ScriptEngine engine = Scriptable.GetEngine($"Commands/{ctx.Name}.js", ctx).Result;
+                    Scriptable.RunScriptAsync(engine).Wait();
                     return;
                 } catch (Exception e) {
                     if (e is AggregateException ae) {

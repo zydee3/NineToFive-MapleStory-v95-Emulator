@@ -294,7 +294,11 @@ namespace NineToFive.Util {
                 string[] sp = _columns.Split(",");
                 string columns = "";
                 foreach (var s in sp) {
-                    columns += $"`{s}`,";
+                    if (s == "*" || s == "count(*) as total") {
+                        columns += $"{s},";
+                    } else {
+                        columns += $"`{s}`,";
+                    }
                 }
 
                 _columns = columns.TrimEnd(',');
@@ -317,7 +321,7 @@ namespace NineToFive.Util {
             for (int i = 0; i < _conditions.Length; i++) {
                 if (i % 3 != 0) continue;
                 // [column] [operator] [variable]
-                // example: [`id` < 10]
+                // example: [`id` < 10]e
                 where += $"`{_conditions[i]}` {_conditions[i + 1]} {_conditions[i + 2]} and ";
             }
 

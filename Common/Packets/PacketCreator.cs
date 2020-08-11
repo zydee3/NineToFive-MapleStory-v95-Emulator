@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NineToFive.Game.Entity;
@@ -670,6 +670,37 @@ namespace NineToFive.Packets {
             w.WriteInt();               // nBrideItemID
             w.WriteStringFixed("", 13); // sGroomName
             w.WriteStringFixed("", 13); // sBrideName
+        }
+    }
+    
+    public static class NpcPackets {
+        
+        /// <summary>
+        /// Generates a packet for OnSay (NpcProperties.ScriptMessageType.OnSay = 0)
+        /// </summary>
+        /// <param name="nSpeakerTypeID">speaker NpcProperties.SpeakerType</param>
+        /// <param name="nSpeakerTemplateID">npc id</param>
+        /// <param name="message">npc dialog</param>
+        /// <param name="bParam">The direction the npc / player faces</param>
+        /// <param name="bPrev">Includes Prev button</param>
+        /// <param name="bNext">Includes Next button</param>
+        /// <returns></returns>
+        public static byte[] GetSay(byte nSpeakerTypeID, int nSpeakerTemplateID, string message, byte bParam, bool bPrev, bool bNext) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte();
+            w.WriteByte(bParam);
+            
+            if ((bParam & 4) == 4) // i have no idea what this is.. lol
+                w.WriteInt(nSpeakerTemplateID);
+                
+            w.WriteString(message);
+            w.WriteBool(bPrev);
+            w.WriteBool(bNext);
+            return w.ToArray();
         }
     }
 }

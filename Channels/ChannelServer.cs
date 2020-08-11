@@ -38,6 +38,9 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.CQuickslotKeyMappedMan_SaveQuickslotKeyMap] = typeof(SaveQuickSlotKeyMapEvent),
                 [(short) ReceiveOperations.CFuncKeyMappedMan_SaveFuncKeyMap] = typeof(SaveFuncKeyMapEvent),
+                
+                [(short) ReceiveOperations.UserLocal_TalkToNpc] = typeof(TalkToNpcEvent),
+                [(short) ReceiveOperations.UserLocal_ContinueTalkToNpc] = typeof(ContinueTalkToNpcEvent),
             };
         }
 

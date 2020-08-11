@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.IO;
 using log4net;
-using Microsoft.ClearScript.V8;
 using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
@@ -9,50 +8,54 @@ using NineToFive.Net;
 using NineToFive.Scripting;
 
 namespace NineToFive.Event {
-    public class TalkToNpcEvent : PacketEvent {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(TalkToNpcEvent));
-
-        private int _objectId;
+    public class ContinueTalkToNpcEvent : PacketEvent {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ContinueTalkToNpcEvent));
         
-        public TalkToNpcEvent(Client client) : base(client) { }
+        public ContinueTalkToNpcEvent(Client client) : base(client) { }
+
+        private NpcProperties.ScriptMessageType _messageType;
+        private byte _action;
 
         public override bool OnProcess(Packet p) {
+            Console.WriteLine(p.ToArrayString(true));
+            User user = Client.User;
+            if (user.ScriptEngine == null || user.NpcScriptInstance == null) {
+                return false;
+            }
             
-            _objectId = p.ReadInt();
-            
-            p.ReadShort(); // user x location
-            p.ReadShort(); // user y location
-            
-            return true;    
+            byte nMessageType = p.ReadByte();
+            if (Enum.IsDefined(typeof(NpcProperties.ScriptMessageType), nMessageType)) {
+                _messageType = (NpcProperties.ScriptMessageType) nMessageType;
+                _action = p.ReadByte();
+                return true;
+            }
+
+            return false;
         }
 
         public override void OnHandle() {
             User user = Client.User;
+            NpcScriptMan scriptInteraction = (NpcScriptMan) user.NpcScriptInstance;
             
-            if (user.ScriptEngine != null) {
+            if (_action == 255 || (scriptInteraction.Status == 0 && _action == 0)) {
                 user.ScriptEngine.Dispose();
                 user.ScriptEngine = null;
-            }
-            
-            if (user.NpcScriptInstance != null) {
                 user.NpcScriptInstance.Dispose();
                 user.NpcScriptInstance = null;
+                return;
             }
             
+            int objectId = scriptInteraction.ObjectId;
+            scriptInteraction.Status += _action == 1 ? 1 : -1;
+
             if (user.Field.LifePools.TryGetValue(EntityType.Npc, out LifePool<Life> pool)) {
-                Npc npc = (Npc) pool.FindFirst(life => life.Id == _objectId);
+                Npc npc = (Npc) pool.FindFirst(life => life.Id == objectId);
                 if (npc == null)
                     return;
 
-                int npcId = npc.TemplateId;
-                
-                if (user.IsDebugging) 
-                    user.SendMessage($"Object Id = {_objectId}, Npc Id = {npcId}");
-                
-                user.NpcScriptInstance = new NpcScriptMan(Client, _objectId, npcId);
-                
+                int npcId = scriptInteraction.NpcId;
+
                 try {
-                    user.ScriptEngine = Scriptable.GetEngine($"Npc/{npcId}.js", user.NpcScriptInstance).Result;
                     Scriptable.RunScriptAsync(user.ScriptEngine).Wait();
                 } catch (Exception e) {
                     if (e is AggregateException ae) {
@@ -72,8 +75,4 @@ namespace NineToFive.Event {
             }
         }
     }
-
-    
-    
-    
 }

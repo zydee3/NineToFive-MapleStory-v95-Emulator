@@ -57,6 +57,8 @@ namespace NineToFive.Net {
         User_OnEmotion = 56,
         
 
+        UserLocal_TalkToNpc = 63,
+        UserLocal_ContinueTalkToNpc = 65,
         UserLocal_OnPortalCollision = 112,
         UserLocal_TryRegisterTeleport = 113,
         UserLocal_UpdatePassiveSkillData = 217, 
@@ -67,5 +69,8 @@ namespace NineToFive.Net {
         
         CQuickslotKeyMappedMan_SaveQuickslotKeyMap = 216,
         CFuncKeyMappedMan_SaveFuncKeyMap = 159,
+        
+        
+        CScriptMan_OnScriptMessage = 363,
     }
 }

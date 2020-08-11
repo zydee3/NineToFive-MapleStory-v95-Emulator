@@ -4,7 +4,9 @@ using NineToFive.Packets;
 
 namespace NineToFive.Game.Entity {
     public class Npc : Life {
-        public Npc(int templateId) : base(templateId, EntityType.Npc) { }
+        public Npc(int templateId) : base(templateId, EntityType.Npc) { 
+            TemplateId = templateId;
+        }
 
         public override byte[] EnterFieldPacket() {
             return NpcPool.GetNpcEnterField(this);
@@ -16,5 +18,8 @@ namespace NineToFive.Game.Entity {
         
         public AvatarLook AvatarLook { get; set; }
         public Range2 HorizontalRange { get; set; }
+        
+        public int TemplateId { get; set; }
+        public string Script { get; set; }
     }
 }

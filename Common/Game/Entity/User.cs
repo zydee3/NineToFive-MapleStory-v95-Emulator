@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
+using Microsoft.ClearScript.V8;
 using MySql.Data.MySqlClient;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
 using NineToFive.Packets;
+using NineToFive.Scripting;
 using NineToFive.SendOps;
 using NineToFive.Util;
 
@@ -82,6 +84,9 @@ namespace NineToFive.Game.Entity {
         public Dictionary<int, Tuple<byte, int>> KeyMap { get; set; }
         public int[] QuickslotKeyMap { get; set; }
         public Dictionary<int, SkillRecord> Skills { get; }
+        
+        public V8ScriptEngine ScriptEngine { get; set; }
+        public ScriptManager NpcScriptInstance { get; set; }
 
         public override Field Field {
             get => base.Field;
