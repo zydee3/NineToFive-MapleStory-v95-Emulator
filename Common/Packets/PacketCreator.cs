@@ -688,18 +688,135 @@ namespace NineToFive.Packets {
         public static byte[] GetSay(byte nSpeakerTypeID, int nSpeakerTemplateID, string message, byte bParam, bool bPrev, bool bNext) {
             Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
             w.WriteByte();
             w.WriteByte(bParam);
             
-            if ((bParam & 4) == 4) // i have no idea what this is.. lol
+            if ((bParam & 4) == 4)
                 w.WriteInt(nSpeakerTemplateID);
-                
+            
             w.WriteString(message);
             w.WriteBool(bPrev);
             w.WriteBool(bNext);
+            return w.ToArray();
+        }
+
+        public static byte[] GetSayImage(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, List<string> list) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnSayImage);
+            w.WriteByte(bParam);
+            w.WriteByte((byte) list.Count); // if ( CInPacket::Decode1(iPacket) > 0 )
+            foreach (string s in list) {
+                w.WriteString(s);
+            }
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskYesNo(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string input) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskYesNo);
+            w.WriteByte(bParam);
+            w.WriteString(input);
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskText(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string input, string input2, short nLenMin, short nLenMax) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskText);
+            w.WriteByte(bParam);
+            w.WriteString(input);
+            w.WriteString(input2);
+            w.WriteShort(nLenMin);
+            w.WriteShort(nLenMax);
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskNumber(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text, int nDef, int nMin, int nMax) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
+            w.WriteByte(bParam);
+            w.WriteString(text);
+            w.WriteInt(nDef);
+            w.WriteInt(nMin);
+            w.WriteInt(nMax);
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskMenu(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
+            w.WriteByte(bParam);
+            w.WriteString(text);
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskQuiz(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, byte v4, string sQuizTitle, string sQuizText, string sQuizHint, int nMinInput, int nMaxInput, int tRemain) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
+            w.WriteByte(bParam);
+            w.WriteByte(v4);
+            
+            if (v4 == 0) {
+                w.WriteString(sQuizTitle);
+                w.WriteString(sQuizText);
+                w.WriteString(sQuizHint);
+                w.WriteInt(nMinInput);
+                w.WriteInt(nMaxInput);
+                w.WriteInt(tRemain);
+            }
+
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskSpeedQuiz(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, byte v4, int nType, int dwAnswer, int nCorrect, int nRemain) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
+            w.WriteByte(bParam);
+
+            if (v4 == 0) { // idk what this is
+                w.WriteInt(nType);
+                w.WriteInt(dwAnswer);
+                w.WriteInt(nCorrect);
+                w.WriteInt(nRemain);
+            }
+            
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskAvatar(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text, IEnumerable<int> list) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(nSpeakerTypeID);
+            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
+            w.WriteByte(bParam);
+            w.WriteString(text);
+            foreach (int i in list) { // I have no idea what this is, like absolutely no clue, none, nada, zip
+                w.WriteInt(i);
+            }
+
             return w.ToArray();
         }
     }
