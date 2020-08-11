@@ -674,7 +674,7 @@ namespace NineToFive.Packets {
         }
     }
     
-    public static class NpcPackets {
+    public static class NpcScriptPackets {
         
         /// <summary>
         /// Generates a packet for OnSay (NpcProperties.ScriptMessageType.OnSay = 0)
@@ -687,7 +687,7 @@ namespace NineToFive.Packets {
         /// <param name="bNext">Includes Next button</param>
         /// <returns></returns>
         public static byte[] GetSay(byte nSpeakerTypeID, int nSpeakerTemplateID, string message, byte bParam, bool bPrev, bool bNext) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -704,7 +704,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetSayImage(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, List<string> list) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -718,7 +718,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskYesNo(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string input) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -729,7 +729,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskText(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string input, string input2, short nLenMin, short nLenMax) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -743,7 +743,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskNumber(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text, int nDef, int nMin, int nMax) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -757,7 +757,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskMenu(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -768,7 +768,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskQuiz(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, byte v4, string sQuizTitle, string sQuizText, string sQuizHint, int nMinInput, int nMaxInput, int tRemain) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -789,7 +789,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskSpeedQuiz(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, byte v4, int nType, int dwAnswer, int nCorrect, int nRemain) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
@@ -806,15 +806,16 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetAskAvatar(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text, IEnumerable<int> list) {
-            Packet w = new Packet();
+        public static byte[] GetAskAvatar(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text, int[] styles) {
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(nSpeakerTypeID);
             w.WriteInt(nSpeakerTemplateID);
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
             w.WriteByte(bParam);
             w.WriteString(text);
-            foreach (int i in list) { // I have no idea what this is, like absolutely no clue, none, nada, zip
+            w.WriteByte((byte) styles.Length);
+            foreach (int i in styles) {
                 w.WriteInt(i);
             }
 

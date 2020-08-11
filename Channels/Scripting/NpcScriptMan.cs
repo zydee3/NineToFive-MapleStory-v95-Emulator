@@ -30,7 +30,7 @@ namespace NineToFive.Scripting {
         }
 
         public void SendSay(byte nSpeakerTypeID, string message, byte bParam, bool bPrev, bool bNext) {
-            Client.Session.Write(NpcPackets.GetSay(nSpeakerTypeID, Npc.TemplateId, message, bParam, bPrev, bNext));
+            Client.Session.Write(NpcScriptPackets.GetSay(nSpeakerTypeID, Npc.TemplateId, message, bParam, bPrev, bNext));
             Proc = true;
         }
     }
