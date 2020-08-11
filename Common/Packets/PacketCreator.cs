@@ -679,37 +679,37 @@ namespace NineToFive.Packets {
         /// <summary>
         /// Generates a packet for OnSay (NpcProperties.ScriptMessageType.OnSay = 0)
         /// </summary>
-        /// <param name="nSpeakerTypeID">speaker NpcProperties.SpeakerType</param>
-        /// <param name="nSpeakerTemplateID">npc id</param>
+        /// <param name="speakerTypeID">speaker NpcProperties.SpeakerType</param>
+        /// <param name="speakerTemplateID">npc id</param>
         /// <param name="message">npc dialog</param>
-        /// <param name="bParam">The direction the npc / player faces</param>
-        /// <param name="bPrev">Includes Prev button</param>
-        /// <param name="bNext">Includes Next button</param>
+        /// <param name="param">The direction the npc / player faces</param>
+        /// <param name="prev">Includes Prev button</param>
+        /// <param name="next">Includes Next button</param>
         /// <returns></returns>
-        public static byte[] GetSay(byte nSpeakerTypeID, int nSpeakerTemplateID, string message, byte bParam, bool bPrev, bool bNext) {
+        public static byte[] GetSay(byte speakerTypeID, int speakerTemplateID, string message, byte param, bool prev, bool next) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
             w.WriteByte();
-            w.WriteByte(bParam);
+            w.WriteByte(param);
             
-            if ((bParam & 4) == 4)
-                w.WriteInt(nSpeakerTemplateID);
+            if ((param & 4) == 4)
+                w.WriteInt(speakerTemplateID);
             
             w.WriteString(message);
-            w.WriteBool(bPrev);
-            w.WriteBool(bNext);
+            w.WriteBool(prev);
+            w.WriteBool(next);
             return w.ToArray();
         }
 
-        public static byte[] GetSayImage(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, List<string> list) {
+        public static byte[] GetSayImage(byte speakerTypeID, int speakerTemplateID, byte param, List<string> list) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnSayImage);
-            w.WriteByte(bParam);
+            w.WriteByte(param);
             w.WriteByte((byte) list.Count); // if ( CInPacket::Decode1(iPacket) > 0 )
             foreach (string s in list) {
                 w.WriteString(s);
@@ -717,108 +717,185 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetAskYesNo(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string input) {
+        public static byte[] GetAskYesNo(byte speakerTypeID, int speakerTemplateID, byte param, string input) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskYesNo);
-            w.WriteByte(bParam);
+            w.WriteByte(param);
             w.WriteString(input);
             return w.ToArray();
         }
 
-        public static byte[] GetAskText(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string input, string input2, short nLenMin, short nLenMax) {
+        public static byte[] GetAskText(byte speakerTypeID, int speakerTemplateID, byte param, string input, string input2, short lenMin, short lenMax) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskText);
-            w.WriteByte(bParam);
+            w.WriteByte(param);
             w.WriteString(input);
             w.WriteString(input2);
-            w.WriteShort(nLenMin);
-            w.WriteShort(nLenMax);
+            w.WriteShort(lenMin);
+            w.WriteShort(lenMax);
             return w.ToArray();
         }
 
-        public static byte[] GetAskNumber(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text, int nDef, int nMin, int nMax) {
+        public static byte[] GetAskNumber(byte speakerTypeID, int speakerTemplateID, byte param, string text, int def, int min, int max) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
-            w.WriteByte(bParam);
+            w.WriteByte(param);
             w.WriteString(text);
-            w.WriteInt(nDef);
-            w.WriteInt(nMin);
-            w.WriteInt(nMax);
+            w.WriteInt(def);
+            w.WriteInt(min);
+            w.WriteInt(max);
             return w.ToArray();
         }
 
-        public static byte[] GetAskMenu(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text) {
+        public static byte[] GetAskMenu(byte speakerTypeID, int speakerTemplateID, byte param, string text) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
-            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
-            w.WriteByte(bParam);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskMenu);
+            w.WriteByte(param);
             w.WriteString(text);
             return w.ToArray();
         }
 
-        public static byte[] GetAskQuiz(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, byte v4, string sQuizTitle, string sQuizText, string sQuizHint, int nMinInput, int nMaxInput, int tRemain) {
+        public static byte[] GetAskQuiz(byte speakerTypeID, int speakerTemplateID, byte param, byte v4, string quizTitle, string quizText, string quizHint, int minInput, int maxInput, int remain) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
-            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
-            w.WriteByte(bParam);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskQuiz);
+            w.WriteByte(param);
             w.WriteByte(v4);
             
             if (v4 == 0) {
-                w.WriteString(sQuizTitle);
-                w.WriteString(sQuizText);
-                w.WriteString(sQuizHint);
-                w.WriteInt(nMinInput);
-                w.WriteInt(nMaxInput);
-                w.WriteInt(tRemain);
+                w.WriteString(quizTitle);
+                w.WriteString(quizText);
+                w.WriteString(quizHint);
+                w.WriteInt(minInput);
+                w.WriteInt(maxInput);
+                w.WriteInt(remain);
             }
 
             return w.ToArray();
         }
 
-        public static byte[] GetAskSpeedQuiz(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, byte v4, int nType, int dwAnswer, int nCorrect, int nRemain) {
+        public static byte[] GetAskSpeedQuiz(byte speakerTypeID, int speakerTemplateID, byte param, byte v4, int type, int dwAnswer, int correct, int remain) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
-            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
-            w.WriteByte(bParam);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskSpeedQuiz);
+            w.WriteByte(param);
 
             if (v4 == 0) { // idk what this is
-                w.WriteInt(nType);
+                w.WriteInt(type);
                 w.WriteInt(dwAnswer);
-                w.WriteInt(nCorrect);
-                w.WriteInt(nRemain);
+                w.WriteInt(correct);
+                w.WriteInt(remain);
             }
             
             return w.ToArray();
         }
 
-        public static byte[] GetAskAvatar(byte nSpeakerTypeID, int nSpeakerTemplateID, byte bParam, string text, int[] styles) {
+        public static byte[] GetAskAvatar(byte speakerTypeID, int speakerTemplateID, byte param, string text, int[] styles) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
-            w.WriteByte(nSpeakerTypeID);
-            w.WriteInt(nSpeakerTemplateID);
-            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskNumber);
-            w.WriteByte(bParam);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskAvataar);
+            w.WriteByte(param);
             w.WriteString(text);
             w.WriteByte((byte) styles.Length);
             foreach (int i in styles) {
                 w.WriteInt(i);
             }
 
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskMembershopAvatar(byte speakerTypeID, int speakerTemplateID, byte param, string text, IEnumerable<int> list) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskMembershopAvatar);
+            w.WriteByte(param);
+            w.WriteString(text);
+            foreach (int i in list) { // I have no idea what this is, like absolutely no clue, none, nada, zip
+                w.WriteInt(i);
+            }
+
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskPet(byte speakerTypeID, int speakerTemplateID, byte param, string message, List<Item> pets) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskPet);
+            w.WriteByte(param);
+            w.WriteString(message);
+            w.WriteByte((byte) pets.Count);
+            foreach (Item pet in pets) {
+                if (pet != null) {
+                    w.WriteLong(pet.Id);
+                    w.WriteByte((byte) pet.BagIndex); // i think? CharacterData::FindCashItemSlotPosition
+                }
+            }
+            return w.ToArray();
+        }
+        
+        public static byte[] GetAskPetAll(byte speakerTypeID, int speakerTemplateID, byte param, string message, bool exceptionExist, List<Item> pets) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskPetAll);
+            w.WriteByte(param);
+            w.WriteString(message);
+            w.WriteByte((byte) pets.Count);
+            w.WriteBool(exceptionExist);
+            foreach (Item pet in pets) {
+                if (pet != null) {
+                    w.WriteLong(pet.Id);
+                    w.WriteByte((byte) pet.BagIndex); // i think? CharacterData::FindCashItemSlotPosition
+                }
+            }
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskBoxText(byte speakerTypeID, int speakerTemplateID, byte param, string text, string text1, short col, short line) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskBoxText);
+            w.WriteByte(param);
+            w.WriteString(text);
+            w.WriteString(text1);
+            w.WriteShort(col);
+            w.WriteShort(line);
+            return w.ToArray();
+        }
+
+        public static byte[] GetAskSlideMenu(byte speakerTypeID, int speakerTemplateID, byte param, int v2) {
+            Packet w = new Packet();
+            w.WriteShort((short) CScriptMan.OnScriptMessage);
+            w.WriteByte(speakerTypeID);
+            w.WriteInt(speakerTemplateID);
+            w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskSlideMenu);
+            w.WriteByte(param);
+            w.WriteInt(v2); // region?
             return w.ToArray();
         }
     }

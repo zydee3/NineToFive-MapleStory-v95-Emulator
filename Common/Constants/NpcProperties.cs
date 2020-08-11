@@ -33,7 +33,6 @@
             OnAskMembershopAvatar = 9,
             OnAskPet = 10,
             OnAskPetAll = 11,
-            OnAsYesNo = 13,
             OnAskBoxText = 14,
             OnAskSlideMenu = 15,
         }
