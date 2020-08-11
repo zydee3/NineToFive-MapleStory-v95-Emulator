@@ -110,7 +110,7 @@ namespace NineToFive.Packets {
         private static void InitNpc(Npc npc, Packet w) {
             w.WriteShort((short) npc.Location.X);
             w.WriteShort((short) npc.Location.Y);
-            w.WriteBool(false); // bMove
+            w.WriteBool(true); // bMove
             w.WriteShort((short) npc.Fh);
             w.WriteShort((short) npc.HorizontalRange.Low);
             w.WriteShort((short) npc.HorizontalRange.High);
