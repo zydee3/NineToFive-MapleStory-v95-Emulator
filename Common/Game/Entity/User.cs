@@ -86,7 +86,6 @@ namespace NineToFive.Game.Entity {
         public Dictionary<int, SkillRecord> Skills { get; }
         
         public V8ScriptEngine ScriptEngine { get; set; }
-        public ScriptManager NpcScriptInstance { get; set; }
 
         public override Field Field {
             get => base.Field;

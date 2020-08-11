@@ -1,9 +1,8 @@
 ﻿namespace NineToFive.Constants {
     public static class NpcProperties {
-        
-        public static byte DefaultSpeakerType { get; set; } = (byte) SpeakerType.NpcEsc;
-        public static byte DefaultSpeakerOrientation { get; set; } = (byte) SpeakerOrientation.NpcFaceLeft;
-        
+        public const SpeakerType DefaultSpeakerType = SpeakerType.Npc;
+        public const SpeakerOrientation DefaultSpeakerOrientation = SpeakerOrientation.NpcFaceLeft;
+
         public enum SpeakerType : byte {
             NpcEsc = 1,
             Player = 2,
@@ -20,7 +19,7 @@
             UserFaceLeft = 2,
             UserFaceRight = 3,
         }
-    
+
         public enum ScriptMessageType : byte {
             OnSay = 0,
             OnSayImage = 1,
@@ -39,8 +38,6 @@
             OnAskSlideMenu = 15,
         }
 
-        public enum ScriptActionType : int {
-            
-        }
+        public enum ScriptActionType : int { }
     }
 }

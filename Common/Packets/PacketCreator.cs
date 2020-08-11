@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NineToFive.Constants;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
