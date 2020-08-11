@@ -11,6 +11,7 @@ namespace NineToFive.Scripting {
         public Npc Npc { get; private set; }
         public int Status { get; set; }
         public int Selection { get; set; }
+        public bool Proc { get; set; }
 
         public override void Dispose() {
             User.ScriptEngine?.Dispose();
@@ -30,6 +31,7 @@ namespace NineToFive.Scripting {
 
         public void SendSay(byte nSpeakerTypeID, string message, byte bParam, bool bPrev, bool bNext) {
             Client.Session.Write(NpcPackets.GetSay(nSpeakerTypeID, Npc.TemplateId, message, bParam, bPrev, bNext));
+            Proc = true;
         }
     }
 }

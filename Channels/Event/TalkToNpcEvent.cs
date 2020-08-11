@@ -15,6 +15,11 @@ namespace NineToFive.Event {
         public TalkToNpcEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
+            if (Client.User.ScriptEngine?.Script.ctx is NpcScriptMan ctx) {
+                if (!ctx.Proc) {
+                    ctx.Dispose();
+                }
+            }
             _objectId = p.ReadUInt();
 
             p.ReadShort(); // user x location

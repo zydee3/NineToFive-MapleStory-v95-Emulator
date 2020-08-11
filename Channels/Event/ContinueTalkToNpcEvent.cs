@@ -32,6 +32,13 @@ namespace NineToFive.Event {
             User user = Client.User;
             NpcScriptMan ctx = user.ScriptEngine.Script.ctx as NpcScriptMan;
             if (ctx == null) return;
+            ctx.Proc = false;
+
+            var npc = user.Field.LifePools[EntityType.Npc][ctx.Npc.Id] as Npc;
+            if (npc == null || npc.Field != user.Field) {
+                ctx.Dispose();
+                return;
+            }
 
             if (_action == 255 || (ctx.Status == 0 && _action == 0)) {
                 ctx.Dispose();
@@ -40,15 +47,11 @@ namespace NineToFive.Event {
 
             ctx.Status += _action == 1 ? 1 : -1;
 
-            var npc = user.Field.LifePools[EntityType.Npc][ctx.Npc.Id] as Npc;
-            if (npc == null) return;
-            if (npc.Field != user.Field) {
-                ctx.Dispose();
-                return;
-            }
-
             try {
-                Scriptable.RunScriptAsync(user.ScriptEngine);
+                Scriptable.RunScriptAsync(user.ScriptEngine).Wait();
+                if (!ctx.Proc) {
+                    ctx.Dispose();
+                }
             } catch (Exception e) {
                 if (e is AggregateException ae) {
                     ae.Handle(x => {
