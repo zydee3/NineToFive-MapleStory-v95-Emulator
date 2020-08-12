@@ -218,6 +218,17 @@ namespace NineToFive.Game.Entity {
         public void SendMessage(string msg, byte type = 5) {
             Client.Session.Write(CWvsPackets.GetBroadcastMessage(this, true, type, $"[NineToFive] {msg}", null));
         }
+
+        public bool GainMoney(int gain) {
+            int balance = (int)Money + gain;
+            if (balance >= 0) {
+                Money = (uint) balance;
+                CharacterStat.SendUpdate(this, (uint)UserAbility.Money);
+                return true;
+            }
+
+            return false;
+        }
     }
 
     public class AvatarLook : IPacketSerializer<User> {
@@ -368,6 +379,7 @@ namespace NineToFive.Game.Entity {
             if ((dwcharFlag & 0x1000) == 0x1000) p.WriteInt(MP);
             if ((dwcharFlag & 0x2000) == 0x2000) p.WriteInt(MaxMP);
             if ((dwcharFlag & 0x4000) == 0x4000) p.WriteShort(AP);
+            if ((dwcharFlag & 0x40000) == 0x40000) p.WriteInt((int) user.Money);
 
             if ((dwcharFlag & 0x8000) == 0x8000) {
                 if (JobConstants.IsExtendedSpJob(Job)) {
