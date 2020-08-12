@@ -21,6 +21,7 @@ namespace NineToFive.Game.Entity.Meta {
                 case UserAbility.Exp: return user.CharacterStat.Exp;
                 case UserAbility.Popularity: return user.CharacterStat.Popularity;
                 case UserAbility.FieldId: return user.CharacterStat.FieldId;
+                case UserAbility.Money: return (int) user.Money;
             }
             throw new InvalidEnumArgumentException("unknown ability: " + ability);
         }
@@ -44,8 +45,10 @@ namespace NineToFive.Game.Entity.Meta {
         MP = 0x1000,
         MaxMP = 0x2000,
         AP = 0x4000,
+        SP = 0x8000,
         Exp = 0x10000,
         Popularity = 0x20000,
+        Money = 0x40000,
         FieldId = 0x200000,
     }
 }
