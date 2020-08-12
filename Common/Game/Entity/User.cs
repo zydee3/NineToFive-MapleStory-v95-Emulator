@@ -84,7 +84,6 @@ namespace NineToFive.Game.Entity {
         public Dictionary<int, Tuple<byte, int>> KeyMap { get; set; }
         public int[] QuickslotKeyMap { get; set; }
         public Dictionary<int, SkillRecord> Skills { get; }
-        
         public V8ScriptEngine ScriptEngine { get; set; }
 
         public override Field Field {
@@ -150,6 +149,7 @@ namespace NineToFive.Game.Entity {
         public void SetField(int fieldId, Portal portal = null, bool characterData = true) {
             Field?.RemoveLife(this);
             Field = Client.Channel.GetField(fieldId);
+            portal ??= Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"));
             if (portal != null) {
                 var destPortal = Field.Portals.First(p => p.Name.Equals(portal.Name));
                 Location = destPortal.Location;
@@ -241,13 +241,13 @@ namespace NineToFive.Game.Entity {
             p.WriteByte();
             p.WriteInt(Hair);
             var inventory = user.Inventories[InventoryType.Equipped];
-            foreach (Item item in inventory.Items) {
+            foreach (Item item in inventory.Items.Where(i => i.BagIndex >= -99)) {
                 p.WriteByte((byte) Math.Abs(item.BagIndex));
                 p.WriteInt(item.Id);
             }
 
             p.WriteByte(255);
-            foreach (Item item in inventory.Items) {
+            foreach (Item item in inventory.Items.Where(i => i.BagIndex <= -100)) {
                 p.WriteByte((byte) item.BagIndex);
                 p.WriteInt(item.Id);
             }

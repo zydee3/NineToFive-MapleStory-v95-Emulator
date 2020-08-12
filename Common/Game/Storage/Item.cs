@@ -1,4 +1,5 @@
-﻿using NineToFive.Net;
+﻿using System;
+using NineToFive.Net;
 using NineToFive.Util;
 using NineToFive.Wz;
 
@@ -22,15 +23,15 @@ namespace NineToFive.Game.Storage {
 
         public virtual void Encode(Item item, Packet p) {
             p.WriteByte(item.Type);
-
-            p.WriteInt(Id);
-            if (p.WriteBool(CashItemSn > 0)) {
+            p.WriteInt(item.Id);
+            if (p.WriteBool(item.CashItemSn > 0)) {
                 // liCashItemSN->low
                 // liCashItemSN->high
-                p.WriteLong(CashItemSn);
+                p.WriteLong(item.CashItemSn);
             }
 
-            p.WriteLong(DateExpire);
+            // p.WriteLong(DateTime.FromFileTimeUtc(150842304000000000).ToFileTime()); // No expiration
+            p.WriteLong(item.DateExpire);
         }
 
         public virtual void Decode(Item item, Packet p) { }

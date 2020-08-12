@@ -35,7 +35,7 @@ namespace NineToFive.Packets {
             w.WriteInt();
 
             if (type == 0 || type == 1 || type == 3 || type == 4) {
-                w.WriteShort((short) drop.Origin.X); 
+                w.WriteShort((short) drop.Origin.X);
                 w.WriteShort((short) drop.Origin.Y);
                 w.WriteShort();
             }
@@ -486,43 +486,17 @@ namespace NineToFive.Packets {
             }
 
             if ((dwCharFlag & 4) == 4) {
-                var equipped = user.Inventories[InventoryType.Equipped];
-                var equips = user.Inventories[InventoryType.Equip];
-
-                foreach (var item in equipped.Items.Where(i => i.BagIndex >= -99)) {
-                    // equipped regular
+                var equipped = user.Inventories[InventoryType.Equipped].Items;
+                var cash = equipped.Where(i => i.BagIndex >= -100);
+                foreach (var item in cash) {
                     w.WriteShort(Math.Abs(item.BagIndex));
                     item.Encode(item, w);
                 }
 
                 w.WriteShort();
-                foreach (var item in equipped.Items.Where(i => i.BagIndex <= -100)) {
-                    // equipped cash
-                    w.WriteShort(Math.Abs(item.BagIndex));
-                    item.Encode(item, w);
-                }
-
                 w.WriteShort();
-                foreach (var item in equips.Items) {
-                    // equip
-                    w.WriteShort(Math.Abs(item.BagIndex));
-                    item.Encode(item, w);
-                }
-
                 w.WriteShort();
-                foreach (var item in equipped.Items.Where(i => i.BagIndex > -1100 && i.BagIndex < -1000)) {
-                    // equip dragon?
-                    w.WriteShort(Math.Abs(item.BagIndex));
-                    item.Encode(item, w);
-                }
-
                 w.WriteShort();
-                foreach (var item in equipped.Items.Where(i => i.BagIndex < -1100)) {
-                    // equip dragon?
-                    w.WriteShort(Math.Abs(item.BagIndex));
-                    item.Encode(item, w);
-                }
-
                 w.WriteShort();
             }
 
@@ -673,9 +647,8 @@ namespace NineToFive.Packets {
             w.WriteStringFixed("", 13); // sBrideName
         }
     }
-    
+
     public static class NpcScriptPackets {
-        
         /// <summary>
         /// Generates a packet for OnSay (NpcProperties.ScriptMessageType.OnSay = 0)
         /// </summary>
@@ -714,6 +687,7 @@ namespace NineToFive.Packets {
             foreach (string s in list) {
                 w.WriteString(s);
             }
+
             return w.ToArray();
         }
 
@@ -775,7 +749,7 @@ namespace NineToFive.Packets {
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskQuiz);
             w.WriteByte(param);
             w.WriteByte(v4);
-            
+
             if (v4 == 0) {
                 w.WriteString(quizTitle);
                 w.WriteString(quizText);

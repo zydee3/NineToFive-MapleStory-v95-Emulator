@@ -4,6 +4,7 @@ using System.Linq;
 using log4net;
 using NineToFive.Constants;
 using NineToFive.Game.Entity;
+using NineToFive.Packets;
 using NineToFive.Util;
 using NineToFive.Wz;
 
@@ -127,7 +128,11 @@ namespace NineToFive.Game {
         /// </summary>
         public void SummonLife(Life create) {
             AddLife(create);
-            BroadcastPacket(create.EnterFieldPacket());
+            var enterFieldPacket = create.Type switch {
+                EntityType.Drop => DropPool.GetDropEnterField((Drop) create, 1),
+                _               => create.EnterFieldPacket()
+            };
+            BroadcastPacket(enterFieldPacket);
         }
     }
 }
