@@ -166,10 +166,10 @@ namespace NineToFive.Packets {
         private static void InitMob(Mob mob, Packet w) {
             w.WriteShort((short) mob.Location.X);
             w.WriteShort((short) mob.Location.Y);
-            w.WriteByte();                // move action
+            w.WriteByte(5);               // move action
             w.WriteShort((short) mob.Fh); // cur fh
             w.WriteShort((short) mob.Fh); // home fh
-            w.WriteByte((byte) mob.SummonType);
+            w.WriteByte(254);
             if (mob.SummonType == -3 || mob.SummonType >= 0) {
                 w.WriteInt(mob.SummonType);
             }
@@ -202,7 +202,7 @@ namespace NineToFive.Packets {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobEnterField);
             w.WriteUInt(mob.Id);
-            w.WriteByte(1); // nCalcDamageIndex
+            w.WriteByte(5); // nCalcDamageIndex
             w.WriteInt(mob.TemplateId);
 
             SetMobTemporaryStat(mob, w);
@@ -666,10 +666,10 @@ namespace NineToFive.Packets {
             w.WriteInt(speakerTemplateID);
             w.WriteByte();
             w.WriteByte(param);
-            
+
             if ((param & 4) == 4)
                 w.WriteInt(speakerTemplateID);
-            
+
             w.WriteString(message);
             w.WriteBool(prev);
             w.WriteBool(next);
@@ -770,13 +770,14 @@ namespace NineToFive.Packets {
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskSpeedQuiz);
             w.WriteByte(param);
 
-            if (v4 == 0) { // idk what this is
+            if (v4 == 0) {
+                // idk what this is
                 w.WriteInt(type);
                 w.WriteInt(dwAnswer);
                 w.WriteInt(correct);
                 w.WriteInt(remain);
             }
-            
+
             return w.ToArray();
         }
 
@@ -804,7 +805,8 @@ namespace NineToFive.Packets {
             w.WriteByte((byte) NpcProperties.ScriptMessageType.OnAskMembershopAvatar);
             w.WriteByte(param);
             w.WriteString(text);
-            foreach (int i in list) { // I have no idea what this is, like absolutely no clue, none, nada, zip
+            foreach (int i in list) {
+                // I have no idea what this is, like absolutely no clue, none, nada, zip
                 w.WriteInt(i);
             }
 
@@ -826,9 +828,10 @@ namespace NineToFive.Packets {
                     w.WriteByte((byte) pet.BagIndex); // i think? CharacterData::FindCashItemSlotPosition
                 }
             }
+
             return w.ToArray();
         }
-        
+
         public static byte[] GetAskPetAll(byte speakerTypeID, int speakerTemplateID, byte param, string message, bool exceptionExist, List<Item> pets) {
             Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
@@ -845,6 +848,7 @@ namespace NineToFive.Packets {
                     w.WriteByte((byte) pet.BagIndex); // i think? CharacterData::FindCashItemSlotPosition
                 }
             }
+
             return w.ToArray();
         }
 

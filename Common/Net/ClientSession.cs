@@ -49,7 +49,7 @@ namespace NineToFive.Net {
             if (_socket?.Connected == true) return;
             Dispose();
         }
-        
+
         private void BeginReadPacketHeader() {
             DisposeIfNecessary();
             _socket.GetStream().BeginRead(_packetHeader, 0, _packetHeader.Length, EndReadPacketHeader, null);
@@ -115,7 +115,12 @@ namespace NineToFive.Net {
         /// encrypts then sends the byte array to the client socket stream
         /// </summary>
         public void Write(byte[] b) {
-            _socket.GetStream().Write(_cipher.Encrypt(b));
+            try {
+                _socket.GetStream().Write(_cipher.Encrypt(b));
+            } catch (IOException) {
+                Dispose();
+                // An existing connection was forcibly closed by the remote host.    
+            }
         }
     }
 }
