@@ -4,6 +4,7 @@ using System.Net;
 using log4net;
 using log4net.Config;
 using NineToFive.Event;
+using NineToFive.Event.Data;
 using NineToFive.Game;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
@@ -35,6 +36,8 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
+                
+                [(short) ReceiveOperations.Mob_GenerateMovePath] = typeof(GenerateMovePathEvent),
 
                 [(short) ReceiveOperations.CQuickslotKeyMappedMan_SaveQuickslotKeyMap] = typeof(SaveQuickSlotKeyMapEvent),
                 [(short) ReceiveOperations.CFuncKeyMappedMan_SaveFuncKeyMap] = typeof(SaveFuncKeyMapEvent),

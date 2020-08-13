@@ -112,6 +112,10 @@ namespace NineToFive.Game {
             if (!LifePools[life.Type].RemoveLife(life)) return;
             BroadcastPacket(life.LeaveFieldPacket());
 
+            foreach (Mob mob in LifePools[EntityType.Mob].Values) {
+                mob.UpdateController(null);
+            }
+            
             life.Id = 0;
             life.Field = null;
             if (life is User user) {

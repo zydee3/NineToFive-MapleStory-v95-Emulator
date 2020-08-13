@@ -55,7 +55,6 @@ namespace NineToFive.Net {
         User_OnUserMove = 44,
         User_OnChatMsg = 54,
         User_OnEmotion = 56,
-        
 
         UserLocal_TalkToNpc = 63,
         UserLocal_ContinueTalkToNpc = 65,
@@ -66,6 +65,8 @@ namespace NineToFive.Net {
         
         Field_SendChatMsgSlash = 151,
         Field_LogChatMsgSlash = 152,
+        
+        Mob_GenerateMovePath = 227,
         
         CQuickslotKeyMappedMan_SaveQuickslotKeyMap = 216,
         CFuncKeyMappedMan_SaveFuncKeyMap = 159,

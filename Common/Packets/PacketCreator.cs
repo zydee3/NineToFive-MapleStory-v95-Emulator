@@ -201,10 +201,7 @@ namespace NineToFive.Packets {
         public static byte[] GetMobEnterField(Mob mob) {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobEnterField);
-            w.WriteUInt(mob.Id);
-            w.WriteByte(5); // nCalcDamageIndex
-            w.WriteInt(mob.TemplateId);
-
+            EncodeMobBasicInfo(mob, w);
             SetMobTemporaryStat(mob, w);
             InitMob(mob, w);
 
@@ -219,31 +216,29 @@ namespace NineToFive.Packets {
             if (b == 4) w.WriteInt();
             return w.ToArray();
         }
-
-        public static byte[] GetMobChangeController(User user, Mob mob) {
+        
+        public static byte[] GetMobChangeController(User user, Mob mob, bool chase = false) {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobChangeController);
-            // nControllerLevel
-            byte controllerLevel = w.WriteByte();
+            
             // 1+ for CVecCtrlMob::SetMoveRandManSeed
             // 2 for CMob::ChaseTarget
-            if (controllerLevel > 0) {
-                w.WriteInt();
-                w.WriteInt();
-                w.WriteInt();
-            }
-
-            w.WriteUInt(mob.Id);
-
-            if (controllerLevel > 0) {
-                w.ReadByte(); // nCalcDamageIndex
-                SetMobLocal(mob, w, false);
-            }
+            w.WriteByte((byte)(chase ? 2 : 1));
+            
+            EncodeMobBasicInfo(mob, w);
+            SetMobTemporaryStat(mob, w);
+            InitMob(mob, w);
 
             return w.ToArray();
         }
-    }
 
+        public static void EncodeMobBasicInfo(Mob mob, Packet w) {
+            w.WriteUInt(mob.Id);
+            w.WriteByte(5); // nCalcDamageIndex
+            w.WriteInt(mob.TemplateId);
+        }
+    }
+    
     public static class CWvsPackets {
         public static byte[] GetChangeSkillRecord(Dictionary<int, SkillRecord> skills) {
             using Packet w = new Packet();
