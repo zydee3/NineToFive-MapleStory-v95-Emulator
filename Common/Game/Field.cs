@@ -113,7 +113,9 @@ namespace NineToFive.Game {
             BroadcastPacket(life.LeaveFieldPacket());
 
             foreach (Mob mob in LifePools[EntityType.Mob].Values) {
-                mob.UpdateController(null);
+                if (life is User target && mob.Controller.Equals(target)) {
+                    mob.UpdateController(null);
+                }
             }
             
             life.Id = 0;

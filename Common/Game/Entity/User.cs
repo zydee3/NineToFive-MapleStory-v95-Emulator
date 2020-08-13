@@ -211,7 +211,11 @@ namespace NineToFive.Game.Entity {
                 foreach (Life life in Field.LifePools[type].Values) {
                     if (life == this) continue;
                     Client.Session.Write(life.EnterFieldPacket());
-                    if (life.GetType() == typeof(Mob)) ((Mob) life).UpdateController(this);
+                    
+                    if (life is Mob mob && mob.Controller != null) {
+                        mob.UpdateController(this);
+                    }
+                    
                 }
             }
         }
