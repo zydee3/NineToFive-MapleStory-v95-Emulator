@@ -112,20 +112,19 @@ namespace NineToFive.Game {
             if (!LifePools[life.Type].RemoveLife(life)) return;
             BroadcastPacket(life.LeaveFieldPacket());
 
-            foreach (Mob mob in LifePools[EntityType.Mob].Values) {
-                if (life is User target && mob.Controller.Equals(target)) {
-                    mob.UpdateController(null);
-                }
-            }
-            
             life.Id = 0;
             life.Field = null;
             if (life is User user) {
+                foreach (var mobs in LifePools[EntityType.Mob].Values) {
+                    if (mobs is Mob mob && mob.Controller.TryGetTarget(out var ctrl) && ctrl == user) {
+                        mob.UpdateController(null);
+                    }
+                }
+
                 if (LifePools[EntityType.User].Count == 0) {
                     Log.Info($"There are no more players in field {Id}, channel {user.Client.Channel.Id}");
                 }
             }
-
         }
 
         /// <summary>

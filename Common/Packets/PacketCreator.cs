@@ -217,13 +217,13 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
         
-        public static byte[] GetMobChangeController(User user, Mob mob, bool chase = false) {
+        public static byte[] GetMobChangeController(Mob mob) {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobChangeController);
             
             // 1+ for CVecCtrlMob::SetMoveRandManSeed
             // 2 for CMob::ChaseTarget
-            w.WriteByte((byte)(chase ? 2 : 1));
+            w.WriteByte((byte) (mob.ChaseTarget ? 2 : 1));
             
             EncodeMobBasicInfo(mob, w);
             SetMobTemporaryStat(mob, w);

@@ -12,6 +12,7 @@ namespace NineToFive.Game.Entity {
         public Mob(int templateId) : base(templateId, EntityType.Mob) {
             MobWz.SetMob(this);
             ChaseTarget = false;
+            Controller = new WeakReference<User>(null);
         }
 
         public override byte[] EnterFieldPacket() {
@@ -22,13 +23,13 @@ namespace NineToFive.Game.Entity {
             return MobPool.GetMobLeaveField(this);
         }
 
-        public WeakReference<User> Controller { get; set; }
+        public WeakReference<User> Controller { get; }
         public bool ChaseTarget { get; set; }
 
-        public void UpdateController(User user, bool chase = false) {
-            Controller = new WeakReference<User>(user);
-            ChaseTarget = chase;
-            user?.Client.Session.Write(MobPool.GetMobChangeController(user, this, chase));
+        public void UpdateController(User user, bool chaseTarget = false) {
+            Controller.SetTarget(user);
+            ChaseTarget = user != null && chaseTarget;
+            user?.Client.Session.Write(MobPool.GetMobChangeController(this));
         }
 
         public int Level { get; set; }

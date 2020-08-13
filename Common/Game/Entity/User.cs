@@ -211,11 +211,12 @@ namespace NineToFive.Game.Entity {
                 foreach (Life life in Field.LifePools[type].Values) {
                     if (life == this) continue;
                     Client.Session.Write(life.EnterFieldPacket());
-                    
-                    if (life is Mob mob && mob.Controller != null) {
+
+                    // update controller if one doesn't exist; TryGetTarget returns false when 
+                    // the Controller target is null
+                    if (life is Mob mob && !mob.Controller.TryGetTarget(out _)) {
                         mob.UpdateController(this);
                     }
-                    
                 }
             }
         }
@@ -225,10 +226,10 @@ namespace NineToFive.Game.Entity {
         }
 
         public bool GainMoney(int gain) {
-            int balance = (int)Money + gain;
+            int balance = (int) Money + gain;
             if (balance >= 0) {
                 Money = (uint) balance;
-                CharacterStat.SendUpdate(this, (uint)UserAbility.Money);
+                CharacterStat.SendUpdate(this, (uint) UserAbility.Money);
                 return true;
             }
 
