@@ -102,6 +102,16 @@ namespace NineToFive.Game {
 
             life.Field = this;
             LifePools[life.Type].AddLife(life);
+            if (life is User user) {
+                if (user.IsHidden) return;
+                foreach (var mobs in LifePools[EntityType.Mob].Values) {
+                    if (mobs is Mob mob) {
+                        if (!mob.Controller.TryGetTarget(out var ctrl) || ctrl.IsHidden) {
+                            mob.UpdateController(user);
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
