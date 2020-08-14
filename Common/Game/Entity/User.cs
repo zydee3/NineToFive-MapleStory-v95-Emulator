@@ -149,10 +149,11 @@ namespace NineToFive.Game.Entity {
         public void SetField(int fieldId, Portal portal = null, bool characterData = true) {
             Field?.RemoveLife(this);
             Field = Client.Channel.GetField(fieldId);
-            portal ??= Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"));
+            portal = portal == null 
+                ? Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"))
+                : Field.Portals.First(p => p.Name.Equals(portal.TargetPortalName));
             if (portal != null) {
-                var destPortal = Field.Portals.First(p => p.Name.Equals(portal.Name));
-                Location = destPortal.Location;
+                Location = portal.Location;
                 CharacterStat.Portal = portal.Id;
             }
 
