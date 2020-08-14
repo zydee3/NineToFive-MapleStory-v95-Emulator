@@ -18,8 +18,6 @@ namespace NineToFive.Game.Entity {
         
         public AvatarLook AvatarLook { get; set; }
         public Range2 HorizontalRange { get; set; }
-        
-        public int TemplateId { get; set; }
         public string Script { get; set; }
     }
 }
