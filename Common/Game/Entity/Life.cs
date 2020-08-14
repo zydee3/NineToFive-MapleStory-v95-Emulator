@@ -13,6 +13,7 @@ namespace NineToFive.Game.Entity {
 
         protected Life(int templateId, EntityType entityType) : this(entityType) {
             TemplateId = templateId;
+            MoveAction = 5;
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace NineToFive.Game.Entity {
         public Vector2 Location { get; set; }
         public Vector2 Velocity { get; set; }
         public int Fh { get; set; }
+        public byte MoveAction { get; set; }
         public bool Flipped { get; set; }
         public EntityType Type { get; }
     }

@@ -37,7 +37,7 @@ namespace NineToFive {
                 [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 
-                [(short) ReceiveOperations.Mob_GenerateMovePath] = typeof(GenerateMovePathEvent),
+                [(short) ReceiveOperations.Mob_GenerateMovePath] = typeof(MobGenerateMovePathEvent),
 
                 [(short) ReceiveOperations.CQuickslotKeyMappedMan_SaveQuickslotKeyMap] = typeof(SaveQuickSlotKeyMapEvent),
                 [(short) ReceiveOperations.CFuncKeyMappedMan_SaveFuncKeyMap] = typeof(SaveFuncKeyMapEvent),
@@ -58,7 +58,6 @@ namespace NineToFive {
 
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
-                Log.Info($"Handled operation : {operation} | 0x{operation:X2} : {handler.GetType().Name}");
                 try {
                     if (handler.ShouldProcess() && handler.OnProcess(p)) {
                         handler.OnHandle();

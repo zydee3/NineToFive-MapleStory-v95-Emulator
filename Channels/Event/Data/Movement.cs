@@ -20,7 +20,7 @@ namespace NineToFive.Event.Data {
         public byte MoveAction { get; set; }
 
         public void Encode(Movement t, Packet p) {
-            switch (t.Type) {
+            switch (p.WriteByte(t.Type)) {
                 case 0:
                 case 5:
                 case 12:

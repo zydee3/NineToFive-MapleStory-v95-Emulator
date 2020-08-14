@@ -133,10 +133,20 @@ namespace NineToFive.Game {
         /// </summary>
         public void SummonLife(Life create) {
             AddLife(create);
-            var enterFieldPacket = create.Type switch {
-                EntityType.Drop => DropPool.GetDropEnterField((Drop) create, 1),
-                _               => create.EnterFieldPacket()
-            };
+
+            byte[] enterFieldPacket = null;
+            switch (create) {
+                case Drop drop:
+                    enterFieldPacket = DropPool.GetDropEnterField(drop, 1);
+                    break;
+                case Mob mob:
+                    var first = LifePools[EntityType.User].Values.FirstOrDefault();
+                    if (first != null && first is User user) mob.UpdateController(user);
+                    break;
+            }
+
+            enterFieldPacket ??= create.EnterFieldPacket();
+
             BroadcastPacket(enterFieldPacket);
         }
     }

@@ -166,7 +166,7 @@ namespace NineToFive.Packets {
         private static void InitMob(Mob mob, Packet w) {
             w.WriteShort((short) mob.Location.X);
             w.WriteShort((short) mob.Location.Y);
-            w.WriteByte(5);               // move action
+            w.WriteByte(mob.MoveAction);
             w.WriteShort((short) mob.Fh); // cur fh
             w.WriteShort((short) mob.Fh); // home fh
             w.WriteByte(254);
@@ -201,7 +201,10 @@ namespace NineToFive.Packets {
         public static byte[] GetMobEnterField(Mob mob) {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobEnterField);
-            EncodeMobBasicInfo(mob, w);
+            w.WriteUInt(mob.Id);
+            w.WriteByte(5); // nCalcDamageIndex
+            w.WriteInt(mob.TemplateId);
+
             SetMobTemporaryStat(mob, w);
             InitMob(mob, w);
 
@@ -216,29 +219,29 @@ namespace NineToFive.Packets {
             if (b == 4) w.WriteInt();
             return w.ToArray();
         }
-        
+
         public static byte[] GetMobChangeController(Mob mob) {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobChangeController);
-            
+
             // 1+ for CVecCtrlMob::SetMoveRandManSeed
             // 2 for CMob::ChaseTarget
-            w.WriteByte((byte) (mob.ChaseTarget ? 2 : 1));
-            
-            EncodeMobBasicInfo(mob, w);
+            var controllerLevel = w.WriteByte((byte) (mob.ChaseTarget ? 2 : 1));
+            w.WriteUInt(mob.Id);
+            if (controllerLevel > 0) {
+                w.WriteByte(5); // nCalcDamageIndex
+                w.WriteInt(mob.TemplateId);
+            }
+
             SetMobTemporaryStat(mob, w);
+            // CMob::InitMob is only necessary if the controller is being set
+            // and the client hasn't registered the mob (CMobPool::GetMob returns false) 
             InitMob(mob, w);
 
             return w.ToArray();
         }
-
-        public static void EncodeMobBasicInfo(Mob mob, Packet w) {
-            w.WriteUInt(mob.Id);
-            w.WriteByte(5); // nCalcDamageIndex
-            w.WriteInt(mob.TemplateId);
-        }
     }
-    
+
     public static class CWvsPackets {
         public static byte[] GetChangeSkillRecord(Dictionary<int, SkillRecord> skills) {
             using Packet w = new Packet();

@@ -2,18 +2,21 @@
 using System.Numerics;
 using NineToFive.Event.Data;
 using NineToFive.Net;
+using NineToFive.Packets;
 using NineToFive.SendOps;
 
 namespace NineToFive.Event {
     public class UserMoveEvent : VecCtrlEvent {
         public UserMoveEvent(Client client) : base(client) { }
 
+        public override bool OnProcess(Packet p) {
+            p.Position += 29;
+            return base.OnProcess(p);
+        }
+
         public override void OnHandle() {
-            var latest = Movements[^1];
             var user = Client.User;
-            user.Location = latest.Location;
-            user.Velocity = latest.Velocity;
-            user.Fh = latest.Fh;
+            ApplyLatestMovement(user);
             user.Field.BroadcastPacketExclude(user, GetUserRemoteMove(user.CharacterStat.Id, Origin, Velocity, Movements));
         }
 
@@ -21,14 +24,7 @@ namespace NineToFive.Event {
             using Packet w = new Packet();
             w.WriteShort((short) CUserRemote.OnMove);
             w.WriteUInt(characterId);
-            w.WriteShort((short) origin.X);
-            w.WriteShort((short) origin.Y);
-            w.WriteShort((short) velocity.X);
-            w.WriteShort((short) velocity.Y);
-            w.WriteByte((byte) moves.Count);
-            foreach (var move in moves) {
-                move.Encode(move, w);
-            }
+            MovePath.Encode(w, origin, velocity, moves);
 
             for (int i = 0; i < w.WriteByte(); i++) {
                 w.WriteByte();

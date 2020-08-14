@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Text;
 
 namespace NineToFive.Net {
@@ -47,10 +46,19 @@ namespace NineToFive.Net {
             Reader = new BinaryReader(Stream);
         }
 
+        /// <summary>
+        /// converts each byte in the buffer to an ASCII character 
+        /// </summary>
+        /// <returns>the byte buffer as an ASCII string</returns>
         public override string ToString() {
             return Encoding.ASCII.GetString(Stream.ToArray());
         }
 
+        /// <summary>
+        /// prints the buffer as an array of bytes
+        /// </summary>
+        /// <param name="hex">if the output string should be printed as hexadecimals, false for decimals</param>
+        /// <returns>the byte buffer as an array</returns>
         public string ToArrayString(bool hex = false) {
             if (hex) {
                 return BitConverter.ToString(Stream.ToArray()).Replace("-", " ");
@@ -155,6 +163,7 @@ namespace NineToFive.Net {
             for (int i = item.Length; i < length; i++) {
                 Writer.Write((byte) 0);
             }
+
             if (Position > Size) Size = Position;
             return this;
         }
@@ -222,6 +231,7 @@ namespace NineToFive.Net {
             for (int i = 0; i < result.Length; i++) {
                 result[i] = (char) Reader.ReadByte();
             }
+
             return new string(result);
         }
 
