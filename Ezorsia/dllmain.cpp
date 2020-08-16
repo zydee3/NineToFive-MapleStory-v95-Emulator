@@ -27,6 +27,17 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		memcpy((void*) 0x004AA707, &update, sizeof(update));
 		Memory::WriteByte(0x004AA7EF, 0xEB);
 		Memory::FillBytes(0x004290C3, 0x90, 2);
+		
+		// CUserLocal__TryDoingMeleeAttack CWvsContext::IsUserGM
+		Memory::WriteByte(0x0091E848, 0xEB);
+		// CUserLocal__TryDoingNormalAttack CWvsContext__IsUserGM
+		Memory::WriteByte(0x00912452, 0xEB);
+		// CUserLocal__TryDoingShootAttack CWvsContext__IsUserGM
+		Memory::WriteByte(0x00925B53, 0xEB);
+		// CUserLocal__TryDoingMagicAttack CWvsContext__IsUserGM
+		Memory::WriteByte(0x0092A2C3, 0xEB);
+		// CUserLocal__TryDoingBodyAttack CWvsContext__IsUserGM
+		Memory::WriteByte(0x0093075F, 0xEB);
 		break;
 	}
 	default: break;
