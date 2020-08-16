@@ -169,9 +169,9 @@ namespace NineToFive.Packets {
             w.WriteByte(mob.MoveAction);
             w.WriteShort((short) mob.Fh); // cur fh
             w.WriteShort((short) mob.Fh); // home fh
-            w.WriteByte(254);
+            w.WriteByte((byte) (mob.SummonType == 1 ? 255 : mob.SummonType));
             if (mob.SummonType == -3 || mob.SummonType >= 0) {
-                w.WriteInt(mob.SummonType);
+                w.WriteInt();
             }
 
             w.WriteByte(); // carnival team
@@ -479,19 +479,24 @@ namespace NineToFive.Packets {
             }
 
             if ((dwCharFlag & 0x100000) == 0x100000) {
-                w.WriteInt(); // sCharacterName
-                w.WriteInt(); // nSkin
+                w.WriteInt();
+                w.WriteInt();
             }
 
             if ((dwCharFlag & 4) == 4) {
-                var equipped = user.Inventories[InventoryType.Equipped].Items;
-                var cash = equipped.Where(i => i.BagIndex >= -100);
-                foreach (var item in cash) {
+                var eqs = user.Inventories[InventoryType.Equipped].Items;
+
+                foreach (var item in eqs.Where(i => i.BagIndex >= -99)) {
                     w.WriteShort(Math.Abs(item.BagIndex));
                     item.Encode(item, w);
                 }
 
                 w.WriteShort();
+                foreach (var item in eqs.Where(i => i.BagIndex <= -100)) {
+                    w.WriteShort(Math.Abs(item.BagIndex));
+                    item.Encode(item, w);
+                }
+
                 w.WriteShort();
                 w.WriteShort();
                 w.WriteShort();

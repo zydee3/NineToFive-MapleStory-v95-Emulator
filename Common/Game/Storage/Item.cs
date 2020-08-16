@@ -12,6 +12,10 @@ namespace NineToFive.Game.Storage {
             if (setItem) ItemWz.SetItem(this);
         }
 
+        public override string ToString() {
+            return $"Item{{ID: {Id}, BagIndex: {BagIndex}}}";
+        }
+
         public virtual byte Type => 2;
         public InventoryType InventoryType { get; }
         public int Id { get; }

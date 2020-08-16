@@ -10,6 +10,10 @@ namespace NineToFive.Game.Storage {
             if (autoBagIndex) BagIndex = (short) -ItemConstants.GetBodyPartFromId(id);
         }
 
+        public override string ToString() {
+            return $"Equip{{ID: {Id}, BagIndex: {BagIndex}}}";
+        }
+
         public override byte Type => 1;
 
         public override ushort Quantity => 1;
@@ -33,7 +37,7 @@ namespace NineToFive.Game.Storage {
         public byte CHUC { get; set; }
 
         public override void Encode(Item item, Packet p) {
-            Equip equip = item as Equip;
+            if (!(item is Equip equip)) throw new NullReferenceException();
             base.Encode(equip, p);
             p.WriteByte(); // nRUC
             p.WriteByte(); // nCUC
@@ -70,8 +74,7 @@ namespace NineToFive.Game.Storage {
             p.WriteShort(); // nOption3
             p.WriteShort(); // nOption4/Socket1
             p.WriteShort(); // nOption5/Socket2
-            // liCashItemSN.QuadPart
-            if (equip.CashItemSn > 0) {
+            if (equip.CashItemSn == 0) {
                 p.WriteLong(equip.CashItemSn);
             }
 

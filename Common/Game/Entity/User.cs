@@ -9,7 +9,6 @@ using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
 using NineToFive.Net;
 using NineToFive.Packets;
-using NineToFive.Scripting;
 using NineToFive.SendOps;
 using NineToFive.Util;
 
@@ -149,7 +148,7 @@ namespace NineToFive.Game.Entity {
         public void SetField(int fieldId, Portal portal = null, bool characterData = true) {
             Field?.RemoveLife(this);
             Field = Client.Channel.GetField(fieldId);
-            portal = portal == null 
+            portal = portal == null
                 ? Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"))
                 : Field.Portals.First(p => p.Name.Equals(portal.TargetPortalName));
             if (portal != null) {
@@ -318,6 +317,15 @@ namespace NineToFive.Game.Entity {
         public short Popularity { get; set; }
         public int FieldId { get; set; } = 10000;
         public byte Portal { get; set; }
+
+        public void GainSkillPoints(User user, short amount, bool sendUpdate = true) {
+            if (JobConstants.IsExtendedSpJob(Job)) {
+                throw new InvalidOperationException("not implemented");
+            }
+
+            SP[0] = Math.Max(amount, (short) 0);
+            if (sendUpdate) SendUpdate(user, 0x8000);
+        }
 
         public void SendUpdate(User user, uint dwcharFlags) {
             user.Client.Session.Write(CWvsPackets.GetStatChanged(user, dwcharFlags));
