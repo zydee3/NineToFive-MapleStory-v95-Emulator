@@ -278,7 +278,10 @@ namespace NineToFive.Game.Entity {
     }
 
     public class CharacterStat : IPacketSerializer<User> {
+        private short[] _skillPoints;
+
         public CharacterStat(MySqlDataReader r = null) {
+            _skillPoints = new short[10];
             if (r == null) return;
             Id = r.GetUInt32("character_id");
             Username = r.GetString("username");
@@ -312,20 +315,32 @@ namespace NineToFive.Game.Entity {
         public int MP { get; set; } = 5;
         public int MaxMP { get; set; } = 5;
         public short AP { get; set; }
-        public short[] SP { get; set; } = new short[10];
+
+        public short SP {
+            get {
+                byte index = 0;
+                if (JobConstants.IsExtendedSpJob(Job)) {
+                    index = (byte) (9 - Math.Min(9, 2218 - Job));
+                }
+
+                return _skillPoints[index];
+            }
+            set {
+                byte index = 0;
+                if (JobConstants.IsExtendedSpJob(Job)) {
+                    index = (byte) (9 - Math.Min(9, 2218 - Job));
+                }
+
+                _skillPoints[index] = value;
+            }
+        }
+
+        public short[] SkillPoints => _skillPoints;
+
         public int Exp { get; set; }
         public short Popularity { get; set; }
         public int FieldId { get; set; } = 10000;
         public byte Portal { get; set; }
-
-        public void GainSkillPoints(User user, short amount, bool sendUpdate = true) {
-            if (JobConstants.IsExtendedSpJob(Job)) {
-                throw new InvalidOperationException("not implemented");
-            }
-
-            SP[0] = Math.Max(amount, (short) 0);
-            if (sendUpdate) SendUpdate(user, 0x8000);
-        }
 
         public void SendUpdate(User user, uint dwcharFlags) {
             user.Client.Session.Write(CWvsPackets.GetStatChanged(user, dwcharFlags));
@@ -360,10 +375,10 @@ namespace NineToFive.Game.Entity {
                 p.WriteByte(advancements);
                 for (byte i = 0; i < advancements; i++) {
                     p.WriteByte(i);
-                    p.WriteByte((byte) SP[i]);
+                    p.WriteByte((byte) SkillPoints[i]);
                 }
             } else {
-                p.WriteShort(SP[0]);
+                p.WriteShort(SP);
             }
 
             p.WriteInt(Exp);
@@ -402,10 +417,10 @@ namespace NineToFive.Game.Entity {
                     p.WriteByte(advancements);
                     for (byte i = 0; i < advancements; i++) {
                         p.WriteByte(i);
-                        p.WriteByte((byte) SP[i]);
+                        p.WriteByte((byte) SkillPoints[i]);
                     }
                 } else {
-                    p.WriteShort(SP[0]);
+                    p.WriteShort(SP);
                 }
             }
 

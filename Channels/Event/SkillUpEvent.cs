@@ -12,7 +12,7 @@ namespace NineToFive.Event {
         public override bool OnProcess(Packet p) {
             p.ReadInt(); // get_update_time
             _skillId = p.ReadInt();
-            return Client.User.CharacterStat.SP[0] > 0;
+            return Client.User.CharacterStat.SP > 0;
         }
 
         public override void OnHandle() {
@@ -25,7 +25,7 @@ namespace NineToFive.Event {
                 Client.User.Skills[_skillId] = record;
             } else record.Level += 1;
 
-            user.CharacterStat.SP[0] -= 1;
+            user.CharacterStat.SP -= 1;
 
             Client.Session.Write(GetChangeSkillRecord(record));
             Client.User.CharacterStat.SendUpdate(Client.User, 0x8000);
