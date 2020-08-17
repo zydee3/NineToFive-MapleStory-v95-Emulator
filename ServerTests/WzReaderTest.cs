@@ -60,7 +60,7 @@ namespace ServerTests {
             watch.Reset();
 
             watch.Start();
-            SS = SkillWz.GetSkills(SkillFilter);
+            SS = SkillWz.GetSkills();
             watch.Stop();
             Log.Debug($"Time Elapsed Loading Skills Using Predicate: {watch.Elapsed}");
         }

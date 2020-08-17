@@ -243,6 +243,55 @@ namespace NineToFive.Packets {
     }
 
     public static class CWvsPackets {
+        public static byte[] GetTemporaryStatSet(User user) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnTemporaryStatSet);
+
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt(1 << 4);
+            
+            w.WriteShort(1); // skill level
+            w.WriteInt(9001000); // skill id
+            w.WriteInt(2000); // buff duration
+
+            w.WriteByte(1);
+            w.WriteByte(1);
+
+            w.WriteShort(1);
+            // SecondaryStat::IsMovementAffectingStat
+            w.WriteByte(1);
+            return w.ToArray();
+        }
+
+        public static byte[] GetTemporaryStatReset(User user) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnTemporaryStatSet);
+
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+
+            // SecondaryStat::IsMovementAffectingStat
+            w.WriteByte();
+            return w.ToArray();
+        }
+
+        public static byte[] GetForcedStatSet(User user, int dwcharFlags) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnForcedStatSet);
+            w.WriteInt(dwcharFlags);
+            return w.ToArray();
+        }
+
+        public static byte[] GetForcedStatReset(User user) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnForcedStatReset);
+            return w.ToArray();
+        }
+
         public static byte[] GetChangeSkillRecord(Dictionary<int, SkillRecord> skills) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnChangeSkillRecordResult);
@@ -355,6 +404,22 @@ namespace NineToFive.Packets {
     }
 
     public static class UserPackets {
+        public static byte[] GetKeyMappedInit(Dictionary<int, Tuple<byte, int>> keyMaps = null) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CFuncKeyMappedMan.OnInit);
+            if (w.WriteBool(keyMaps == null)) {
+                return w.ToArray();
+            }
+
+            foreach (var pair in keyMaps!) {
+                var keyMap = pair.Value;
+                w.WriteByte(keyMap.Item1);
+                w.WriteInt(keyMap.Item2);
+            }
+
+            return w.ToArray();
+        }
+
         public static void EncodeUserRemoteInit(User user, Packet w) {
             w.WriteByte();
             w.WriteString();
@@ -504,23 +569,27 @@ namespace NineToFive.Packets {
             }
 
             for (int i = 1; i < 5; i++) {
-                var inventory = user.Inventories[(InventoryType) i];
-                foreach (var item in inventory.Items) {
-                    w.WriteByte((byte) item.BagIndex);
-                    item.Encode(item, w);
-                }
+                int inventoryFlag = 4 << (i - 1);
+                if ((dwCharFlag & inventoryFlag) == inventoryFlag) {
+                    var inventory = user.Inventories[(InventoryType) i];
+                    foreach (var item in inventory.Items) {
+                        w.WriteByte((byte) item.BagIndex);
+                        item.Encode(item, w);
+                    }
 
-                w.WriteByte();
+                    w.WriteByte();
+                }
             }
 
             if ((dwCharFlag & 0x100) == 0x100) {
                 var records = user.Skills.ToArray();
-                for (int i = 0; i < w.WriteShort((short) records.Length); i++) {
+                var count = w.WriteShort((short) records.Length);
+                for (int i = 0; i < count; i++) {
                     var record = records[i].Value;
-                    int jobId = w.WriteInt(record.Id / 10000);
                     w.WriteInt(record.Id);
+                    w.WriteInt(record.Level);
                     w.WriteLong(record.Expiration);
-                    if (SkillConstants.IsSkillNeedMasterLevel(jobId)) {
+                    if (SkillConstants.IsSkillNeedMasterLevel(record.Id)) {
                         w.WriteInt(record.MasterLevel);
                     }
                 }

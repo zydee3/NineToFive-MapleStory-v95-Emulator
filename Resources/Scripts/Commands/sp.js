@@ -13,5 +13,5 @@ async function run() {
 
     user.CharacterStat.SP = ctx.ArgAsInt(0);
     user.CharacterStat.SendUpdate(user, 0x8000)
-    user.SendMessage(`SP is now ${user.CharacterStat.SP[0]}`);
+    user.SendMessage(`SP is now ${user.CharacterStat.SP}`);
 }

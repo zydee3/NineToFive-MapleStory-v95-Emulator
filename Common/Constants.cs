@@ -98,15 +98,13 @@ namespace NineToFive {
             }
 
             if (skillId >= 3220009) return true;
-            if (skillId > 2120009) {
-                if (skillId > 2320010) {
-                    return skillId >= 3120010 && skillId <= 3120011;
-                }
-
-                return skillId == 2320010 || skillId == 2220009;
+            if (skillId <= 2120009) return skillId == 2120009 || skillId == 1120012 || skillId == 1220013 || skillId == 1320011;
+            if (skillId > 2320010) {
+                return skillId >= 3120010 && skillId <= 3120011;
             }
 
-            return skillId == 2120009 || skillId == 1120012 || skillId == 1220013 || skillId == 1320011;
+            return skillId == 2320010 || skillId == 2220009;
+
         }
 
         private static int GetSkillRootFromSkill(int skillId) {
@@ -142,12 +140,18 @@ namespace NineToFive {
         }
 
         public static bool IsSkillNeedMasterLevel(int skillId) {
-            return !IsIgnoreMasterLevelForCommon(skillId)
-                   && (skillId / 1000000 != 92 || (skillId % 10000) != 0)
-                   && !IsCommonSkill(skillId)
-                   && !IsNoviceSkill(skillId)
-                   && !IsFieldAttackObjSkill(skillId)
-                   && JobConstants.GetJobLevel(GetSkillRootFromSkill(skillId)) != 4;
+            if (IsIgnoreMasterLevelForCommon(skillId)) return false;
+            var jobId = skillId / 10000;
+            var jobLevel = JobConstants.GetJobLevel(jobId);
+            if (jobId == 2001) {
+                return jobLevel == 9 || jobLevel == 10 || skillId == 22111001 || skillId == 22141002 || skillId == 22140000;
+            }
+
+            if (jobId / 10 == 43) {
+                return jobLevel == 4;
+            }
+
+            return jobId % 10 == 2;
         }
     }
 

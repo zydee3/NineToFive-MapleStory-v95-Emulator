@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Game.Entity;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
 
 namespace NineToFive.Util {
@@ -49,6 +49,16 @@ namespace NineToFive.Util {
                 "quantity", item.Quantity,
                 "cash_sn", item.CashItemSn,
                 "date_expire", item.DateExpire
+            };
+        }
+
+        public static object[] CreateSkillParameters(User user, KeyValuePair<int, SkillRecord> item) {
+            return new object[] {
+                "character_id", user.CharacterStat.Id,
+                "skill_id", item.Key,
+                "skill_level", item.Value.Level,
+                "date_expire", item.Value.Expiration,
+                "master_level", item.Value.MasterLevel,
             };
         }
     }

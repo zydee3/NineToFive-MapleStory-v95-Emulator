@@ -58,7 +58,8 @@ namespace NineToFive.Event {
             Client.SetChannel(Server.Worlds[World.ActiveWorld].Channels.First(ch => ch.Port == Client.Channel.Port).Id);
             Client.World.Users.AddOrUpdate(user.CharacterStat.Id, id => user, (id, u) => user);
             user.SetField(user.CharacterStat.FieldId);
-            user.Client.Session.Write(CWvsPackets.GetStatChanged(user, 0));
+            Client.Session.Write(UserPackets.GetKeyMappedInit(user.KeyMap));
+            Client.Session.Write(CWvsPackets.GetStatChanged(user, 0));
             ClientAuthRequest.RequestClientUpdate(Client);
         }
     }

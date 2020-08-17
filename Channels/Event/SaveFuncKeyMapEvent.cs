@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using NineToFive.Net;
-using NineToFive.SendOps;
 
 namespace NineToFive.Event {
     public class SaveFuncKeyMapEvent : PacketEvent {
@@ -38,22 +37,6 @@ namespace NineToFive.Event {
                     Client.User.KeyMap = _keyMaps;
                     break;
             }
-        }
-
-        private static byte[] GetKeyMappedInit(Dictionary<int, Tuple<byte, int>> keyMaps = null) {
-            using Packet w = new Packet();
-            w.WriteShort((short) CFuncKeyMappedMan.OnInit);
-            if (w.WriteBool(keyMaps == null)) {
-                return w.ToArray();
-            }
-
-            foreach (var pair in keyMaps!) {
-                var keyMap = pair.Value;
-                w.WriteByte(keyMap.Item1);
-                w.WriteInt(keyMap.Item2);
-            }
-
-            return w.ToArray();
         }
     }
 }

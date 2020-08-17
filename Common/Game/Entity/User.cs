@@ -62,11 +62,18 @@ namespace NineToFive.Game.Entity {
             using (DatabaseQuery q = Database.Table("skill_records")) {
                 using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
                 while (r.Read()) {
-                    var record = new SkillRecord(r.GetInt32("skill_id"), r.GetInt32("level")) {
+                    var record = new SkillRecord(r.GetInt32("skill_id"), r.GetInt32("skill_level")) {
                         Expiration = r.GetInt64("date_expire"),
                         MasterLevel = r.GetInt32("master_level"),
                     };
                     Skills.Add(record.Id, record);
+                }
+            }
+            
+            using (DatabaseQuery q = Database.Table("keymap")) {
+                using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
+                while (r.Read()) {
+                    KeyMap.Add(r.GetInt32("key"), new Tuple<byte, int>(r.GetByte("type"), r.GetInt32("value")));
                 }
             }
         }
@@ -123,8 +130,10 @@ namespace NineToFive.Game.Entity {
                 .ExecuteNonQuery();
             if (count == 0) throw new InvalidOperationException($"Failed to save character({CharacterStat.Username})");
 
+            #region items
+
             using DatabaseQuery deleteItems = Database.Table("items");
-            count = deleteItems.Delete().ExecuteNonQuery();
+            count = deleteItems.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} items");
 
             using DatabaseQuery insertItems = Database.Table("items");
@@ -133,9 +142,40 @@ namespace NineToFive.Game.Entity {
                     insertItems.Insert(Database.CreateItemParameters(this, item));
                 }
             }
-
             count = insertItems.ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Saved {count} items");
+
+            #endregion
+
+            #region skills
+
+            using DatabaseQuery deleteSkills = Database.Table("skill_records");
+            count = deleteSkills.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
+            Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} skill records");
+
+            using DatabaseQuery insertSkills = Database.Table("skill_records");
+            foreach (var pair in Skills) {
+                insertSkills.Insert(Database.CreateSkillParameters(this, pair));
+            }
+            count = insertSkills.ExecuteNonQuery();
+            Log.Info($"[Save] {CharacterStat.Username} : Saved {count} skill records");
+
+            #endregion
+            
+            #region keymap
+
+            using DatabaseQuery deleteKeymap = Database.Table("keymap");
+            count = deleteKeymap.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
+            Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} key mappings");
+
+            using DatabaseQuery insertKeymap = Database.Table("keymap");
+            foreach (var pair in KeyMap) {
+                insertKeymap.Insert("character_id", CharacterStat.Id, "key", pair.Key, "type", pair.Value.Item1, "value", pair.Value.Item2);
+            }
+            count = insertKeymap.ExecuteNonQuery();
+            Log.Info($"[Save] {CharacterStat.Username} : Saved {count} key mappings");
+
+            #endregion
         }
 
         /// <summary>
