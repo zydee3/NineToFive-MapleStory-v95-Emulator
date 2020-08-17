@@ -33,6 +33,7 @@ namespace NineToFive {
                 [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
                 [(short) ReceiveOperations.UserLocal_TryRegisterTeleport] = typeof(RegisterTeleportEvent),
                 [(short) ReceiveOperations.UserLocal_UpdatePassiveSkillData] = typeof(UpdatePassiveSkillDataEvent),
+                [(short) ReceiveOperations.UserLocal_SendSkillUseRequest] = typeof(UserSkillUseEvent),
 
                 [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
