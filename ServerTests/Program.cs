@@ -1,6 +1,5 @@
 ﻿using System;
 using NineToFive;
-using NineToFive.Game.Entity;
 using NineToFive.Wz;
 
 namespace ServerTests {
@@ -8,7 +7,11 @@ namespace ServerTests {
         static void Main(string[] args) {
             short gver = ServerConstants.GameVersion; // proc static constructor
 
-            SkillWz.GetSkills();
+            var skills = SkillWz.GetSkills();
+            Console.WriteLine($"Loaded {skills.Count} skills");
+
+            var skill = skills[13100004];
+            Console.WriteLine(skill);
 
             // WzReaderTest.TestMob();
             // WzReaderTest.TestSkill();

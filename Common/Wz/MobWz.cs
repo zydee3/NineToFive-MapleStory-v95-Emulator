@@ -110,7 +110,7 @@ namespace NineToFive.Wz {
             mob.SelfDestruction = t.SelfDestruction;
 
             mob.Revives = t.Revives == null ? new int[0] : t.Revives.ToArray();
-            mob.Skills = t.Skills == null ? new TemplateMob.Skill[0] : t.Skills.ToArray();
+            mob.Skills = t.Skills == null ? new TemplateMob.MobSkill[0] : t.Skills.ToArray();
             mob.LoseItems = t.LoseItems == null ? new TemplateMob.LoseItem[0] : t.LoseItems.ToArray();
             mob.DamagedBySelectedMob = t.DamagedBySelectedMob == null ? new int[0] : t.DamagedBySelectedMob.ToArray();
             mob.DamagedBySelectedSkill = t.DamagedBySelectedSkill == null ? new int[0] : t.DamagedBySelectedSkill.ToArray();
@@ -470,25 +470,25 @@ namespace NineToFive.Wz {
 
                             break;
                         case "skill":
-                            template.Skills = new List<TemplateMob.Skill>();
+                            template.Skills = new List<TemplateMob.MobSkill>();
                             foreach (WzImageProperty monsterSkillLevel in property.WzProperties) {
-                                TemplateMob.Skill skill = new TemplateMob.Skill();
+                                TemplateMob.MobSkill mobSkill = new TemplateMob.MobSkill();
                                 foreach (WzImageProperty monsterSkill in monsterSkillLevel.WzProperties) {
                                     switch (monsterSkill.Name) {
                                         case "action":
-                                            skill.Action = ((WzIntProperty) monsterSkill).Value;
+                                            mobSkill.Action = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "effectAfter":
-                                            skill.EffectAfter = ((WzIntProperty) monsterSkill).Value;
+                                            mobSkill.EffectAfter = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "level":
-                                            skill.Level = ((WzIntProperty) monsterSkill).Value;
+                                            mobSkill.Level = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "skill":
-                                            skill.Id = ((WzIntProperty) monsterSkill).Value;
+                                            mobSkill.Id = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         case "skillAfter":
-                                            skill.NextId = ((WzIntProperty) monsterSkill).Value;
+                                            mobSkill.NextId = ((WzIntProperty) monsterSkill).Value;
                                             break;
                                         default:
                                             Log.Info($"Unhandled MonsterSkill Property: {monsterSkill.Name} ({monsterSkill.GetType()})");
@@ -496,7 +496,7 @@ namespace NineToFive.Wz {
                                     }
                                 }
 
-                                template.Skills.Add(skill);
+                                template.Skills.Add(mobSkill);
                             }
 
                             break;

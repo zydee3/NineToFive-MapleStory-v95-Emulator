@@ -50,7 +50,7 @@ namespace NineToFive.Game.Entity {
         public int[] DamagedBySelectedSkill { get; set; }
         public int[] DamagedBySelectedMob { get; set; }
         public int[] Revives { get; set; }
-        public TemplateMob.Skill[] Skills { get; set; }
+        public TemplateMob.MobSkill[] Skills { get; set; }
 
         public int BodyAttack { get; set; }
         public int Pushed { get; set; }

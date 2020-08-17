@@ -8,7 +8,7 @@ namespace NineToFive.Game.Entity.Meta {
         public List<int> DamagedBySelectedSkill { get; set; }
         public List<int> DamagedBySelectedMob { get; set; }
         public List<int> Revives { get; set; }
-        public List<Skill> Skills { get; set; }
+        public List<MobSkill> Skills { get; set; }
         public Tuple<int, int> HealOnDestroy { get; set; }
         public int SelfDestruction { get; set; }
 
@@ -106,7 +106,7 @@ namespace NineToFive.Game.Entity.Meta {
             public int X { get; set; }
         }
 
-        public class Skill {
+        public class MobSkill {
             public int Id { get; set; }
             public int NextId { get; set; }
             public int Action { get; set; }
