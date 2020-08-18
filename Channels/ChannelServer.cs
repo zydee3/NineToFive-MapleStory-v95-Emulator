@@ -8,6 +8,7 @@ using NineToFive.Event.Data;
 using NineToFive.Game;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
+using NineToFive.Wz;
 
 [assembly: XmlConfigurator(ConfigFile = "logger-config.xml")]
 
@@ -96,6 +97,9 @@ namespace NineToFive {
                 Log.Warn("Invalid usage. Please specify a --channels and --world cmd-line argument");
                 Environment.Exit(0);
             }
+            
+            var skills = SkillWz.LoadSkills();
+            Console.WriteLine($"Loaded {skills.Count} skills");
         }
 
         private static void InitializeChannels(ref string[] args) {

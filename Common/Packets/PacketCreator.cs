@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NineToFive.Constants;
+using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
@@ -243,21 +244,24 @@ namespace NineToFive.Packets {
     }
 
     public static class CWvsPackets {
-        public static byte[] GetTemporaryStatSet(User user) {
+        public static byte[] GetTemporaryStatSet(Skill skill, SkillRecord record) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnTemporaryStatSet);
 
             w.WriteInt();
             w.WriteInt();
             w.WriteInt();
-            w.WriteInt(1 << 4);
-            
-            w.WriteShort(1); // skill level
-            w.WriteInt(9001000); // skill id
-            w.WriteInt(2000); // buff duration
+            w.WriteInt((int) skill.BitMask);
 
-            w.WriteByte(1);
-            w.WriteByte(1);
+            foreach (var ts in Enum.GetValues(typeof(TemporaryStat)).Cast<TemporaryStat>()) {
+                if ((skill.BitMask & ts) != ts || ts == TemporaryStat.None) continue;
+                w.WriteShort((short) ts.GetFromSkill(skill, record));
+                w.WriteInt(skill.Id);
+                w.WriteInt(skill.Time[record.Level - 1] * 1000);
+            }
+
+            w.WriteByte();
+            w.WriteByte();
 
             w.WriteShort(1);
             // SecondaryStat::IsMovementAffectingStat

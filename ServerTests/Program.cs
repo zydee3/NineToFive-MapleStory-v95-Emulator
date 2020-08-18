@@ -7,10 +7,11 @@ namespace ServerTests {
         static void Main(string[] args) {
             short gver = ServerConstants.GameVersion; // proc static constructor
 
-            var skills = SkillWz.GetSkills();
+            var skills = SkillWz.LoadSkills();
             Console.WriteLine($"Loaded {skills.Count} skills");
+            Console.WriteLine("=============================");
 
-            var skill = skills[13100004];
+            var skill = skills[9101003];
             Console.WriteLine(skill);
 
             // WzReaderTest.TestMob();

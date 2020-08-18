@@ -1,34 +1,6 @@
-﻿using System.ComponentModel;
-using NineToFive.Net;
+﻿using NineToFive.Net;
 
 namespace NineToFive.Game.Entity.Meta {
-    public static class Extensions {
-        public static int GetFromUser(this UserAbility ability, User user) {
-            switch (ability) {
-                case UserAbility.Skin:       return user.AvatarLook.Skin;
-                case UserAbility.Face:       return user.AvatarLook.Face;
-                case UserAbility.Hair:       return user.AvatarLook.Hair;
-                case UserAbility.Level:      return user.CharacterStat.Level;
-                case UserAbility.Job:        return user.CharacterStat.Job;
-                case UserAbility.Str:        return user.CharacterStat.Str;
-                case UserAbility.Dex:        return user.CharacterStat.Dex;
-                case UserAbility.Int:        return user.CharacterStat.Int;
-                case UserAbility.Luk:        return user.CharacterStat.Luk;
-                case UserAbility.HP:         return user.CharacterStat.HP;
-                case UserAbility.MaxHP:      return user.CharacterStat.MaxHP;
-                case UserAbility.MP:         return user.CharacterStat.MP;
-                case UserAbility.MaxMP:      return user.CharacterStat.MaxMP;
-                case UserAbility.AP:         return user.CharacterStat.AP;
-                case UserAbility.Exp:        return user.CharacterStat.Exp;
-                case UserAbility.Popularity: return user.CharacterStat.Popularity;
-                case UserAbility.FieldId:    return user.CharacterStat.FieldId;
-                case UserAbility.Money:      return (int) user.Money;
-            }
-
-            throw new InvalidEnumArgumentException("unknown ability: " + ability);
-        }
-    }
-
     public enum UserAbility {
         Skin = 1,
         Hair = 2,

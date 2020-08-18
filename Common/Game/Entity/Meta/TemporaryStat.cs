@@ -1,14 +1,18 @@
-﻿namespace NineToFive.Game.Entity.Meta {
+﻿using System;
+
+namespace NineToFive.Game.Entity.Meta {
+    [Flags]
     public enum TemporaryStat {
-        PAD = 0,
-        PDD = 1,
-        MAD = 2,
-        MDD = 3,
-        PMAcc = 4,
-        PMEva = 5,
-        Hands = 6,
-        Speed = 7,
-        Jump = 8,
-        Ghost = 10,
+        None = 0,
+        PAD = 1,  // PhysicalDamage
+        PDD = 2,  // PhysicalDefense
+        MAD = 4,  // MagicDamage
+        MDD = 8,  // MagicDefense
+        Acc = 16, // Accuracy
+        Eva = 32, // Evasion
+        Hands = 64,
+        Speed = 128,
+        Jump = 256,
+        Ghost = 512,
     }
 }

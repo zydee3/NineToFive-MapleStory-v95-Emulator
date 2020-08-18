@@ -13,7 +13,7 @@ namespace NineToFive.Wz {
     public static class SkillWz {
         private const string WzName = "Skill";
         private static readonly ILog Log = LogManager.GetLogger(typeof(SkillWz));
-        private static readonly Dictionary<int, Skill> Skills = new Dictionary<int, Skill>();
+        public static readonly Dictionary<int, Skill> Skills = new Dictionary<int, Skill>();
 
         public static void SetSkill(Skill skill, ref List<WzImageProperty> skillProperties) {
             if (skill == null || skillProperties == null || skillProperties.Count == 0) return;
@@ -280,72 +280,141 @@ namespace NineToFive.Wz {
             return skillsRetrieved;
         }
 
-        /// <summary>
-        /// Retrieves all skill ids where the predicate is evaluated as true.
-        /// </summary>
-        /// <param name="predicate">Condition to add to returned dictionary.</param>
-        /// <returns>Dictionary of all skills that match the predicate.</returns>
-        /// <note>
-        ///     The downside to this function is it iterates through the whole skill wz;
-        ///     the operation is still very fast. If you just need skills from one job,
-        ///     you should use SkillWz.GetFromJob(int JobID). Honestly, I probably
-        ///     wouldn't even use it, but it's here if needed.
-        /// </note>
-        /// <note>
-        ///    Average benchmark time: 00:00:01.3542697
-        /// </note>
-        public static Dictionary<int, Skill> GetSkills() {
+        public static Dictionary<int, Skill> LoadSkills() {
             WzFile wz = WzProvider.Load(WzName);
 
             foreach (WzImage job in wz.WzDirectory.WzImages) {
                 var name = job.Name.Substring(0, job.Name.LastIndexOf(".", StringComparison.Ordinal));
                 if (!int.TryParse(name, out var jobId)) continue;
-                Console.WriteLine($"========== {jobId} ==========");
                 foreach (var skill in job.GetFromPath("skill").WzProperties) {
+                    var s = new Skill(int.Parse(skill.Name)) {
+                        MasterLevel = ((WzIntProperty) skill["masterLevel"])?.Value ?? 0,
+                        Weapon = skill["weapon"]?.GetInt() ?? 0,
+                    };
+                    
                     var common = skill.GetFromPath("common");
-                    var s = new Skill(int.Parse(skill.Name));
-                    Console.Write($"Parsing {s.Id}...\t");
                     if (common != null) {
-                        s.Common = new Dictionary<string, string>(common.WzProperties.Count);
+                        // (e.g. 13100004) uses WzStringProperty for some reason...
+                        s.MaxLevel = common["maxLevel"].GetInt();
                         foreach (var c in common.WzProperties) {
-                            switch (c.Name) {
-                                case "maxLevel":
-                                    // (e.g. 13100004) uses WzStringProperty for some reason...
-                                    s.MaxLevel = (common["maxLevel"] as WzIntProperty)?.Value ?? int.Parse((common["maxLevel"] as WzStringProperty)!.Value);
-                                    break;
-                                default:
-                                    s.Common.Add(c.Name, c.WzValue.ToString());
-                                    break;
+                            SetSkillValue(c, s, c.WzValue.ToString());
+                        }
+                    } else {
+                        var levels = skill.GetFromPath("level");
+                        s.MaxLevel = levels.WzProperties.Count;
+                        foreach (var level in levels.WzProperties) {
+                            foreach (var p in level.WzProperties) {
+                                if (p is WzStringProperty || p is WzSubProperty) {
+                                    // Console.WriteLine($"Job: {jobId}, Skill {s.Id}, Property: {p.Name} : Can't parse; skipping...");
+                                    continue;
+                                }
+
+                                int nLevel = int.Parse(level.Name) - 1; // index starts at 0 :coolcat:
+                                SetSkillValue(p, s, null, nLevel);
                             }
                         }
                     }
 
-                    s.MasterLevel = ((WzIntProperty) skill["masterLevel"])?.Value ?? 0;
-
                     Skills.Add(s.Id, s);
-                    Console.WriteLine(s);
                 }
-
-                // Current Path: Skill.wz/{JobID}.img/skill
-                // WzImageProperty skills = job.GetFromPath("skill");
-                // if (skills == null) continue;
-                //
-                // // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}
-                // foreach (WzImageProperty skill in skills.WzProperties) {
-                //     if (!int.TryParse(skill.Name, out int skillId)) continue;
-                //
-                //     // Current Path: Skill.wz/{JobID}.img/skill/{SkillID}/common
-                //     WzImageProperty image = skill.GetFromPath("common");
-                //     if (image == null || image.WzProperties.Count == 0) continue;
-                //     List<WzImageProperty> SkillProperties = skill.GetFromPath("common").WzProperties;
-                //
-                //     Skill s = new Skill();
-                //     SetSkill(s, ref SkillProperties);
-                //     Skills.Add(skillId, s);
-                // }
             }
 
             return Skills;
+        }
+
+        /// <summary>
+        /// <para>
+        /// If <paramref name="expression"/> is null then <paramref name="skl"/> and <paramref name="value"/> is used
+        /// to assign the value of a skill property. Otherwise the expression is evaluated and applied to all available
+        /// levels for the specified skill.
+        /// </para>
+        /// </summary>
+        /// <param name="property">wz property retrieved from the wz file</param>
+        /// <param name="s">the skill object the property originates from</param>
+        /// <param name="expression">math expression if the value can be scaled with the skill level</param>
+        /// <param name="skl">skill level that is being parsed</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
+        private static void SetSkillValue(WzImageProperty property, Skill s, string expression, int skl = 0) {
+            if (!Enum.TryParse(typeof(TemporaryStat), property.Name, true, out var stat) || stat == null) {
+                switch (property.Name) {
+                    case "damage":
+                        if (expression != null) s.Damage.Eval(s, property.WzValue.ToString());
+                        else s.Damage[skl] = ((WzIntProperty) property).Value;
+
+                        break;
+                    case "time":
+                        if (expression != null) s.Time.Eval(s, property.WzValue.ToString());
+                        else s.Time[skl] = ((WzIntProperty) property).Value;
+
+                        break;
+                    case "cooltime":
+                        if (expression != null) s.CoolTime.Eval(s, property.WzValue.ToString());
+                        else s.CoolTime[skl] = ((WzIntProperty) property).Value;
+
+                        break;
+                    case "mpCon":
+                        if (expression != null) s.MpCon.Eval(s, property.WzValue.ToString());
+                        else s.MpCon[skl] = ((WzIntProperty) property).Value;
+                        break;
+                    case "lt": {
+                        var v = ((WzVectorProperty) property);
+                        s.Lt[skl] = new Vector2(v.X.Value, v.Y.Value);
+                        break;
+                    }
+                    case "rb": {
+                        var v = ((WzVectorProperty) property);
+                        s.Rb[skl] = new Vector2(v.X.Value, v.Y.Value);
+                        break;
+                    }
+                }
+
+                return;
+            }
+
+            s.BitMask |= (TemporaryStat) stat;
+            switch (stat) {
+                case TemporaryStat.PAD:
+                    if (expression == null) s.PAD[skl] = ((WzIntProperty) property).Value;
+                    else s.PAD.Eval(s, expression);
+                    break;
+                case TemporaryStat.PDD:
+                    if (expression == null) s.PDD[skl] = ((WzIntProperty) property).Value;
+                    else s.PDD.Eval(s, expression);
+                    break;
+                case TemporaryStat.MAD:
+                    if (expression == null) s.MAD[skl] = ((WzIntProperty) property).Value;
+                    else s.MAD.Eval(s, expression);
+                    break;
+                case TemporaryStat.MDD:
+                    if (expression == null) s.MDD[skl] = ((WzIntProperty) property).Value;
+                    else s.MDD.Eval(s, expression);
+                    break;
+                case TemporaryStat.Acc:
+                    if (expression == null) s.Acc[skl] = ((WzIntProperty) property).Value;
+                    else s.Acc.Eval(s, expression);
+                    break;
+                case TemporaryStat.Eva:
+                    if (expression == null) s.Eva[skl] = ((WzIntProperty) property).Value;
+                    else s.Eva.Eval(s, expression);
+
+                    break;
+                case TemporaryStat.Hands:
+                    break;
+                case TemporaryStat.Speed:
+                    if (expression == null) s.Speed[skl] = ((WzIntProperty) property).Value;
+                    else s.Speed.Eval(s, expression);
+
+                    break;
+                case TemporaryStat.Jump:
+                    if (expression == null) s.Jump[skl] = ((WzIntProperty) property).Value;
+                    else s.Jump.Eval(s, expression);
+
+                    break;
+                case TemporaryStat.Ghost:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stat), stat, null);
+            }
         }
     }
 }
