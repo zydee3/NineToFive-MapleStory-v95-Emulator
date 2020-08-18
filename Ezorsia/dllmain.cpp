@@ -38,6 +38,10 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		Memory::WriteByte(0x0092A2C3, 0xEB);
 		// CUserLocal__TryDoingBodyAttack CWvsContext__IsUserGM
 		Memory::WriteByte(0x0093075F, 0xEB);
+		
+		// CUISkill::OnSkillLevelUpButton
+		Memory::WriteByte(0x0084D817, 90);
+		Memory::WriteByte(0x0084D817 + 1, 0xEB);
 		break;
 	}
 	default: break;
