@@ -59,6 +59,7 @@ namespace NineToFive.Net {
         UserLocal_TalkToNpc = 63,
         UserLocal_ContinueTalkToNpc = 65,
         UserLocal_SendSkillUseRequest = 103,
+        UserLocal_SendSkillCancelRequest = 104,
         UserLocal_OnPortalCollision = 112,
         UserLocal_TryRegisterTeleport = 113,
         UserLocal_UpdatePassiveSkillData = 217, 

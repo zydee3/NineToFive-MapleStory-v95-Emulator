@@ -1,11 +1,13 @@
 ﻿using System.Numerics;
 using NineToFive.Game.Entity;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
 using NineToFive.Packets;
 using NineToFive.Wz;
 
 namespace NineToFive.Event {
     public class UserSkillUseEvent : PacketEvent {
+        private SkillRecord _playerskill;
         private int _skillId;
         private byte _skillLevel;
         private Vector2 _origin;
@@ -23,18 +25,25 @@ namespace NineToFive.Event {
                 p.ReadInt();
             }
 
-            Client.User.Skills.TryGetValue(_skillId, out var skillRecord);
-            return skillRecord?.Level == _skillLevel;
+            Client.User.Skills.TryGetValue(_skillId, out _playerskill);
+            return _playerskill?.Level == _skillLevel;
         }
 
         public override void OnHandle() {
             User user = Client.User;
-            var skillRecord = user.Skills[_skillId];
-            user.SendMessage($"Skill: {_skillId}, Level: {skillRecord.Level}, Received: {_skillLevel}");
+            if (user.IsDebugging) user.SendMessage($"Skill: {_skillId}, Level: {_playerskill.Level}, Received: {_skillLevel}");
 
-            SkillWz.Skills.TryGetValue(skillRecord.Id, out var skill);
-            if (skill != null) {
-                Client.Session.Write(CWvsPackets.GetTemporaryStatSet(skill, skillRecord));
+            if (SkillWz.Skills.TryGetValue(_playerskill.Id, out var skill)) {
+                _playerskill.Proc = true;
+                if (skill.Id == 9101004) {
+                    if (user.IsHidden = !user.IsHidden) {
+                        user.SendMessage("Now you don't.");
+                    } else {
+                        user.SendMessage("Now you see me.");
+                    }
+                } else {
+                    Client.Session.Write(CWvsPackets.GetTemporaryStatSet(skill, _playerskill));
+                }
             }
 
             user.CharacterStat.SendUpdate(user, 0);

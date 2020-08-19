@@ -269,14 +269,14 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetTemporaryStatReset(User user) {
+        public static byte[] GetTemporaryStatReset(Skill skill) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnTemporaryStatSet);
 
             w.WriteInt();
             w.WriteInt();
             w.WriteInt();
-            w.WriteInt();
+            w.WriteInt((int) skill.BitMask);
 
             // SecondaryStat::IsMovementAffectingStat
             w.WriteByte();
