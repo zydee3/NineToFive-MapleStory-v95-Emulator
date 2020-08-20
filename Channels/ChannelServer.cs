@@ -31,6 +31,7 @@ namespace NineToFive {
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
                 [(short) ReceiveOperations.User_OnEmotion] = typeof(EmotionChangeEvent),
 
+                [(short) ReceiveOperations.UserLocal_SetDamaged] = typeof(SetDamagedEvent),
                 [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
                 [(short) ReceiveOperations.UserLocal_TryRegisterTeleport] = typeof(RegisterTeleportEvent),
                 [(short) ReceiveOperations.UserLocal_UpdatePassiveSkillData] = typeof(UpdatePassiveSkillDataEvent),

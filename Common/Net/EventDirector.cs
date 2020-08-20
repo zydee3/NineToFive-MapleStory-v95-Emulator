@@ -56,6 +56,7 @@ namespace NineToFive.Net {
         User_OnChatMsg = 54,
         User_OnEmotion = 56,
 
+        UserLocal_SetDamaged = 52,
         UserLocal_TalkToNpc = 63,
         UserLocal_ContinueTalkToNpc = 65,
         UserLocal_SendSkillUseRequest = 103,

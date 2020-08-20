@@ -235,6 +235,16 @@ namespace NineToFive.Net {
             return new string(result);
         }
 
+        public string ReadRemaining() {
+            string result = "";
+            string[] bytes = BitConverter.ToString(Stream.ToArray()).Split("-");
+            for (int i = Position; i < Capacity; i++) {
+                result = $"{result} {bytes[i]}";
+            }
+
+            return result;
+        }
+
         #endregion
     }
 }

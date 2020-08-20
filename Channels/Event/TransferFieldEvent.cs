@@ -1,7 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using log4net;
+using NineToFive.Constants;
+using NineToFive.Game;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
+using NineToFive.Wz;
 
 namespace NineToFive.Event {
     public class TransferFieldEvent : PacketEvent {
@@ -21,6 +26,11 @@ namespace NineToFive.Event {
             _targetField = p.ReadInt();
             _portal = p.ReadString();
             if (_portal.Length == 0) {
+                if (_targetField == 0) {
+                    _targetField = Client.User.Field.ReturnMap;
+                    return true;
+                }
+                
                 _location = new Vector2(p.ReadShort(), p.ReadShort());
             }
 
@@ -34,16 +44,37 @@ namespace NineToFive.Event {
 
         public override void OnHandle() {
             var user = Client.User;
-            var portal = user.Field.Portals.First(p => p.Name.Equals(_portal));
-            if (portal == null) {
-                Log.Warn($"Failed to find portal '{_portal}' in field {user.Field.Id}");
-                return;
+            
+            Portal portal = null;
+            try {
+                portal = user.Field.Portals.First(p => p.Name.Equals(_portal));
+            } catch (Exception exception) {
+                if (!_portal.Equals("")) {
+                    Log.Warn($"Failed to find portal '{_portal}' in field {user.Field.Id}");
+                    return;
+                }
             }
 
             if (_location != Vector2.Zero) user.Location = _location;
-            var field = Client.Channel.GetField(portal.TargetMap);
-            portal = field.Portals.FirstOrDefault(p => p.Name.Equals(portal.Name));
+            if (_targetField == 999999999 || _targetField == -1) _targetField = portal.TargetMap;
+            
+            Field field;
+            try {
+                field = Client.Channel.GetField(_targetField); // throws map not found and cancels the whole event
+            } catch (Exception ignore) {
+                field = Client.Channel.GetField((user.Field.Id/1000000)*1000000); // 103000100 -> 103000000 or 100000100 -> 100000000 nearest town
+            }
+            
+            portal = (portal == null ? 
+                field.Portals[0] : 
+                field.Portals.FirstOrDefault(p => p.TargetPortalName.Equals(portal.Name)));
+
             user.SetField(field.Id, portal);
+
+            if (_portal.Equals("") && user.CharacterStat.HP == 0 && GameConstants.FieldConstants.IsTown(_targetField)) {
+                user.CharacterStat.HP = 50;
+                user.CharacterStat.SendUpdate(user, (uint)UserAbility.HP);
+            }
         }
     }
 }

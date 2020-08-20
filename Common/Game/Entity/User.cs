@@ -188,9 +188,12 @@ namespace NineToFive.Game.Entity {
         public void SetField(int fieldId, Portal portal = null, bool characterData = true) {
             Field?.RemoveLife(this);
             Field = Client.Channel.GetField(fieldId);
+            portal ??= Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"));
+            /*
             portal = portal == null
                 ? Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"))
                 : Field.Portals.First(p => p.Name.Equals(portal.TargetPortalName));
+                */
             if (portal != null) {
                 Location = portal.Location;
                 CharacterStat.Portal = portal.Id;
@@ -350,11 +353,20 @@ namespace NineToFive.Game.Entity {
         public short Dex { get; set; } = 4;
         public short Int { get; set; } = 4;
         public short Luk { get; set; } = 4;
-        public int HP { get; set; } = 50;
+        
         public int MaxHP { get; set; } = 50;
         public int MP { get; set; } = 5;
         public int MaxMP { get; set; } = 5;
         public short AP { get; set; }
+
+        private int _hp;
+        public int HP {
+            get => _hp;
+            set {
+                _hp = Math.Min(Math.Max(value, 0), 30000);
+                //todo remove skills / buffs, lose exp and other dying stuff
+            }
+        } 
 
         public short SP {
             get {
