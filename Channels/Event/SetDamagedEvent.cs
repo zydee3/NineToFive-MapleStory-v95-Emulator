@@ -6,12 +6,14 @@ using NineToFive.Net;
 
 namespace NineToFive.Event {
     public class SetDamagedEvent : PacketEvent {
-        public SetDamagedEvent(Client client) : base(client) { }
-
+        
         private int _time;
         private int _damage;
         private int _mobTemplateId;
         private uint _mobId;
+        
+        public SetDamagedEvent(Client client) : base(client) { }
+        
         public override bool OnProcess(Packet p) {
             _time = p.ReadInt();
             
