@@ -8,19 +8,18 @@ namespace NineToFive.Event {
     public class SetDamagedEvent : PacketEvent {
         public SetDamagedEvent(Client client) : base(client) { }
 
-        private int time;
-        private int damage;
-        private int mobTemplateId;
-        private uint mobId;
+        private int _time;
+        private int _damage;
+        private int _mobTemplateId;
+        private uint _mobId;
         public override bool OnProcess(Packet p) {
-            time = p.ReadInt();
-            byte a2 = p.ReadByte();
+            _time = p.ReadInt();
             
-            if (a2 == 255) { // COutPacket::Encode1(&v243, (a10 == dwObstacleData) - 3); // -3 will always be < 0
+            if (p.ReadByte() == 255) { // COutPacket::Encode1(&v243, (a10 == dwObstacleData) - 3); // -3 will always be < 0
                 p.ReadByte(); // ?
-                damage = p.ReadInt();
-                mobTemplateId = p.ReadInt();
-                mobId = p.ReadByte();
+                _damage = p.ReadInt();
+                _mobTemplateId = p.ReadInt();
+                _mobId = p.ReadByte();
                 //p.ReadInt(); // ?
                 //p.ReadInt()  // ?0
             }
@@ -29,17 +28,17 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            if (time <= 0 || damage <= 0 || mobTemplateId < 0 || mobId <= 0) {
+            if (_time <= 0 || _damage <= 0 || _mobTemplateId <= 0 || _mobId < 0) {
                 return;
             }
 
             User user = Client.User;
-            Mob mob = user.Field.LifePools[EntityType.Mob][mobId] as Mob;
+            Mob mob = user.Field.LifePools[EntityType.Mob][_mobId] as Mob;
             if (mob == null) {
                 return;
             }
 
-            user.CharacterStat.HP -= damage;
+            user.CharacterStat.HP -= _damage;
             user.CharacterStat.SendUpdate(user, (uint)UserAbility.HP);
         }
     }

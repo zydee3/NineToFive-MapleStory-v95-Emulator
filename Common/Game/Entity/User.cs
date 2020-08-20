@@ -364,7 +364,9 @@ namespace NineToFive.Game.Entity {
             get => _hp;
             set {
                 _hp = Math.Min(Math.Max(value, 0), 30000);
-                //todo remove skills / buffs, lose exp and other dying stuff
+                if (_hp == 0) {
+                    //todo remove skills / buffs, lose exp and other dying stuff   
+                }
             }
         } 
 

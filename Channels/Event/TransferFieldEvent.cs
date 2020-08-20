@@ -45,11 +45,13 @@ namespace NineToFive.Event {
         public override void OnHandle() {
             var user = Client.User;
             
+            bool targetPortalExists = _portal.Equals("");
             Portal portal = null;
-            try {
-                portal = user.Field.Portals.First(p => p.Name.Equals(_portal));
-            } catch (Exception exception) {
-                if (!_portal.Equals("")) {
+
+            if(targetPortalExists){
+                try {
+                    portal = user.Field.Portals.First(p => p.Name.Equals(_portal));
+                } catch (Exception exception) {
                     Log.Warn($"Failed to find portal '{_portal}' in field {user.Field.Id}");
                     return;
                 }
@@ -71,7 +73,7 @@ namespace NineToFive.Event {
 
             user.SetField(field.Id, portal);
 
-            if (_portal.Equals("") && user.CharacterStat.HP == 0 && GameConstants.FieldConstants.IsTown(_targetField)) {
+            if (!targetPortalExists && user.CharacterStat.HP == 0 && field.Town) {
                 user.CharacterStat.HP = 50;
                 user.CharacterStat.SendUpdate(user, (uint)UserAbility.HP);
             }
