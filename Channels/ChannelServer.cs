@@ -37,6 +37,8 @@ namespace NineToFive {
                 [(short) ReceiveOperations.UserLocal_UpdatePassiveSkillData] = typeof(UpdatePassiveSkillDataEvent),
                 [(short) ReceiveOperations.UserLocal_SendSkillUseRequest] = typeof(UserSkillUseEvent),
                 [(short) ReceiveOperations.UserLocal_SendSkillCancelRequest] = typeof(UserSkillCancelEvent),
+                
+                [(short) ReceiveOperations.UserRemote_OnMeleeAttack] = typeof(MeleeAttackEvent),
 
                 [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),

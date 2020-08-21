@@ -45,7 +45,7 @@ namespace NineToFive.Event {
         public override void OnHandle() {
             var user = Client.User;
             
-            bool targetPortalExists = _portal.Equals("");
+            bool targetPortalExists = !_portal.Equals("");
             Portal portal = null;
 
             if(targetPortalExists){

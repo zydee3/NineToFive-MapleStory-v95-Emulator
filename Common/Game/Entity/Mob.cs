@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Packets;
@@ -32,8 +33,22 @@ namespace NineToFive.Game.Entity {
             user?.Client.Session.Write(MobPool.GetMobChangeController(this));
         }
 
+        public async Task Damage(User attacker, int damage) {
+            HP -= damage;
+        }
+
+        private int _hp;
+        public int HP {
+            get => _hp;
+            set {
+                _hp = Math.Max(_hp - value, 0);
+                if (_hp == 0) {
+                    // monster dead
+                }
+            }
+        }
+
         public int Level { get; set; }
-        public int HP { get; set; }
         public int MaxHP { get; set; }
         public int MaxMP { get; set; }
         public int Speed { get; set; }
