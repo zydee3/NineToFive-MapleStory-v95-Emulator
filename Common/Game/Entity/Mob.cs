@@ -38,7 +38,6 @@ namespace NineToFive.Game.Entity {
                 HP -= damage;
                 byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP); 
                 attacker.Field.BroadcastPacket(MobPool.GetShowHpIndicator((int) Id, indicator));
-                Console.WriteLine($"Damage: {damage}, Hp: {HP}, Guage: {indicator}%");
             }
         }
 
@@ -46,8 +45,7 @@ namespace NineToFive.Game.Entity {
         public int HP {
             get => _hp;
             set {
-                Console.WriteLine($"HP: {_hp}, New HP: {Math.Max(_hp - value, 0)}");
-                _hp = Math.Max(_hp - value, 0);
+                _hp = Math.Max(value, 0);
                 if (_hp == 0) {
                     // monster dead
                 }
