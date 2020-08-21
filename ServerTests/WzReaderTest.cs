@@ -40,31 +40,12 @@ namespace ServerTests {
         }
 
         public static void TestSkill() {
-            const int skillId = 2211006;
-            const int jobId = 512;
-            Stopwatch watch = new Stopwatch();
-            var skill = new Skill(skillId);
+            var skills = SkillWz.LoadSkills();
+            Console.WriteLine($"Loaded {skills.Count} skills");
+            Console.WriteLine("=============================");
 
-            watch.Start();
-            skill = new Skill(skillId);
-            watch.Stop();
-            Log.Debug($"Time Elapsed Loading Skill({skillId}): {watch.Elapsed}s");
-
-            watch.Reset();
-
-            watch.Start();
-            var SS = SkillWz.GetFromJob(jobId);
-            watch.Stop();
-            Log.Debug($"Time Elapsed Loading Skills From Job({jobId}): {watch.Elapsed}s");
-
-            watch.Reset();
-
-            watch.Start();
-            SS = SkillWz.LoadSkills();
-            watch.Stop();
-            Log.Debug($"Time Elapsed Loading Skills Using Predicate: {watch.Elapsed}");
+            var skill = skills[9101003];
+            Console.WriteLine(skill);
         }
-
-        private static readonly Func<int, bool> SkillFilter = id => id > 0;
     }
 }

@@ -55,9 +55,19 @@ CREATE TABLE `items` (
   PRIMARY KEY (`generated_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=ascii COLLATE=ascii_bin;
 
+CREATE TABLE  `keymap` (
+  `character_id` int(10) unsigned NOT NULL,
+  `key` int(10) unsigned NOT NULL,
+  `type` tinyint(3) unsigned NOT NULL,
+  `value` int(11) NOT NULL,
+  KEY `keymap_character_id_idx` (`character_id`),
+  CONSTRAINT `FK_keymap_character_id` FOREIGN KEY (`character_id`) REFERENCES `characters` (`character_id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=ascii COLLATE=ascii_bin;
+
 CREATE TABLE  `skill_records` (
   `character_id` int(10) unsigned NOT NULL,
   `skill_id` int(10) unsigned NOT NULL,
+  `skill_level` int(10) unsigned NOT NULL,
   `date_expire` bigint(20) unsigned NOT NULL,
   `master_level` int(10) unsigned NOT NULL,
   KEY `skill_records_user_id_idx` (`character_id`) USING BTREE,
