@@ -57,6 +57,7 @@ namespace NineToFive.Game.Entity {
         public int Level { get; set; }
         public int MaxHP { get; set; }
         public int MaxMP { get; set; }
+        public int MP { get; set; }
         public int Speed { get; set; }
         public int PADamage { get; set; }
         public int PDDamage { get; set; }

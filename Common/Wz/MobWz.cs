@@ -35,6 +35,10 @@ namespace NineToFive.Wz {
             mob.Level = t.Level;
             mob.MaxHP = t.MaxHp;
             mob.MaxMP = t.MaxMp;
+
+            mob.HP = t.MaxHp;
+            mob.MP = t.MaxMp;
+            
             mob.Speed = t.Speed;
             mob.PADamage = t.PADamage;
             mob.PDDamage = t.PDDamage;
