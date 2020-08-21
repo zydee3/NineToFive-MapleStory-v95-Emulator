@@ -45,15 +45,16 @@ namespace NineToFive.Event.Data {
             int a8 = p.ReadInt();
             int a9 = p.ReadInt();
             int a10 = p.ReadInt();
-
-            byte a11 = p.ReadByte();
-            short a12 = p.ReadShort();
-            int a13 = p.ReadInt();
-            byte a14 = p.ReadByte();
+            
+            int a11 = p.ReadInt();
+            byte a12 = p.ReadByte();
+            short a13 = p.ReadShort();
+            int a14 = p.ReadInt();
             byte a15 = p.ReadByte();
-            int a16 = p.ReadInt();
+            byte a16 = p.ReadByte();
             int a17 = p.ReadInt();
             int a18 = p.ReadInt();
+            
 
             hits = new Hit[mobsHit];
             for (int i = 0; i < mobsHit; i++) {
