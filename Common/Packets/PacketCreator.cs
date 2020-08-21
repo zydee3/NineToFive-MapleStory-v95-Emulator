@@ -241,6 +241,14 @@ namespace NineToFive.Packets {
 
             return w.ToArray();
         }
+
+        public static byte[] GetShowHpIndicator(int mobId, byte health) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CMob.OnHPIndicator);
+            w.WriteInt(mobId);
+            w.WriteByte(health);
+            return w.ToArray();
+        }
     }
 
     public static class CWvsPackets {
@@ -874,7 +882,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskMembershopAvatar(byte speakerTypeID, int speakerTemplateID, byte param, string text, IEnumerable<int> list) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(speakerTypeID);
             w.WriteInt(speakerTemplateID);
@@ -890,7 +898,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskPet(byte speakerTypeID, int speakerTemplateID, byte param, string message, List<Item> pets) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(speakerTypeID);
             w.WriteInt(speakerTemplateID);
@@ -909,7 +917,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskPetAll(byte speakerTypeID, int speakerTemplateID, byte param, string message, bool exceptionExist, List<Item> pets) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(speakerTypeID);
             w.WriteInt(speakerTemplateID);
@@ -929,7 +937,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskBoxText(byte speakerTypeID, int speakerTemplateID, byte param, string text, string text1, short col, short line) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(speakerTypeID);
             w.WriteInt(speakerTemplateID);
@@ -943,7 +951,7 @@ namespace NineToFive.Packets {
         }
 
         public static byte[] GetAskSlideMenu(byte speakerTypeID, int speakerTemplateID, byte param, int v2) {
-            Packet w = new Packet();
+            using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(speakerTypeID);
             w.WriteInt(speakerTemplateID);

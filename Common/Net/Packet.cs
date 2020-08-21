@@ -235,10 +235,10 @@ namespace NineToFive.Net {
             return new string(result);
         }
 
-        public string ReadRemaining() {
+        public string ReadRemaining(int index = -1) {
             string result = "";
             string[] bytes = BitConverter.ToString(Stream.ToArray()).Split("-");
-            for (int i = Position; i < Capacity; i++) {
+            for (int i = (index == -1 ? Position : index); i < Capacity; i++) {
                 result = $"{result} {bytes[i]}";
             }
 

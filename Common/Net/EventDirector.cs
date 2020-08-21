@@ -65,8 +65,7 @@ namespace NineToFive.Net {
         UserLocal_TryRegisterTeleport = 113,
         UserLocal_UpdatePassiveSkillData = 217, 
         UserLocal_OnResetNLCPQ = 251,
-        
-        UserRemote_OnMeleeAttack = 47,
+        UserLocal_OnMeleeAttack = 47,
         
         Field_SendChatMsgSlash = 151,
         Field_LogChatMsgSlash = 152,

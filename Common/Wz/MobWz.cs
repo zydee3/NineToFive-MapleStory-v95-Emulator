@@ -49,7 +49,7 @@ namespace NineToFive.Wz {
             mob.Boss = t.Boss;
             mob.IgnoreFieldOut = t.IgnoreFieldOut;
             mob.Category = t.Category;
-            mob.HPgaugeHide = t.HPgaugeHide;
+            mob.HPGaugeHide = t.HPgaugeHide;
             mob.HpTagColor = t.HpTagColor;
             mob.HpTagBgColor = t.HpTagBgColor;
             mob.FirstAttack = t.FirstAttack;

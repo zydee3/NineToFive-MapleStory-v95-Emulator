@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,60 +8,66 @@ using NineToFive.Net;
 
 namespace NineToFive.Event.Data {
     public class Attack {
-        public AttackType attackType { get; set; }
-        public byte type { get; set; }
-        public byte targeted { get; set; }
-        public int skillId { get; set; }
-        public int hitsPerMob { get; set; }
-        public int mobsHit { get; set; }
-
-        internal Hit[] hits { get; set; }
+        public AttackType AttackType { get; }
+        
+        public int AttackSpeed { get; }
+        public int AttackStance { get; }
+        public int SkillId { get; }
+        public int HitsPerMob { get; }
+        public int MobsHit { get; }
+        
+        public byte FieldOffset { get; }
+        public bool IsFacingRight { get; }
+        
+        internal Hit[] Hits { get; }
         
         public Attack(User user, Packet p, AttackType attackType) {
-            this.attackType = attackType;
+            AttackType = attackType;
             
-            Console.WriteLine(p.ToArrayString(true));
-            
-            type = p.ReadByte();
-            int a2 = p.ReadInt();
-            int a3 = p.ReadInt();
-            
-            targeted = p.ReadByte();
-            hitsPerMob = targeted & 0xF;
-            mobsHit = targeted >> 4;
+            PrintPacket(p);
 
-            if (mobsHit == 0) {
-                //return;
+            FieldOffset = p.ReadByte();
+            
+            p.ReadInt(); 
+            p.ReadInt();
+            
+            int a4 = p.ReadByte();
+            HitsPerMob = a4 & 0xF;
+            MobsHit = a4 >> 4;
+
+            if (MobsHit <= 0) {
+                return;
             }
 
-            Console.WriteLine($"type={type} \na2={a2} \na3={a3} \ntargeted={targeted} \nhitsPerMob={hitsPerMob}");
+            p.ReadInt(); 
+            p.ReadInt();
             
-            int a4 = p.ReadInt();
-            int a5 = p.ReadInt();
-            skillId = p.ReadInt();
-            byte a6 = p.ReadByte();
+            SkillId = p.ReadInt(); 
+            // check mob hit and hits per mob is valid
             
-            int a7 = p.ReadInt();
-            int a8 = p.ReadInt();
-            int a9 = p.ReadInt();
-            int a10 = p.ReadInt();
+            p.ReadByte();
+            p.ReadInt();  
+            p.ReadInt();
+            p.ReadInt();
+            p.ReadInt();
+            p.ReadByte();
             
-            int a11 = p.ReadInt();
-            byte a12 = p.ReadByte();
-            short a13 = p.ReadShort();
-            int a14 = p.ReadInt();
-            byte a15 = p.ReadByte();
-            byte a16 = p.ReadByte();
-            int a17 = p.ReadInt();
-            int a18 = p.ReadInt();
+            short a14 = p.ReadShort();
+            IsFacingRight = a14 >> 15 == 0;
+            AttackStance = a14 & 0x7FFF;
             
+            p.ReadInt();
+            p.ReadByte();
+            
+            AttackSpeed = p.ReadByte();
+            
+            p.ReadInt();
+            p.ReadInt();
 
-            hits = new Hit[mobsHit];
-            for (int i = 0; i < mobsHit; i++) {
-                hits[i] = new Hit(user, p);
+            Hits = new Hit[MobsHit];
+            for (int i = 0; i < MobsHit; i++) {
+                Hits[i] = new Hit(user, p, HitsPerMob);
             }
-            
-            Console.WriteLine($"a4={a4} \na5={a5} \nskill={skillId} \na6={a6} \na7={a7} \na8={a8} \na9={a9} \na10={a10} \na11={a11} \na12={a12} \na13={a13} \na14={a14} \na15={a15} \na16={a16} \na17={a17} \na18={a18} \nremaining={p.ReadRemaining()}\n\n");
         }
 
         public async Task Complete() {
@@ -71,20 +77,49 @@ namespace NineToFive.Event.Data {
 
     internal class Hit {
         private readonly User _user;
+        private readonly bool _complete = true;
+        private readonly int _damage;
+        private readonly uint _mobId;
         
-        private int _damage;
-        private uint _mobId;
         
-        public Hit(User user, Packet p) {
-            _user = user;
+        public Hit(User user, Packet p, int hitsPerMob) {
+            try {
+                _user = user;
+                _mobId = p.ReadUInt();
+                p.ReadByte();
+                p.ReadByte();
+                p.ReadByte();
+                p.ReadByte();
+                
+                p.ReadShort();
+                p.ReadShort();
+                
+                p.ReadShort();
+                p.ReadShort();
+
+                p.ReadShort();
+
+                for (int i = 0; i < hitsPerMob; i++) {
+                    _damage += p.ReadInt();
+                }
+
+            } catch (Exception exception) {
+                Console.WriteLine(exception.Message);
+                _complete = false;
+            }
         }
 
         public async Task Complete() {
+            if (!_complete) {
+                return;
+            }
+            
             Mob mob = _user.Field.LifePools[EntityType.Mob][_mobId] as Mob;
             if (mob == null) {
                 return;
             }
 
+            
             await mob.Damage(_user, _damage);
         }
     }

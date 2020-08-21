@@ -34,13 +34,19 @@ namespace NineToFive.Game.Entity {
         }
 
         public async Task Damage(User attacker, int damage) {
-            HP -= damage;
+            lock (this) {
+                HP -= damage;
+                byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP); 
+                attacker.Field.BroadcastPacket(MobPool.GetShowHpIndicator((int) Id, indicator));
+                Console.WriteLine($"Damage: {damage}, Hp: {HP}, Guage: {indicator}%");
+            }
         }
 
         private int _hp;
         public int HP {
             get => _hp;
             set {
+                Console.WriteLine($"HP: {_hp}, New HP: {Math.Max(_hp - value, 0)}");
                 _hp = Math.Max(_hp - value, 0);
                 if (_hp == 0) {
                     // monster dead
@@ -73,7 +79,7 @@ namespace NineToFive.Game.Entity {
         public int Boss { get; set; }
         public int IgnoreFieldOut { get; set; }
         public int Category { get; set; }
-        public int HPgaugeHide { get; set; }
+        public int HPGaugeHide { get; set; }
         public int HpTagColor { get; set; }
         public int HpTagBgColor { get; set; }
         public int FirstAttack { get; set; }
