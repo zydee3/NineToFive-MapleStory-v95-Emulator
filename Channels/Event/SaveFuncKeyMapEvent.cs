@@ -34,7 +34,10 @@ namespace NineToFive.Event {
         public override void OnHandle() {
             switch (_action) {
                 case 0:
-                    Client.User.KeyMap = _keyMaps;
+                    foreach (var (key, value) in _keyMaps) {
+                        Client.User.KeyMap[key] = value;
+                    }
+
                     break;
             }
         }

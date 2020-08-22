@@ -25,10 +25,12 @@ namespace NineToFive.Game.Entity {
 
             AvatarLook = new AvatarLook(reader);
             CharacterStat = new CharacterStat(reader);
+
+            if (reader == null) return;
+
             Skills = new Dictionary<int, SkillRecord>();
             KeyMap = new Dictionary<int, Tuple<byte, int>>(89);
 
-            if (reader == null) return;
             AccountId = reader.GetUInt32("account_id");
             Money = reader.GetUInt32("money");
 

@@ -18,20 +18,22 @@ namespace NineToFive.Game.Entity {
         }
 
         public void ImitateUser(User user) {
-            AvatarLook = new AvatarLook() {
-                Gender = user.AvatarLook.Gender,
-                Skin = user.AvatarLook.Skin,
-                Face = user.AvatarLook.Face,
-                Hair = user.AvatarLook.Hair
-            };
-            Equipped = new Inventory(InventoryType.Equipped);
-            foreach (var item in user.Inventories[InventoryType.Equipped].Items) {
-                Equipped.EquipItem(new Equip(item.Id, true));
+            User = new User();
+            User.CharacterStat.Username = user.CharacterStat.Username;
+
+            User.AvatarLook.Gender = user.AvatarLook.Gender;
+            User.AvatarLook.Skin = user.AvatarLook.Skin;
+            User.AvatarLook.Face = user.AvatarLook.Face;
+            User.AvatarLook.Hair = user.AvatarLook.Hair;
+
+            var source = user.Inventories[InventoryType.Equipped];
+            var dest = User.Inventories[InventoryType.Equipped];
+            foreach (var item in source.Items) {
+                dest.EquipItem(new Equip(item.Id, true));
             }
         }
 
-        public Inventory Equipped { get; set; }
-        public AvatarLook AvatarLook { get; set; }
+        public User User { get; set; }
         public Range2 HorizontalRange { get; set; }
         public string Script { get; set; }
     }

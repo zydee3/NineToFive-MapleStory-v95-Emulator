@@ -152,13 +152,13 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetNpcImitateData(Npc npc, User user) {
+        public static byte[] GetNpcImitateData(Npc npc) {
             using Packet w = new Packet();
             w.WriteShort((short) CNpcPool.OnNpcImitateData);
             w.WriteByte(1);
             w.WriteInt(npc.TemplateId);
-            w.WriteString(user.CharacterStat.Username);
-            npc.AvatarLook.Encode(null, w);
+            w.WriteString(npc.User.CharacterStat.Username);
+            npc.User.AvatarLook.Encode(npc.User, w);
             return w.ToArray();
         }
     }
@@ -419,22 +419,18 @@ namespace NineToFive.Packets {
         public static byte[] GetKeyMappedInit(Dictionary<int, Tuple<byte, int>> keyMaps = null) {
             using Packet w = new Packet();
             w.WriteShort((short) CFuncKeyMappedMan.OnInit);
-            bool useDefault = keyMaps == null;
-            if (w.WriteBool(useDefault)) {
+            if (w.WriteBool(keyMaps == null)) {
                 return w.ToArray();
             }
 
-            int count = 89;
-            foreach (var pair in keyMaps!) {
-                var keyMap = pair.Value;
-                w.WriteByte(keyMap.Item1);
-                w.WriteInt(keyMap.Item2);
-                count--;
-            }
-
-            for (int i = 0; i < count; i++) {
-                w.WriteByte();
-                w.WriteInt();
+            for (int i = 0; i < 89; i++) {
+                if (!keyMaps!.TryGetValue(i, out var pair)) {
+                    w.WriteByte();
+                    w.WriteInt();
+                } else {
+                    w.WriteByte(pair.Item1);
+                    w.WriteInt(pair.Item2);
+                }
             }
 
             return w.ToArray();
