@@ -6,10 +6,11 @@ namespace NineToFive.Game.Storage {
     public class Equip : Item {
         /// <param name="id">the id if the equip</param>
         /// <param name="autoBagIndex">should the BagIndex be automatically assigned to the associated body part</param>
-        public Equip(int id, bool autoBagIndex = false, bool setEquip = false) : base(id) {
+        /// <param name="loadStats">should default stats for the item be loaded</param>
+        public Equip(int id, bool autoBagIndex = false, bool loadStats = false) : base(id) {
             if (InventoryType != InventoryType.Equip) throw new InvalidOperationException("cannot create Equip of Item : " + id);
             if (autoBagIndex) BagIndex = (short) -ItemConstants.GetBodyPartFromId(id);
-            if (setEquip) CharacterWz.CopyEquipTemplate(this);
+            if (loadStats) CharacterWz.CopyEquipTemplate(this);
         }
 
         public override string ToString() {
@@ -37,9 +38,9 @@ namespace NineToFive.Game.Storage {
         public short Jump { get; set; }
         public string Title { get; set; } = "";
         public byte CHUC { get; set; }
-        
+
         public int EquipId { get; set; }
-        
+
         public int IncHP { get; set; }
         public int IncMHP { get; set; }
         public int IncMP { get; set; }
@@ -65,14 +66,14 @@ namespace NineToFive.Game.Storage {
         public int IncMMPR { get; set; }
         public int IncSwim { get; set; }
         public int IncFatigue { get; set; }
-        
+
         public int AttackSpeed { get; set; }
         public int HPRecovery { get; set; }
         public int MPRecovery { get; set; }
         public int KnockBack { get; set; }
         public int Walk { get; set; }
         public int Stand { get; set; }
-        
+
         public int ReqLevel { get; set; }
         public int ReqJob { get; set; }
         public int ReqSTR { get; set; }
@@ -80,7 +81,7 @@ namespace NineToFive.Game.Storage {
         public int ReqINT { get; set; }
         public int ReqLUK { get; set; }
         public int ReqPOP { get; set; }
-        
+
         public int Price { get; set; }
         public int NotSale { get; set; }
         public int TradeBlock { get; set; }
@@ -92,7 +93,7 @@ namespace NineToFive.Game.Storage {
         public int TradeAvailable { get; set; }
         public int ExpireOnLogout { get; set; }
         public int NotExtend { get; set; }
-        
+
         public int OnlyEquip { get; set; }
         public int Pachinko { get; set; }
         public int ChatBalloon { get; set; }
@@ -129,7 +130,7 @@ namespace NineToFive.Game.Storage {
         public string ConsumeHP { get; set; }
         public string LongRange { get; set; }
         public string ConsumeMP { get; set; }
-        
+
         public float Recovery { get; set; }
         public short Attack { get; set; }
 
