@@ -20,7 +20,6 @@ namespace NineToFive.Event {
                 byte type = p.ReadByte();
                 Movement move = new Movement(type);
                 move.Decode(move, p);
-                if (user.IsDebugging) user.SendMessage($"{move.Type} : Pos{move.Location}, Vel{move.Velocity}");
                 Movements.Add(move);
             }
 
