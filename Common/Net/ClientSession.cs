@@ -46,16 +46,24 @@ namespace NineToFive.Net {
             _server = null;
         }
 
-        private void DisposeIfNecessary() {
+        public void DisposeIfNecessary() {
             if (_socket?.Connected == true) return;
             if (Client != null) {
                 var now = DateTime.Now.TimeOfDay;
-                if (now - Client.PingTimestamp > TimeSpan.FromSeconds(30)) {
+                var elapsed = now - Client.PingTimestamp;
+
+                // if longer than 75 seconds, timeout
+                if (elapsed < TimeSpan.FromSeconds(75)
+                    // 30 second delay before next ping
+                    && elapsed > TimeSpan.FromSeconds(30)) {
+                    
                     using Packet w = new Packet();
                     w.WriteShort((short) CClientSocket.OnAliveReq);
                     Write(w.ToArray());
+                    return;
                 }
             }
+
             Dispose();
         }
 

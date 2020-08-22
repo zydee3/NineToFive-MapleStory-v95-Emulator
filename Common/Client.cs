@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Timers;
 using log4net;
 using MySql.Data.MySqlClient;
 using NineToFive.Game;
@@ -25,6 +26,8 @@ namespace NineToFive {
         }
 
         public void Dispose() {
+            PingTimer?.Dispose();
+
             Users.Clear();
             try {
                 User?.Dispose();
@@ -92,7 +95,9 @@ namespace NineToFive {
         /// <code>2    socket migrate</code>
         /// </summary>
         public byte LoginStatus { get; set; }
+
         public TimeSpan PingTimestamp { get; set; }
+        public Timer PingTimer { get; set; }
         public User User { get; set; }
         public byte[] MachineId { get; set; }
         public string SecondaryPassword { get; set; }
