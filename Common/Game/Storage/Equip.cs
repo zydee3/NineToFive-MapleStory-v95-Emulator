@@ -9,7 +9,7 @@ namespace NineToFive.Game.Storage {
         public Equip(int id, bool autoBagIndex = false, bool setEquip = false) : base(id) {
             if (InventoryType != InventoryType.Equip) throw new InvalidOperationException("cannot create Equip of Item : " + id);
             if (autoBagIndex) BagIndex = (short) -ItemConstants.GetBodyPartFromId(id);
-            if (setEquip) CharacterWz.CopyTemplate(this);
+            if (setEquip) CharacterWz.CopyEquipTemplate(this);
         }
 
         public override string ToString() {

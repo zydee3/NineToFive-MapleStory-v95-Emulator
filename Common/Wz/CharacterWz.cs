@@ -8,7 +8,7 @@ using NineToFive.Resources;
 
 namespace NineToFive.Wz {
     public static class CharacterWz {
-        public static void CopyTemplate(Equip equip) {
+        public static void CopyEquipTemplate(Equip equip) {
             if (equip == null) return;
 
             int equipId = equip.Id;

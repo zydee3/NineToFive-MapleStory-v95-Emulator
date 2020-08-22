@@ -1,12 +1,13 @@
 ﻿namespace NineToFive.Game.Entity.Meta {
     public class TemplateEquip {
-        
-        public TemplateEquip(int equipId) {
-            EquipId = equipId;
+        public TemplateEquip(int itemId) {
+            ItemId = itemId;
         }
-        
-        public int EquipId { get; set; }
-        
+
+        public int ItemId { get; }
+
+        #region Increase stats
+
         public int IncHP { get; set; }
         public int IncMHP { get; set; }
         public int IncMP { get; set; }
@@ -32,7 +33,9 @@
         public int IncMMPR { get; set; }
         public int IncSwim { get; set; }
         public int IncFatigue { get; set; }
-        
+
+        #endregion
+
         public int AttackSpeed { get; set; }
         public int HPRecovery { get; set; }
         public int MPRecovery { get; set; }
@@ -40,7 +43,9 @@
         public int Walk { get; set; }
         public int Stand { get; set; }
         public int Speed { get; set; }
-        
+
+        #region Require stats
+
         public int ReqLevel { get; set; }
         public int ReqJob { get; set; }
         public int ReqSTR { get; set; }
@@ -48,7 +53,9 @@
         public int ReqINT { get; set; }
         public int ReqLUK { get; set; }
         public int ReqPOP { get; set; }
-        
+
+        #endregion
+
         public int Price { get; set; }
         public int NotSale { get; set; }
         public int TradeBlock { get; set; }
@@ -60,7 +67,7 @@
         public int TradeAvailable { get; set; }
         public int ExpireOnLogout { get; set; }
         public int NotExtend { get; set; }
-        
+
         public int OnlyEquip { get; set; }
         public int Pachinko { get; set; }
         public int ChatBalloon { get; set; }
@@ -97,7 +104,7 @@
         public string ConsumeHP { get; set; }
         public string LongRange { get; set; }
         public string ConsumeMP { get; set; }
-        
+
         public float Recovery { get; set; }
         public short Attack { get; set; }
     }
