@@ -15,6 +15,7 @@ CREATE TABLE `accounts` (
 CREATE TABLE `characters` (
   `account_id` int(10) unsigned NOT NULL,
   `character_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `world` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `username` varchar(13) COLLATE ascii_bin NOT NULL,
   `gender` tinyint(3) unsigned NOT NULL,
   `skin` tinyint(3) unsigned NOT NULL,

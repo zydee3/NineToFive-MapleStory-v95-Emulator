@@ -117,7 +117,9 @@ namespace NineToFive {
 
         public void LoadCharacters() {
             using DatabaseQuery q = Database.Table("characters");
-            using MySqlDataReader r = q.Select().Where("account_id", "=", Id).ExecuteReader();
+            using MySqlDataReader r = q.Select()
+                .Where("account_id", "=", Id,
+                    "world", "=", _worldId).ExecuteReader();
             while (r.Read()) {
                 Users.Add(new User(r));
             }
