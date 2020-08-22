@@ -116,7 +116,7 @@ namespace NineToFive {
             }
 
             var skills = SkillWz.LoadSkills();
-            Console.WriteLine($"Loaded {skills.Count} skills");
+            Log.Info($"Loaded {skills.Count} skills");
         }
 
         private static void InitializeChannels(ref string[] args) {
