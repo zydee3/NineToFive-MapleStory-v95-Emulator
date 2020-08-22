@@ -11,6 +11,7 @@ using NineToFive.Net;
 using NineToFive.Packets;
 using NineToFive.SendOps;
 using NineToFive.Util;
+using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
     public class User : Life {
@@ -69,7 +70,7 @@ namespace NineToFive.Game.Entity {
                     Skills.Add(record.Id, record);
                 }
             }
-            
+
             using (DatabaseQuery q = Database.Table("keymap")) {
                 using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
                 while (r.Read()) {
@@ -292,11 +293,11 @@ namespace NineToFive.Game.Entity {
         public int Hair { get; set; }
 
         public void Encode(User user, Packet p) {
-            p.WriteByte(Gender);
-            p.WriteByte(Skin);
-            p.WriteInt(Face);
+            p.WriteByte(user.AvatarLook.Gender);
+            p.WriteByte(user.AvatarLook.Skin);
+            p.WriteInt(user.AvatarLook.Face);
             p.WriteByte();
-            p.WriteInt(Hair);
+            p.WriteInt(user.AvatarLook.Hair);
             var inventory = user.Inventories[InventoryType.Equipped];
             foreach (Item item in inventory.Items.Where(i => i.BagIndex >= -99)) {
                 p.WriteByte((byte) Math.Abs(item.BagIndex));
@@ -318,7 +319,9 @@ namespace NineToFive.Game.Entity {
     }
 
     public class CharacterStat : IPacketSerializer<User> {
-        private short[] _skillPoints;
+        private readonly short[] _skillPoints;
+        private int _hp = 50, _mp = 5;
+
 
         public CharacterStat(MySqlDataReader r = null) {
             _skillPoints = new short[10];
@@ -353,8 +356,6 @@ namespace NineToFive.Game.Entity {
 
         public int MaxHP { get; set; } = 50;
 
-        private int _mp = 5;
-
         public int MP {
             get => _mp;
             set => _mp = Math.Min(Math.Max(value, 0), MaxMP);
@@ -363,16 +364,9 @@ namespace NineToFive.Game.Entity {
         public int MaxMP { get; set; } = 5;
         public short AP { get; set; }
 
-        private int _hp = 50;
-
         public int HP {
             get => _hp;
-            set {
-                _hp = Math.Min(Math.Max(value, 0), MaxHP);
-                if (_hp == 0) {
-                    //todo remove skills / buffs, lose exp and other dying stuff   
-                }
-            }
+            set => _hp = Math.Min(Math.Max(value, 0), MaxHP);
         }
 
         public short SP {
@@ -402,6 +396,12 @@ namespace NineToFive.Game.Entity {
         public byte Portal { get; set; }
 
         public void SendUpdate(User user, uint dwcharFlags) {
+            if (((UserAbility) dwcharFlags & UserAbility.HP) == UserAbility.HP) {
+                if (user.CharacterStat.HP < 1) {
+                    user.SendMessage("You have died.");
+                }
+            }
+
             user.Client.Session.Write(CWvsPackets.GetStatChanged(user, dwcharFlags));
         }
 

@@ -11,11 +11,11 @@ namespace NineToFive.Game.Storage {
     }
 
     public class Inventory {
-        private Dictionary<short, Item> _items = new Dictionary<short, Item>();
+        private readonly Dictionary<short, Item> _items = new Dictionary<short, Item>();
 
         public Inventory(InventoryType type, byte size = 32) {
             Type = type;
-            Size = size;
+            Size = (type == InventoryType.Equipped) ? byte.MaxValue : size;
         }
 
         public InventoryType Type { get; }
