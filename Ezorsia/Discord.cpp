@@ -27,7 +27,7 @@ void Discord::Update() {
 	rp.startTimestamp = Discord::m_nStartTimestamp;
 	rp.largeImageKey = "maplestory";
 	rp.largeImageText = "by izarooni";
-	rp.details = "haha your mom,";
-	rp.state = "and your dada!";
+	rp.details = "haha your mom";
+	rp.state = "made you look!";
 	Discord_UpdatePresence(&rp);
 }
