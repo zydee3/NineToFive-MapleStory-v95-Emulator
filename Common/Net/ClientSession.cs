@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using Destiny.Security;
 using log4net;
 using NineToFive.Security;
+using NineToFive.SendOps;
 
 namespace NineToFive.Net {
     public class ClientSession : IDisposable {
@@ -47,24 +48,31 @@ namespace NineToFive.Net {
 
         private void DisposeIfNecessary() {
             if (_socket?.Connected == true) return;
+            if (Client != null) {
+                var now = DateTime.Now.TimeOfDay;
+                if (now - Client.PingTimestamp > TimeSpan.FromSeconds(30)) {
+                    using Packet w = new Packet();
+                    w.WriteShort((short) CClientSocket.OnAliveReq);
+                    Write(w.ToArray());
+                }
+            }
             Dispose();
         }
 
         private void BeginReadPacketHeader() {
             DisposeIfNecessary();
-            _socket.GetStream().BeginRead(_packetHeader, 0, _packetHeader.Length, EndReadPacketHeader, null);
+            try {
+                _socket.GetStream().BeginRead(_packetHeader, 0, _packetHeader.Length, EndReadPacketHeader, null);
+            } catch (IOException) {
+                Dispose();
+            }
         }
 
         private void EndReadPacketHeader(IAsyncResult ar) {
             DisposeIfNecessary();
-            int size;
             try {
-                size = _socket.GetStream().EndRead(ar);
+                _socket.GetStream().EndRead(ar);
             } catch (IOException) {
-                size = 0;
-            }
-
-            if (size < 1) {
                 // disconnection
                 Dispose();
                 return;
@@ -72,6 +80,7 @@ namespace NineToFive.Net {
 
             if (!_cipher.De.IsValidPacket(_packetHeader)) {
                 Log.Warn("Invalid packet received");
+                Dispose();
                 return;
             }
 
@@ -85,14 +94,9 @@ namespace NineToFive.Net {
 
         private void BeginReadPacketBody(IAsyncResult ar) {
             DisposeIfNecessary();
-            int size;
             try {
-                size = _socket.GetStream().EndRead(ar);
+                _socket.GetStream().EndRead(ar);
             } catch (IOException) {
-                size = 0;
-            }
-
-            if (size < 1) {
                 // disconnection
                 Dispose();
                 return;
@@ -102,7 +106,7 @@ namespace NineToFive.Net {
             byte[] packet = new byte[packetLength];
             Buffer.BlockCopy(_packetBody, 0, packet, 0, packetLength);
             try {
-                using Packet p = new Packet(_cipher.Decrypt(packet));
+                Packet p = new Packet(_cipher.Decrypt(packet));
                 _server.OnPacketReceived(Client, p);
             } catch (Exception e) {
                 Log.Error("Failed to handle packet", e);
@@ -115,6 +119,7 @@ namespace NineToFive.Net {
         /// encrypts then sends the byte array to the client socket stream
         /// </summary>
         public void Write(byte[] b) {
+            DisposeIfNecessary();
             try {
                 _socket.GetStream().Write(_cipher.Encrypt(b));
             } catch (IOException) {

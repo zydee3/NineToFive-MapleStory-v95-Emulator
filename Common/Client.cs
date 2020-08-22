@@ -92,7 +92,7 @@ namespace NineToFive {
         /// <code>2    socket migrate</code>
         /// </summary>
         public byte LoginStatus { get; set; }
-
+        public TimeSpan PingTimestamp { get; set; }
         public User User { get; set; }
         public byte[] MachineId { get; set; }
         public string SecondaryPassword { get; set; }
