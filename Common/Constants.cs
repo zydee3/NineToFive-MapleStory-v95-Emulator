@@ -167,6 +167,62 @@ namespace NineToFive {
             return "";
         }
 
+        public static string GetEquipCategory(int equipId) {
+            switch (Math.Floor(equipId / 10000.0)) {
+                case 101: 
+                case 102:
+                case 103:
+                case 112:
+                case 113:
+                case 114:
+                case 115:
+                    return "Accessory";
+                case 100:
+                    return "Cap";
+                case 110:
+                    return "Cape";
+                case 104:
+                    return "Coat";
+                case 194:
+                case 195:
+                case 196:
+                case 197:
+                    return "Dragon";
+                case 108:
+                    return "Glove";
+                case 105:
+                    return "Longcoat";
+                case 161:
+                case 162:
+                case 163:
+                case 164:
+                case 165:
+                    return "Mechanic";
+                case 106:
+                    return "Pants";
+                case 181:
+                case 182:
+                case 183:
+                    return "PetEquip";
+                case 111:
+                    return "Ring";
+                case 109:
+                    return "Shield";
+                case 107:
+                    return "Shoes";
+                case 190:
+                case 191:
+                case 193:
+                case 198:
+                    return "TamingMob";
+                default:
+                    if (equipId >= 1302000 && equipId <= 1702301) return "Weapon";
+                    if (equipId >= 20000 && equipId <= 22000) return "Face";
+                    if (equipId >= 30000 && equipId <= 35000) return "Hair";
+                    return "";
+            }
+        }
+
         public static InventoryType GetInventoryType(int itemId) {
             int type = itemId / 1000000;
             if (type < 1 || type > 5) {

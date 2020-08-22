@@ -9,6 +9,7 @@ namespace NineToFive.Resources {
 
         public static readonly Dictionary<int, TemplateMob.MobSkill> Skills = new Dictionary<int, TemplateMob.MobSkill>();
         public static readonly Dictionary<int, Item> Items = new Dictionary<int, Item>();
+        public static readonly Dictionary<int, TemplateEquip> EquipTemplates = new Dictionary<int, TemplateEquip>(); 
         public static readonly Dictionary<int, TemplateField> FieldTemplates = new Dictionary<int, TemplateField>();
         public static readonly Dictionary<int, TemplateMob> MobTemplates = new Dictionary<int, TemplateMob>();
     }

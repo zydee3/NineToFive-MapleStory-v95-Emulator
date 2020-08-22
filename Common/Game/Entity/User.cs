@@ -41,11 +41,11 @@ namespace NineToFive.Game.Entity {
 
                     if (type == InventoryType.Equip) {
                         if (bagIndex < 0) {
-                            Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true));
+                            Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true, true));
                             continue;
                         }
 
-                        item = new Equip(itemId);
+                        item = new Equip(itemId, false, true);
                     } else {
                         item = new Item(itemId);
                         item.Quantity = r.GetUInt16("quantity");

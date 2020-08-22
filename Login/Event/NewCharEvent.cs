@@ -60,10 +60,10 @@ namespace NineToFive.Event {
             user.AvatarLook.Face = _avatarLook[(int) AvatarSel.Face];
 
             var inventory = user.Inventories[InventoryType.Equipped];
-            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Top], true));
-            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Bottom], true));
-            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Shoes], true));
-            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Weapon], true));
+            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Top], true, true));
+            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Bottom], true, true));
+            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Shoes], true, true));
+            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Weapon], true, true));
 
             using DatabaseQuery insertChar = Database.Table("characters");
             int count = insertChar.Insert(Database.CreateUserParameters(user)).ExecuteNonQuery();

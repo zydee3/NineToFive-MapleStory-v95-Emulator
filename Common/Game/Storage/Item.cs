@@ -10,6 +10,8 @@ namespace NineToFive.Game.Storage {
             InventoryType = ItemConstants.GetInventoryType(id);
 
             if (setItem) ItemWz.SetItem(this);
+            
+            //todo need to load item from database
         }
 
         public override string ToString() {
