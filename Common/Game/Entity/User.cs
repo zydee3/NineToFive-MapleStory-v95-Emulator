@@ -142,6 +142,7 @@ namespace NineToFive.Game.Entity {
                     insertItems.Insert(Database.CreateItemParameters(this, item));
                 }
             }
+
             count = insertItems.ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Saved {count} items");
 
@@ -157,11 +158,12 @@ namespace NineToFive.Game.Entity {
             foreach (var pair in Skills) {
                 insertSkills.Insert(Database.CreateSkillParameters(this, pair));
             }
+
             count = insertSkills.ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Saved {count} skill records");
 
             #endregion
-            
+
             #region keymap
 
             using DatabaseQuery deleteKeymap = Database.Table("keymap");
@@ -172,6 +174,7 @@ namespace NineToFive.Game.Entity {
             foreach (var pair in KeyMap) {
                 insertKeymap.Insert("character_id", CharacterStat.Id, "key", pair.Key, "type", pair.Value.Item1, "value", pair.Value.Item2);
             }
+
             count = insertKeymap.ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Saved {count} key mappings");
 
@@ -188,12 +191,6 @@ namespace NineToFive.Game.Entity {
         public void SetField(int fieldId, Portal portal = null, bool characterData = true) {
             Field?.RemoveLife(this);
             Field = Client.Channel.GetField(fieldId);
-            portal ??= Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"));
-            /*
-            portal = portal == null
-                ? Field.Portals.FirstOrDefault(p => p.Name.Equals("sp"))
-                : Field.Portals.First(p => p.Name.Equals(portal.TargetPortalName));
-                */
             if (portal != null) {
                 Location = portal.Location;
                 CharacterStat.Portal = portal.Id;
@@ -353,22 +350,30 @@ namespace NineToFive.Game.Entity {
         public short Dex { get; set; } = 4;
         public short Int { get; set; } = 4;
         public short Luk { get; set; } = 4;
-        
+
         public int MaxHP { get; set; } = 50;
-        public int MP { get; set; } = 5;
+
+        private int _mp = 5;
+
+        public int MP {
+            get => _mp;
+            set => _mp = Math.Min(Math.Max(value, 0), MaxMP);
+        }
+
         public int MaxMP { get; set; } = 5;
         public short AP { get; set; }
 
-        private int _hp;
+        private int _hp = 50;
+
         public int HP {
             get => _hp;
             set {
-                _hp = Math.Min(Math.Max(value, 0), 30000);
+                _hp = Math.Min(Math.Max(value, 0), MaxHP);
                 if (_hp == 0) {
                     //todo remove skills / buffs, lose exp and other dying stuff   
                 }
             }
-        } 
+        }
 
         public short SP {
             get {
