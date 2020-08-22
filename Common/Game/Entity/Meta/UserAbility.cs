@@ -1,6 +1,7 @@
-﻿using NineToFive.Net;
+﻿using System;
 
 namespace NineToFive.Game.Entity.Meta {
+    [Flags]
     public enum UserAbility {
         Skin = 1,
         Hair = 2,
