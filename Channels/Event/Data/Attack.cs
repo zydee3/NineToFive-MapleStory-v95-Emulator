@@ -24,8 +24,6 @@ namespace NineToFive.Event.Data {
         public Attack(User user, Packet p, AttackType attackType) {
             AttackType = attackType;
             
-            PrintPacket(p);
-
             FieldOffset = p.ReadByte();
             
             p.ReadInt(); 
@@ -71,7 +69,7 @@ namespace NineToFive.Event.Data {
         }
 
         public async Task Complete() {
-            await Task.WhenAll(hits.Select(hit => hit.Complete()));
+            await Task.WhenAll(Hits.Select(hit => hit.Complete()));
         }
     }
 

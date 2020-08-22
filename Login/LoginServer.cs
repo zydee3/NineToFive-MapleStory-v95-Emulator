@@ -14,6 +14,7 @@ namespace NineToFive {
 
         public LoginServer(int port) : base(port) {
             _director = new EventDirector {
+                [(short) ReceiveOperations.ClientSocket_OnAliveReq] = typeof(KeepAliveEvent),
                 [(short) ReceiveOperations.Login_OnCheckPasswordResult] = typeof(CheckPasswordEvent),
                 [(short) ReceiveOperations.Login_OnWorldListReinitializeRequest] = typeof(WorldListEvent),
                 [(short) ReceiveOperations.Login_OnChannelSelectEnterChannel] = typeof(SelectEnterChannelEvent),

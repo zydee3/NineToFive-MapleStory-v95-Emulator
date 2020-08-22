@@ -22,6 +22,14 @@ namespace NineToFive.SendOps {
         OnCheckNameChangePossibleResult     = 388
     }
 
+    public enum CClientSocket : int {
+        OnMigrateCommand        = 16,
+        OnAliveReq              = 17,
+        OnAuthenCodeChanged     = 18,
+        OnAuthenMessage         = 19,
+        OnCheckCrcResult        = 23
+    }
+    
     public enum CCashTradingRoomDlg : int {
         OnPutItem                           =  15,
         OnPutMoney                          =  16,

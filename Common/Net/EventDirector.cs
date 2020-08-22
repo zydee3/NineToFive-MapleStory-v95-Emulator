@@ -16,6 +16,7 @@ namespace NineToFive.Net {
 
     // ReSharper disable InconsistentNaming
     public enum ReceiveOperations : short {
+        ClientSocket_OnAliveReq = 25,
         #region CLogin
 
         Login_OnCheckPasswordResult = 1,
@@ -47,10 +48,12 @@ namespace NineToFive.Net {
         OnTransferFieldRequest = 41,
 
         CWvsContext_SendAbilityUpRequest = 98,
+        CWvsContext_SendStatchangeRequest = 100,
         CWvsContext_SendSkillUpRequest = 102,
         CWvsContext_SendCharacterInfoRequest = 109,
         CWvsContext_OnCheckOpBoardHasNew = 192,
         CWvsContext_OnUiMenu = 218,
+        CWvsContext_CancelPartyWanted = 267,
 
         User_OnUserMove = 44,
         User_OnChatMsg = 54,

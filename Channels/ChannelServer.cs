@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using log4net;
 using log4net.Config;
 using NineToFive.Event;
@@ -19,13 +20,17 @@ namespace NineToFive {
 
         public ChannelServer(int port) : base(port) {
             _director = new EventDirector {
+                [(short) ReceiveOperations.ClientSocket_OnAliveReq] = typeof(KeepAliveEvent),
                 [(short) ReceiveOperations.Login_OnEnterGamePacket] = typeof(CharEnterGameEvent),
 
                 [(short) ReceiveOperations.OnTransferFieldRequest] = typeof(TransferFieldEvent),
 
-                [(short) ReceiveOperations.CWvsContext_SendSkillUpRequest] = typeof(SkillUpEvent),
                 [(short) ReceiveOperations.CWvsContext_SendAbilityUpRequest] = typeof(AbilityUpEvent),
+                [(short) ReceiveOperations.CWvsContext_SendStatchangeRequest] = typeof(StatChangeEvent),
+                [(short) ReceiveOperations.CWvsContext_SendSkillUpRequest] = typeof(SkillUpEvent),
                 [(short) ReceiveOperations.CWvsContext_SendCharacterInfoRequest] = typeof(CharacterInfoEvent),
+                [(short) ReceiveOperations.CWvsContext_CancelPartyWanted] = typeof(CancelPartyWantedEvent),
+                [(short) ReceiveOperations.CWvsContext_OnCheckOpBoardHasNew] = typeof(CheckOpBoardHasNewEvent),
 
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
@@ -35,19 +40,20 @@ namespace NineToFive {
                 [(short) ReceiveOperations.UserLocal_OnPortalCollision] = typeof(PortalCollisionEvent),
                 [(short) ReceiveOperations.UserLocal_TryRegisterTeleport] = typeof(RegisterTeleportEvent),
                 [(short) ReceiveOperations.UserLocal_UpdatePassiveSkillData] = typeof(UpdatePassiveSkillDataEvent),
+                [(short) ReceiveOperations.UserLocal_OnResetNLCPQ] = typeof(ResetNLCPQEvent),
                 [(short) ReceiveOperations.UserLocal_SendSkillUseRequest] = typeof(UserSkillUseEvent),
                 [(short) ReceiveOperations.UserLocal_SendSkillCancelRequest] = typeof(UserSkillCancelEvent),
-                
+
                 [(short) ReceiveOperations.UserLocal_OnMeleeAttack] = typeof(MeleeAttackEvent),
 
                 [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
-                
+
                 [(short) ReceiveOperations.Mob_GenerateMovePath] = typeof(MobGenerateMovePathEvent),
 
                 [(short) ReceiveOperations.CQuickslotKeyMappedMan_SaveQuickslotKeyMap] = typeof(SaveQuickSlotKeyMapEvent),
                 [(short) ReceiveOperations.CFuncKeyMappedMan_SaveFuncKeyMap] = typeof(SaveFuncKeyMapEvent),
-                
+
                 [(short) ReceiveOperations.UserLocal_TalkToNpc] = typeof(TalkToNpcEvent),
                 [(short) ReceiveOperations.UserLocal_ContinueTalkToNpc] = typeof(ContinueTalkToNpcEvent),
             };
@@ -64,17 +70,24 @@ namespace NineToFive {
 
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
-                try {
-                    if (handler.ShouldProcess() && handler.OnProcess(p)) {
-                        handler.OnHandle();
-                    }
-                } catch (Exception e) {
-                    try {
-                        handler.OnError(e);
-                    } catch {
-                        // ignore
-                    }
+                if (!handler.ShouldProcess()) {
+                    p.Dispose();
+                    return;
                 }
+
+                ThreadPool.QueueUserWorkItem(OnHandlePacket, new object[] {handler, p});
+            }
+        }
+
+        private void OnHandlePacket(object state) {
+            PacketEvent handler = (PacketEvent) ((object[]) state)[0];
+            try {
+                using Packet p = (Packet) ((object[]) state)[1];
+                if (handler.OnProcess(p)) {
+                    handler.OnHandle();
+                }
+            } catch (Exception e) {
+                handler.OnError(e);
             }
         }
 
@@ -101,7 +114,7 @@ namespace NineToFive {
                 Log.Warn("Invalid usage. Please specify a --channels and --world cmd-line argument");
                 Environment.Exit(0);
             }
-            
+
             var skills = SkillWz.LoadSkills();
             Console.WriteLine($"Loaded {skills.Count} skills");
         }
