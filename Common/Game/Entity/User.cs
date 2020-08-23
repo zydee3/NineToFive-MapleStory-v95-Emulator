@@ -156,13 +156,15 @@ namespace NineToFive.Game.Entity {
             using DatabaseQuery deleteSkills = Database.Table("skill_records");
             count = deleteSkills.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} skill records");
-
-            using DatabaseQuery insertSkills = Database.Table("skill_records");
-            foreach (var pair in Skills) {
-                insertSkills.Insert(Database.CreateSkillParameters(this, pair));
+            
+            if (Skills.Count > 0) {
+                using DatabaseQuery insertSkills = Database.Table("skill_records");
+                foreach (var pair in Skills) {
+                    insertSkills.Insert(Database.CreateSkillParameters(this, pair));
+                }
+                count = insertSkills.ExecuteNonQuery();
             }
 
-            count = insertSkills.ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Saved {count} skill records");
 
             #endregion
@@ -245,6 +247,7 @@ namespace NineToFive.Game.Entity {
 
             w.WriteLong(DateTime.Now.ToFileTime()); // paramFieldInit.ftServer
             Client.Session.Write(w.ToArray());
+            Console.WriteLine(w.ToArrayString(true));
 
             Field.AddLife(this);
             // let people know this person entered the field

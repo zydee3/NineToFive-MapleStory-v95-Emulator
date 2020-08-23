@@ -60,8 +60,9 @@ namespace NineToFive.Event {
             user.AvatarLook.Face = _avatarLook[(int) AvatarSel.Face];
 
             var inventory = user.Inventories[InventoryType.Equipped];
+            int bottomId = _avatarLook[(int) AvatarSel.Bottom];
+            if(bottomId > 0) inventory.EquipItem(new Equip(bottomId, true, true));
             inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Top], true, true));
-            inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Bottom], true, true));
             inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Shoes], true, true));
             inventory.EquipItem(new Equip(_avatarLook[(int) AvatarSel.Weapon], true, true));
 
