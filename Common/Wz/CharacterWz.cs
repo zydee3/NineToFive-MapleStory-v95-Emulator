@@ -123,126 +123,135 @@ namespace NineToFive.Wz {
 
                     foreach (WzImageProperty property in infoNode.WzProperties) {
                         if (property == null) continue;
-
+                        
                         switch (property.Name) {
                             case "reqLevel":
-                                templateEquip.ReqLevel = ((WzIntProperty) property).Value;
+                                templateEquip.ReqLevel = (short) property.GetInt();
                                 break;
                             case "reqJob":
-                                templateEquip.ReqJob = ((WzIntProperty) property).Value;
+                                templateEquip.ReqJob = (short) property.GetInt();
                                 break;
                             case "reqSTR":
-                                templateEquip.ReqSTR = ((WzIntProperty) property).Value;
+                                templateEquip.ReqSTR = (short) property.GetInt();
                                 break;
                             case "reqDEX":
-                                templateEquip.ReqDEX = ((WzIntProperty) property).Value;
+                                templateEquip.ReqDEX = (short) property.GetInt();
                                 break;
                             case "reqINT":
-                                templateEquip.ReqINT = ((WzIntProperty) property).Value;
+                                templateEquip.ReqINT = (short) property.GetInt();
                                 break;
                             case "incLUk":
                             case "reqLUK":
-                                templateEquip.ReqLUK = ((WzIntProperty) property).Value;
+                                templateEquip.ReqLUK = (short) property.GetInt();
                                 break;
                             case "reqPOP":
-                                templateEquip.ReqPOP = ((WzIntProperty) property).Value;
+                                templateEquip.ReqPOP = (short) property.GetInt();
                                 break;
                             case "incPDD":
-                                templateEquip.IncPDD = ((WzIntProperty) property).Value;
+                                templateEquip.IncPDD = (short) property.GetInt();
                                 break;
                             case "incACC":
                             case "acc":
-                                templateEquip.IncACC = ((WzIntProperty) property).Value;
+                                templateEquip.IncACC = (short) property.GetInt();
                                 break;
                             case "incDEX":
-                                templateEquip.IncDEX = ((WzIntProperty) property).Value;
+                                templateEquip.IncDEX = (short) property.GetInt();
                                 break;
                             case "incLUK":
-                                templateEquip.IncLUK = ((WzIntProperty) property).Value;
+                                templateEquip.IncLUK = (short) property.GetInt();
                                 break;
                             case "MaxHP":
                             case "maxHP":
                             case "incMHP":
-                                templateEquip.IncMHP = ((WzIntProperty) property).Value;
+                                templateEquip.IncMHP = (short) property.GetInt();
                                 break;
                             case "incMDD":
-                                templateEquip.IncMDD = ((WzIntProperty) property).Value;
+                                templateEquip.IncMDD = (short) property.GetInt();
                                 break;
                             case "incSTR":
-                                templateEquip.IncSTR = ((WzIntProperty) property).Value;
+                                templateEquip.IncSTR = (short) property.GetInt();
                                 break;
                             case "incMMP":
-                                templateEquip.IncMMP = ((WzIntProperty) property).Value;
+                                templateEquip.IncMMP = (short) property.GetInt();
                                 break;
                             case "incSpeed":
-                                templateEquip.IncSpeed = ((WzIntProperty) property).Value;
+                                templateEquip.IncSpeed = (short) property.GetInt();
                                 break;
                             case "incJump":
-                                templateEquip.IncJump = ((WzIntProperty) property).Value;
+                                templateEquip.IncJump = (short) property.GetInt();
                                 break;
                             case "incEVA":
-                                templateEquip.IncEVA = ((WzIntProperty) property).Value;
+                                templateEquip.IncEVA = (short) property.GetInt();
                                 break;
                             case "incINT":
-                                templateEquip.IncINT = ((WzIntProperty) property).Value;
+                                templateEquip.IncINT = (short) property.GetInt();
                                 break;
                             case "incPAD":
-                                templateEquip.IncPAD = ((WzIntProperty) property).Value;
+                                templateEquip.IncPAD = (short) property.GetInt();
                                 break;
                             case "incMAD":
-                                templateEquip.IncMAD = ((WzIntProperty) property).Value;
+                                templateEquip.IncMAD = (short) property.GetInt();
                                 break;
                             case "incRMAF":
-                                templateEquip.IncRMAF = ((WzIntProperty) property).Value;
+                                templateEquip.IncRMAF = (short) property.GetInt();
                                 break;
                             case "incRMAL":
-                                templateEquip.IncRMAL = ((WzIntProperty) property).Value;
+                                templateEquip.IncRMAL = (short) property.GetInt();
                                 break;
                             case "incCraft":
-                                templateEquip.IncCraft = ((WzIntProperty) property).Value;
+                                templateEquip.IncCraft = (short) property.GetInt();
                                 break;
                             case "incMHPr":
-                                templateEquip.IncMHPR = ((WzIntProperty) property).Value;
+                                templateEquip.IncMHPR = (short) property.GetInt();
                                 break;
                             case "incMMPr":
-                                templateEquip.IncMMPR = ((WzIntProperty) property).Value;
+                                templateEquip.IncMMPR = (short) property.GetInt();
                                 break;
                             case "incHP":
-                                templateEquip.IncHP = ((WzIntProperty) property).Value;
+                                templateEquip.IncHP = (short) property.GetInt();
                                 break;
                             case "incSwim":
-                                templateEquip.IncSwim = ((WzIntProperty) property).Value;
+                                templateEquip.IncSwim = (short) property.GetInt();
                                 break;
                             case "incFatigue":
-                                templateEquip.IncFatigue = ((WzIntProperty) property).Value;
+                                templateEquip.IncFatigue = (short) property.GetInt();
                                 break;
                             case "hpRecovery":
-                                templateEquip.HPRecovery = ((WzIntProperty) property).Value;
+                                templateEquip.HPRecovery = (short) property.GetInt();
                                 break;
                             case "mpRecovery":
-                                templateEquip.MPRecovery = ((WzIntProperty) property).Value;
+                                templateEquip.MPRecovery = (short) property.GetInt();
                                 break;
                             case "attackSpeed":
-                                templateEquip.AttackSpeed = ((WzIntProperty) property).Value;
+                                templateEquip.AttackSpeed = (short) property.GetInt();
                                 break;
                             case "speed":
-                                templateEquip.Speed = ((WzIntProperty) property).Value;
+                                templateEquip.Speed = (short) property.GetInt();
+                                break;
+                            case "walk":
+                                templateEquip.Walk = (short) property.GetInt();
+                                break;
+                            case "stand":
+                                templateEquip.Stand = (short) property.GetInt();
+                                break;
+                            case "knockback":
+                                templateEquip.KnockBack =(short) property.GetInt();
                                 break;
                             case "cash":
-                                templateEquip.Cash = ((WzIntProperty) property).Value;
+                                templateEquip.Cash = property.GetInt();
                                 break;
                             case "notSale":
-                                templateEquip.NotSale = ((WzIntProperty) property).Value;
+                                templateEquip.NotSale = property.GetInt();
                                 break;
                             case "price":
-                                templateEquip.Price = ((WzIntProperty) property).Value;
+                                templateEquip.Price = property.GetInt();
                                 break;
                             case "tradBlock":
                             case "tradeBlock":
-                                templateEquip.TradeBlock = ((WzIntProperty) property).Value;
+                                templateEquip.TradeBlock = property.GetInt();
                                 break;
                             case "tuc":
-                                templateEquip.TUC = ((WzIntProperty) property).Value;
+                                templateEquip.TUC = property.GetInt();
                                 break;
                             case "pickupMeso":
                                 templateEquip.PickupMeso = ((WzStringProperty) property).Value;
@@ -266,7 +275,7 @@ namespace NineToFive.Wz {
                                 templateEquip.LongRange = ((WzStringProperty) property).Value;
                                 break;
                             case "ignorePickup":
-                                templateEquip.IgnorePickup = ((WzIntProperty) property).Value;
+                                templateEquip.IgnorePickup = property.GetInt();
                                 break;
                             case "islot":
                                 templateEquip.ISlot = ((WzStringProperty) property).Value;
@@ -275,22 +284,16 @@ namespace NineToFive.Wz {
                                 templateEquip.VSlot = ((WzStringProperty) property).Value;
                                 break;
                             case "equipTradeBlock":
-                                templateEquip.EquipTradeBlock = ((WzIntProperty) property).Value;
+                                templateEquip.EquipTradeBlock = property.GetInt();
                                 break;
                             case "setItemID":
-                                templateEquip.SetItemID = ((WzIntProperty) property).Value;
+                                templateEquip.SetItemID = property.GetInt();
                                 break;
                             case "tradeAvailable":
-                                templateEquip.TradeAvailable = ((WzIntProperty) property).Value;
-                                break;
-                            case "walk":
-                                templateEquip.Walk = ((WzIntProperty) property).Value;
-                                break;
-                            case "stand":
-                                templateEquip.Stand = ((WzIntProperty) property).Value;
+                                templateEquip.TradeAvailable = property.GetInt();
                                 break;
                             case "attack":
-                                templateEquip.Attack = ((WzShortProperty) property).Value;
+                                templateEquip.Attack = (short) property.GetInt();
                                 break;
                             case "afterImage":
                                 templateEquip.AfterImage = ((WzStringProperty) property).Value;
@@ -299,80 +302,77 @@ namespace NineToFive.Wz {
                                 templateEquip.Sfx = ((WzStringProperty) property).Value;
                                 break;
                             case "only":
-                                templateEquip.Only = ((WzIntProperty) property).Value;
+                                templateEquip.Only = property.GetInt();
                                 break;
                             case "expireOnLogout":
-                                templateEquip.ExpireOnLogout = ((WzIntProperty) property).Value;
-                                break;
-                            case "knockback":
-                                templateEquip.KnockBack = ((WzIntProperty) property).Value;
+                                templateEquip.ExpireOnLogout = property.GetInt();
                                 break;
                             case "slotMax":
-                                templateEquip.SlotMax = ((WzIntProperty) property).Value;
+                                templateEquip.SlotMax = property.GetInt();
                                 break;
                             case "timeLimited":
-                                templateEquip.TimeLimited = ((WzIntProperty) property).Value;
+                                templateEquip.TimeLimited = property.GetInt();
                                 break;
                             case "notExtend":
                             case "notExtended":
-                                templateEquip.NotExtend = ((WzIntProperty) property).Value;
+                                templateEquip.NotExtend = property.GetInt();
                                 break;
                             case "durability":
-                                templateEquip.Durability = ((WzIntProperty) property).Value;
+                                templateEquip.Durability = property.GetInt();
                                 break;
                             case "hide":
-                                templateEquip.Hide = ((WzIntProperty) property).Value;
+                                templateEquip.Hide = property.GetInt();
                                 break;
                             case "quest":
-                                templateEquip.Quest = ((WzIntProperty) property).Value;
+                                templateEquip.Quest = property.GetInt();
                                 break;
                             case "weekly":
-                                templateEquip.Weekly = ((WzIntProperty) property).Value;
+                                templateEquip.Weekly = property.GetInt();
                                 break;
                             case "enchantCategory":
-                                templateEquip.EnchantCategory = ((WzIntProperty) property).Value;
+                                templateEquip.EnchantCategory = property.GetInt();
                                 break;
                             case "IUCMax":
-                                templateEquip.IUCMax = ((WzIntProperty) property).Value;
+                                templateEquip.IUCMax = property.GetInt();
                                 break;
                             case "fs":
-                                templateEquip.Fs = ((WzIntProperty) property).Value;
+                                templateEquip.Fs = property.GetInt();
                                 break;
                             case "medalTag":
-                                templateEquip.MedalTag = ((WzIntProperty) property).Value;
+                                templateEquip.MedalTag = property.GetInt();
                                 break;
                             case "noExpend":
-                                templateEquip.NoExpend = ((WzIntProperty) property).Value;
+                                templateEquip.NoExpend = property.GetInt();
                                 break;
                             case "specialID":
-                                templateEquip.SpecialID = ((WzIntProperty) property).Value;
+                                templateEquip.SpecialID = property.GetInt();
                                 break;
                             case "onlyEquip":
-                                templateEquip.OnlyEquip = ((WzIntProperty) property).Value;
+                                templateEquip.OnlyEquip = property.GetInt();
                                 break;
                             case "accountSharable":
-                                templateEquip.AccountSharable = ((WzIntProperty) property).Value;
+                                templateEquip.AccountSharable = property.GetInt();
                                 break;
                             case "dropBlock":
-                                templateEquip.DropBlock = ((WzIntProperty) property).Value;
+                                templateEquip.DropBlock = property.GetInt();
                                 break;
                             case "pachinko":
-                                templateEquip.Pachinko = ((WzIntProperty) property).Value;
+                                templateEquip.Pachinko = property.GetInt();
                                 break;
                             case "recovery":
                                 templateEquip.Recovery = ((WzFloatProperty) property).Value;
                                 break;
                             case "chatBalloon":
-                                templateEquip.ChatBalloon = ((WzIntProperty) property).Value;
+                                templateEquip.ChatBalloon = property.GetInt();
                                 break;
                             case "nameTag":
-                                templateEquip.NameTag = ((WzIntProperty) property).Value;
+                                templateEquip.NameTag = property.GetInt();
                                 break;
                             case "sharableOnce":
-                                templateEquip.SharableOnce = ((WzIntProperty) property).Value;
+                                templateEquip.SharableOnce = property.GetInt();
                                 break;
                             case "tamingMob":
-                                templateEquip.TamingMob = ((WzIntProperty) property).Value;
+                                templateEquip.TamingMob = property.GetInt();
                                 break;
 
                             // end

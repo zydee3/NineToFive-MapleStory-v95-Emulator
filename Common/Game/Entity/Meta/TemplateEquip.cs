@@ -8,51 +8,51 @@
 
         #region Increase stats
 
-        public int IncHP { get; set; }
-        public int IncMHP { get; set; }
-        public int IncMP { get; set; }
-        public int IncMMP { get; set; }
-        public int IncSTR { get; set; }
-        public int IncDEX { get; set; }
-        public int IncINT { get; set; }
-        public int IncLUK { get; set; }
-        public int IncPAD { get; set; }
-        public int IncMAD { get; set; }
-        public int IncPDD { get; set; }
-        public int IncMDD { get; set; }
-        public int IncACC { get; set; }
-        public int IncEVA { get; set; }
-        public int IncSpeed { get; set; }
-        public int IncJump { get; set; }
-        public int IncRMAF { get; set; }
-        public int IncRMAS { get; set; }
-        public int IncRMAI { get; set; }
-        public int IncRMAL { get; set; }
-        public int IncCraft { get; set; }
-        public int IncMHPR { get; set; }
-        public int IncMMPR { get; set; }
-        public int IncSwim { get; set; }
-        public int IncFatigue { get; set; }
+        public short IncHP { get; set; }
+        public short IncMHP { get; set; }
+        public short IncMP { get; set; }
+        public short IncMMP { get; set; }
+        public short IncSTR { get; set; }
+        public short IncDEX { get; set; }
+        public short IncINT { get; set; }
+        public short IncLUK { get; set; }
+        public short IncPAD { get; set; }
+        public short IncMAD { get; set; }
+        public short IncPDD { get; set; }
+        public short IncMDD { get; set; }
+        public short IncACC { get; set; }
+        public short IncEVA { get; set; }
+        public short IncSpeed { get; set; }
+        public short IncJump { get; set; }
+        public short IncRMAF { get; set; }
+        public short IncRMAS { get; set; }
+        public short IncRMAI { get; set; }
+        public short IncRMAL { get; set; }
+        public short IncCraft { get; set; }
+        public short IncMHPR { get; set; }
+        public short IncMMPR { get; set; }
+        public short IncSwim { get; set; }
+        public short IncFatigue { get; set; }
 
         #endregion
 
-        public int AttackSpeed { get; set; }
-        public int HPRecovery { get; set; }
-        public int MPRecovery { get; set; }
-        public int KnockBack { get; set; }
-        public int Walk { get; set; }
-        public int Stand { get; set; }
-        public int Speed { get; set; }
+        public short AttackSpeed { get; set; }
+        public short HPRecovery { get; set; }
+        public short MPRecovery { get; set; }
+        public short KnockBack { get; set; }
+        public short Walk { get; set; }
+        public short Stand { get; set; }
+        public short Speed { get; set; }
 
         #region Require stats
 
-        public int ReqLevel { get; set; }
-        public int ReqJob { get; set; }
-        public int ReqSTR { get; set; }
-        public int ReqDEX { get; set; }
-        public int ReqINT { get; set; }
-        public int ReqLUK { get; set; }
-        public int ReqPOP { get; set; }
+        public short ReqLevel { get; set; }
+        public short ReqJob { get; set; }
+        public short ReqSTR { get; set; }
+        public short ReqDEX { get; set; }
+        public short ReqINT { get; set; }
+        public short ReqLUK { get; set; }
+        public short ReqPOP { get; set; }
 
         #endregion
 
