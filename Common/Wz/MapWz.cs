@@ -31,6 +31,7 @@ namespace NineToFive.Wz {
             foreach (var pair in t.Life) {
                 if (!pair.Key.IsTemplate()) continue;
                 foreach (var lifeEntry in pair.Value) {
+                    if (lifeEntry.Type == EntityType.Mob) continue;
                     field.AddLife(lifeEntry.Create());
                 }
             }

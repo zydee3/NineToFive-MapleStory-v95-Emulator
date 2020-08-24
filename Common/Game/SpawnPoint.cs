@@ -5,12 +5,14 @@ using NineToFive.Game.Entity.Meta;
 
 namespace NineToFive.Game {
     public class SpawnPoint {
-        private TemplateLife _life;
-        private Field _field;
+        private readonly TemplateLife _life;
+        private readonly Field _field;
+        public bool CanSpawn { get; set; }
 
         public SpawnPoint(ref Field field, TemplateLife life) {
             _field = field;
             _life = life;
+            CanSpawn = true;
         }
 
         public long LastSummon { get; set; }
@@ -18,13 +20,20 @@ namespace NineToFive.Game {
         /// <summary>
         /// Summons the mob associated to _mobId if the previous monster has been killed.
         /// </summary>
-        public async Task<bool> SummonLife(Field field) {
-            Life life = _life.Create();
-            if (life == null) return false;
-            //todo: spawn
-            LastSummon = DateTime.Now.ToFileTime();
+        public async Task SummonMob(User controller) {
+            if (controller == null || !CanSpawn || _field.SpawnedMobCount > _field.SpawnedMobLimit) return;
 
-            return true;
+            Mob mob = (Mob) _life.Create();
+            if (mob != null) {
+                _field.AddLife(mob);
+                _field.BroadcastPacket(mob.EnterFieldPacket());
+
+                mob.SpawnPoint = this;
+                //mob.UpdateController(controller); // i disabled this because the packet dcing us is mob movement
+
+                _field.LastUpdate = LastSummon = DateTime.Now.ToFileTime();
+                CanSpawn = false;
+            }
         }
     }
 }

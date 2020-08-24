@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -55,11 +55,44 @@ namespace NineToFive.Game {
         public Dictionary<EntityType, LifePool<Life>> LifePools { get; }
         public uint FieldLimit { get; set; }
 
-        private int _spawnedMonsters;
-        private int _spawnedMonstersLimit = 500;
-        public int SpawnedMonsters {
-            get => _spawnedMonsters;
-            set => Interlocked.Exchange(ref _spawnedMonsters, value);
+        public int SpawnedMobLimit { get; set; } = 20;
+        
+        private int _spawnedMobCount;
+        public int SpawnedMobCount {
+            get => _spawnedMobCount;
+            set => Interlocked.Exchange(ref _spawnedMobCount, value);
+        }
+
+        private long _lastUpdate;
+
+        public long LastUpdate {
+            get => _lastUpdate;
+            set => Interlocked.Exchange(ref _lastUpdate, value);
+        }
+
+        /// <summary>
+        /// Each task in this function should be ran asynchronously.
+        ///
+        /// Each spawn point needs a user for the controller, this serves double to check if a
+        /// user exists (since we don't want to update the spawns when no players are in the map)
+        /// and as a retrieval so we aren't accessing the life pool on each spawn point.
+        ///
+        /// I probably shouldn't be passing in channel like this but idk how else to access it.
+        /// </summary>
+        /// <returns></returns>
+        public async Task Update(Channel channel) {
+            User user = (User) LifePools[EntityType.User].Values.First();
+            
+            if (user == null && (LastUpdate + 180000 <= DateTime.Now.ToFileTime())) {
+                channel.Fields.Remove(Id);
+                Console.WriteLine($"Disposing Field: {ToString()}");
+                return;
+            }
+
+            if (user != null) foreach (var point in SpawnPoints) point.SummonMob(user); // OwO
+
+            //todo remove drops, update reactors and etc
+            // LifePools[EntityType.Drop].Values.Select(async drop => );
         }
 
         /// <summary>
@@ -107,13 +140,9 @@ namespace NineToFive.Game {
                 Log.Info("Life already exists in a field");
                 return;
             }
-            
-            if (life.Type == EntityType.Mob) {
-                if (SpawnedMonsters > _spawnedMonstersLimit) return;
-                life = null;
-                SpawnedMonsters++;
-            }
 
+            if (life.Type == EntityType.Mob) SpawnedMobCount++;
+            
             life.Field = this;
             LifePools[life.Type].AddLife(life);
             if (life is User user) {
@@ -134,7 +163,7 @@ namespace NineToFive.Game {
         /// </summary>
         public void RemoveLife(Life life) {
             if (!LifePools[life.Type].RemoveLife(life)) return;
-            if (life.Type == EntityType.Mob) SpawnedMonsters--;
+            if (life.Type == EntityType.Mob) SpawnedMobCount--;
             BroadcastPacket(life.LeaveFieldPacket());
             
             life.Id = 0;

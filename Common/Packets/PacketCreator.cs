@@ -212,11 +212,11 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetMobLeaveField(Mob mob) {
+        public static byte[] GetMobLeaveField(Mob mob, byte type) {
             using Packet w = new Packet();
             w.WriteShort((short) CMobPool.OnMobLeaveField);
             w.WriteUInt(mob.Id);
-            byte b = w.WriteByte(); // dead type
+            byte b = w.WriteByte(type); // dead type
             if (b == 4) w.WriteInt();
             return w.ToArray();
         }

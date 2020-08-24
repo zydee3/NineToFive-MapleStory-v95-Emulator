@@ -7,8 +7,12 @@ using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
     public class Mob : Life {
+
+        public SpawnPoint SpawnPoint { get; set; }
+        
         public Tuple<int, int> HealOnDestroy;
         public int SelfDestruction;
+        
 
         public Mob(int templateId) : base(templateId, EntityType.Mob) {
             MobWz.SetMob(this);
@@ -21,7 +25,7 @@ namespace NineToFive.Game.Entity {
         }
 
         public override byte[] LeaveFieldPacket() {
-            return MobPool.GetMobLeaveField(this);
+            return MobPool.GetMobLeaveField(this, 1);
         }
 
         public WeakReference<User> Controller { get; }
@@ -53,7 +57,8 @@ namespace NineToFive.Game.Entity {
                         attacker.CharacterStat.Exp += rewardExp;
                         attacker.CharacterStat.SendUpdate(attacker, (uint) UserAbility.Exp);
                     }
-                    
+
+                    SpawnPoint.CanSpawn = true;
                     attacker.Field.RemoveLife(this);
                 }
             }
@@ -87,7 +92,7 @@ namespace NineToFive.Game.Entity {
 
         public int BodyAttack { get; set; }
         public int Pushed { get; set; }
-        public int SummonType { get; set; }
+        public int SummonType { get; set; } = -2;
         public int Boss { get; set; }
         public int IgnoreFieldOut { get; set; }
         public int Category { get; set; }

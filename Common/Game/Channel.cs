@@ -7,15 +7,12 @@ namespace NineToFive.Game {
     public class Channel {
         private readonly byte _worldId;
         public readonly ChannelSnapshot Snapshot = new ChannelSnapshot();
-        private Dictionary<int, Field> _fields = new Dictionary<int, Field>();
-
-        public Dictionary<int, Field> Fields { get; }
+        public Dictionary<int, Field> Fields { get; } = new Dictionary<int, Field>();
 
         public Channel(byte worldId, byte id, int port) {
             _worldId = worldId;
             Id = id;
             Port = port;
-            Fields = new Dictionary<int, Field>();
         }
 
         public World World => Server.Worlds[_worldId];
@@ -25,10 +22,10 @@ namespace NineToFive.Game {
         public ServerListener ServerListener { get; set; }
 
         public Field GetField(int fieldId) {
-            _fields.TryGetValue(fieldId, out Field field);
+            Fields.TryGetValue(fieldId, out Field field);
             if (field != null) return field;
             field = new Field(fieldId);
-            _fields.Add(fieldId, field);
+            Fields.Add(fieldId, field);
             return field;
         }
     }

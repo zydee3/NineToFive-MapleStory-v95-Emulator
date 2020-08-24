@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using Destiny.Security;
@@ -129,6 +130,7 @@ namespace NineToFive.Net {
         public void Write(byte[] b) {
             DisposeIfNecessary();
             try {
+                //Console.WriteLine(BitConverter.ToString(b).Split("-").Aggregate("[Out Going] ", (ba, by) => $"{ba} {by}"));
                 _socket.GetStream().Write(_cipher.Encrypt(b));
             } catch (IOException) {
                 Dispose();

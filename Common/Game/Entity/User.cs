@@ -11,7 +11,6 @@ using NineToFive.Net;
 using NineToFive.Packets;
 using NineToFive.SendOps;
 using NineToFive.Util;
-using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
     public class User : Life {
@@ -76,7 +75,7 @@ namespace NineToFive.Game.Entity {
             using (DatabaseQuery q = Database.Table("keymap")) {
                 using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
                 while (r.Read()) {
-                    KeyMap.Add(r.GetInt32("key"), new Tuple<byte, int>(r.GetByte("type"), r.GetInt32("value")));
+                    KeyMap.TryAdd(r.GetInt32("key"), new Tuple<byte, int>(r.GetByte("type"), r.GetInt32("value")));
                 }
             }
         }
@@ -247,7 +246,6 @@ namespace NineToFive.Game.Entity {
 
             w.WriteLong(DateTime.Now.ToFileTime()); // paramFieldInit.ftServer
             Client.Session.Write(w.ToArray());
-            Console.WriteLine(w.ToArrayString(true));
 
             Field.AddLife(this);
             // let people know this person entered the field

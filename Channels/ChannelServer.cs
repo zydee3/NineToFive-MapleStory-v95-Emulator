@@ -10,6 +10,7 @@ using NineToFive.Game;
 using NineToFive.Net;
 using NineToFive.Net.Interoperations;
 using NineToFive.Wz;
+using Timer = System.Timers.Timer;
 
 [assembly: XmlConfigurator(ConfigFile = "logger-config.xml")]
 
@@ -83,6 +84,7 @@ namespace NineToFive {
             PacketEvent handler = (PacketEvent) ((object[]) state)[0];
             try {
                 using Packet p = (Packet) ((object[]) state)[1];
+                //Console.WriteLine($"[Incoming] {p.ToArrayString(true)}");
                 if (handler.OnProcess(p)) {
                     handler.OnHandle();
                 }
@@ -109,11 +111,18 @@ namespace NineToFive {
                     World.ActiveWorld = byte.Parse(arg.Split("=")[1]);
                 }
             }
-
-            if (Server.Worlds[World.ActiveWorld].Channels.Count(ch => ch.ServerListener != null) == 0) {
+            World world = Server.Worlds[World.ActiveWorld];
+            if (world.Channels.Count(ch => ch.ServerListener != null) == 0) {
                 Log.Warn("Invalid usage. Please specify a --channels and --world cmd-line argument");
                 Environment.Exit(0);
             }
+
+            const int fieldUpdateInterval = 5 * 1000;
+            Timer timer = new Timer(fieldUpdateInterval);
+            timer.Elapsed += world.UpdateFields;
+            timer.AutoReset = true;
+            timer.Enabled = true;
+            world.UpdateFieldTimer = timer;
 
             var skills = SkillWz.LoadSkills();
             Log.Info($"Loaded {skills.Count} skills");
