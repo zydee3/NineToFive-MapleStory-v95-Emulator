@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace NineToFive.Net {
@@ -236,13 +237,7 @@ namespace NineToFive.Net {
         }
 
         public string ReadRemaining(int index = -1) {
-            string result = "";
-            string[] bytes = BitConverter.ToString(Stream.ToArray()).Split("-");
-            for (int i = (index == -1 ? Position : index); i < Capacity; i++) {
-                result = $"{result} {bytes[i]}";
-            }
-
-            return result;
+            return BitConverter.ToString(Stream.ToArray()).Split("-").Aggregate((ba, by) => $"{ba} {by}");
         }
 
         #endregion

@@ -79,7 +79,7 @@
         public int IgnorePickup { get; set; }
         public int SetItemID { get; set; }
         public int Only { get; set; }
-        public int Durability { get; set; }
+        public int Durability { get; set; } = -1;
         public int ElemDefault { get; set; }
         public int ScanTradeBlock { get; set; }
         public int EpicItem { get; set; }

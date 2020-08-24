@@ -161,7 +161,7 @@ namespace NineToFive.Game.Storage {
             p.WriteByte(); // iLevelUpType
             p.WriteByte(); // iLevel
             p.WriteInt();  // iEXP
-            p.WriteInt();  // iDurability
+            p.WriteInt(equip.Durability);  // iDurability
 
             p.WriteInt(); // nIUC
 
