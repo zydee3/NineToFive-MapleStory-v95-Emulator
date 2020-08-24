@@ -139,18 +139,18 @@ namespace NineToFive.Game.Storage {
             base.Encode(equip, p);
             p.WriteByte(); // nRUC
             p.WriteByte(); // nCUC
-            p.WriteShort((short)equip.IncSTR);
-            p.WriteShort((short)equip.IncDEX);
-            p.WriteShort((short)equip.IncINT);
-            p.WriteShort((short)equip.IncLUK);
-            p.WriteShort((short)equip.IncMHP);
-            p.WriteShort((short)equip.IncMMP);
-            p.WriteShort((short)equip.IncPAD);
-            p.WriteShort((short)equip.IncMAD);
-            p.WriteShort((short)equip.IncPDD);
-            p.WriteShort((short)equip.IncMDD);
-            p.WriteShort((short)equip.IncACC);
-            p.WriteShort((short)equip.IncEVA);
+            p.WriteShort(equip.IncSTR);
+            p.WriteShort(equip.IncDEX);
+            p.WriteShort(equip.IncINT);
+            p.WriteShort(equip.IncLUK);
+            p.WriteShort(equip.IncMHP);
+            p.WriteShort(equip.IncMMP);
+            p.WriteShort(equip.IncPAD);
+            p.WriteShort(equip.IncMAD);
+            p.WriteShort(equip.IncPDD);
+            p.WriteShort(equip.IncMDD);
+            p.WriteShort(equip.IncACC);
+            p.WriteShort(equip.IncEVA);
 
             p.WriteShort(equip.Craft);
             p.WriteShort(equip.Speed);
