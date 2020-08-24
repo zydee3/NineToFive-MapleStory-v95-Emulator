@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using log4net;
 using NineToFive.Constants;
 using NineToFive.Game.Entity;
@@ -54,6 +55,13 @@ namespace NineToFive.Game {
         public Dictionary<EntityType, LifePool<Life>> LifePools { get; }
         public uint FieldLimit { get; set; }
 
+        private int _spawnedMonsters;
+        private int _spawnedMonstersLimit = 500;
+        public int SpawnedMonsters {
+            get => _spawnedMonsters;
+            set => Interlocked.Exchange(ref _spawnedMonsters, value);
+        }
+
         /// <summary>
         /// Calculates the projected position on a foothold directly under the provided argument.
         /// </summary>
@@ -99,6 +107,12 @@ namespace NineToFive.Game {
                 Log.Info("Life already exists in a field");
                 return;
             }
+            
+            if (life.Type == EntityType.Mob) {
+                if (SpawnedMonsters > _spawnedMonstersLimit) return;
+                life = null;
+                SpawnedMonsters++;
+            }
 
             life.Field = this;
             LifePools[life.Type].AddLife(life);
@@ -120,8 +134,9 @@ namespace NineToFive.Game {
         /// </summary>
         public void RemoveLife(Life life) {
             if (!LifePools[life.Type].RemoveLife(life)) return;
+            if (life.Type == EntityType.Mob) SpawnedMonsters--;
             BroadcastPacket(life.LeaveFieldPacket());
-
+            
             life.Id = 0;
             life.Field = null;
             if (life is User user) {

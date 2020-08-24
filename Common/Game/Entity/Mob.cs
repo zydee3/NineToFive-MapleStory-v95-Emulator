@@ -36,20 +36,33 @@ namespace NineToFive.Game.Entity {
         public async Task Damage(User attacker, int damage) {
             lock (this) {
                 HP -= damage;
-                byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP); 
-                attacker.Field.BroadcastPacket(MobPool.GetShowHpIndicator((int) Id, indicator));
+                if (HP > 0) {
+                    byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP);
+                    attacker.Field.BroadcastPacket(MobPool.GetShowHpIndicator((int) Id, indicator));
+                } else {
+                    int expToLevel = GameConstants.getExpToLevel(attacker.CharacterStat.Level);
+                    int expNeededToLevel = expToLevel - attacker.CharacterStat.Exp;
+                    int rewardExp = Exp;
+                    if (rewardExp >= expNeededToLevel) {
+                        attacker.CharacterStat.Level++;
+                        
+                        //cap the exp at 99% to prevent multi-leveling in the event of overflow
+                        attacker.CharacterStat.Exp = Math.Min(rewardExp - expNeededToLevel, GameConstants.getExpToLevel(attacker.CharacterStat.Level) - 1);
+                        attacker.CharacterStat.SendUpdate(attacker, (uint)(UserAbility.Level | UserAbility.Exp));
+                    } else {
+                        attacker.CharacterStat.Exp += rewardExp;
+                        attacker.CharacterStat.SendUpdate(attacker, (uint) UserAbility.Exp);
+                    }
+                    
+                    attacker.Field.RemoveLife(this);
+                }
             }
         }
 
         private int _hp;
         public int HP {
             get => _hp;
-            set {
-                _hp = Math.Max(value, 0);
-                if (_hp == 0) {
-                    // monster dead
-                }
-            }
+            set => _hp = Math.Max(Math.Min(value, MaxHP), 0);
         }
 
         public int Level { get; set; }

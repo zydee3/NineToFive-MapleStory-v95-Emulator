@@ -25,7 +25,7 @@ namespace NineToFive.Wz {
             // Create spawn points only where monsters exist.
             List<TemplateLife> mobs = t.Life[EntityType.Mob];
             foreach (var mob in mobs) {
-                field.SpawnPoints.Add(new SpawnPoint(mob));
+                field.SpawnPoints.Add(new SpawnPoint(ref field, mob));
             }
 
             foreach (var pair in t.Life) {
