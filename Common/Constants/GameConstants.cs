@@ -9,6 +9,14 @@ namespace NineToFive.Constants {
         Body,
     }
 
+    public enum QuestType : byte {
+        Start = 1,
+        Complete = 2,
+        Resign = 3,
+        StartScriptLinked = 4,
+        CompleteScriptLinked = 5,
+    }
+
     public static class GameConstants {
         /// <summary>
         /// in ida: 00724BF0 : get_next_level_exp

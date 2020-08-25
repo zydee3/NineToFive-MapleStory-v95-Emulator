@@ -57,6 +57,8 @@ namespace NineToFive {
 
                 [(short) ReceiveOperations.UserLocal_TalkToNpc] = typeof(TalkToNpcEvent),
                 [(short) ReceiveOperations.UserLocal_ContinueTalkToNpc] = typeof(ContinueTalkToNpcEvent),
+                
+                [(short) ReceiveOperations.CQuest_OnQuestUpdate] = typeof(QuestUpdateEvent),
             };
         }
 

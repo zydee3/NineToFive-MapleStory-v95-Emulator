@@ -80,5 +80,7 @@ namespace NineToFive.Net {
         
         
         CScriptMan_OnScriptMessage = 363,
+        
+        CQuest_OnQuestUpdate = 119,
     }
 }
