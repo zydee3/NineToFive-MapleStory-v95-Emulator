@@ -28,7 +28,7 @@ namespace NineToFive.Event {
             user.CharacterStat.SP -= 1;
 
             Client.Session.Write(GetChangeSkillRecord(record));
-            Client.User.CharacterStat.SendUpdate(Client.User, 0x8000);
+            Client.User.CharacterStat.SendUpdate(Client.User, (uint) UserAbility.SP);
         }
 
         public static byte[] GetChangeSkillRecord(SkillRecord record) {
