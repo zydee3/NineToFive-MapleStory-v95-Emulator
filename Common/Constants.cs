@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using IniParser;
@@ -60,13 +59,6 @@ namespace NineToFive {
             "Galicia", "El Nido (East)", "Zenith", "Arcania", "Plana", "Kastia", "Kalluna", "Stius", "Croa", "Judis",
             "Nova", "Aster", "Cosmo", "Androa"
         };
-    }
-
-    public static class Disabled {
-        public static readonly List<uint> Mobs = new List<uint>();
-        public static readonly List<uint> Npcs = new List<uint>();
-        public static readonly List<uint> Cash = new List<uint>();
-        public static readonly List<uint> Fields = new List<uint>();
     }
 
     public static class JobConstants {

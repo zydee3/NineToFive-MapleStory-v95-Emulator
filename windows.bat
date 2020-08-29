@@ -14,12 +14,11 @@ if /I "%OPT%"=="all" goto start_central
 if /I "%OPT%"=="exit" goto exit
 
 echo invalid command "%OPT%"... try again
-ping 127.0.0.1 -n 3 > nul
 goto start
 
 :start_central
 echo Starting Central server
-start /d "bin\Debug\Common\netcoreapp3.1" cmd /k "title Central Server & Common.exe"
+start /d "bin\Debug\Central\netcoreapp3.1" cmd /k "title Central Server & Central.exe"
 ping 127.0.0.1 -n 2 > nul
 if /I "%OPT%"=="c" goto start
 

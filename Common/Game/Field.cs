@@ -80,7 +80,6 @@ namespace NineToFive.Game {
         ///
         /// I probably shouldn't be passing in channel like this but idk how else to access it.
         /// </summary>
-        /// <returns></returns>
         public async Task Update(Channel channel) {
             User user = (User) LifePools[EntityType.User].Values.First();
             

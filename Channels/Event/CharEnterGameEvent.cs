@@ -18,7 +18,7 @@ namespace NineToFive.Event {
         public CharEnterGameEvent(Client client) : base(client) { }
 
         public override bool ShouldProcess() {
-            return Client.LoginStatus == 0;
+            return true;
         }
 
         public override void OnError(Exception e) {

@@ -11,7 +11,6 @@ namespace NineToFive.Event {
             return false; // no reason to continue
         }
 
-        public override void OnHandle() {
-        }
+        public override void OnHandle() { }
     }
 }

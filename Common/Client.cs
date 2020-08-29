@@ -13,8 +13,8 @@ using NineToFive.Util;
 namespace NineToFive {
     public class Client : IPacketSerializer<Client>, IDisposable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Client));
-        public readonly ClientSession Session;
         public readonly List<User> Users = new List<User>(15);
+        public ClientSession Session;
         private byte _worldId, _channelId;
 
         public Client() {
@@ -25,8 +25,15 @@ namespace NineToFive {
             Session = session;
         }
 
+        public void SendKeepAliveRequest() {
+            PingTimestamp = DateTime.Now.TimeOfDay;
+            Session.Write(new byte[] {17, 0});
+        }
+
         public void Dispose() {
-            PingTimer?.Dispose();
+            PingTimer?.Stop();
+            PingTimer?.Dispose(); // WHICH DO I USE
+            PingTimer = null;
 
             Users.Clear();
             try {
@@ -41,6 +48,7 @@ namespace NineToFive {
             } catch (Exception e) {
                 Log.Error($"Failure to disconnect '{Username}'", e);
             }
+            Session = null;
         }
 
         public void Encode(Client t, Packet p) {
@@ -97,6 +105,7 @@ namespace NineToFive {
         public byte LoginStatus { get; set; }
 
         public TimeSpan PingTimestamp { get; set; }
+        public TimeSpan PongTimestamp { get; set; }
         public Timer PingTimer { get; set; }
         public User User { get; set; }
         public byte[] MachineId { get; set; }

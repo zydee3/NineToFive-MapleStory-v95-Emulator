@@ -32,11 +32,13 @@ namespace NineToFive.Event {
             _address = p.ReadInt();
             if (_worldId >= Server.Worlds.Length) {
                 Log.Warn($"invalid world specified : {_worldId}");
+                Client.Session.Write(GetSelectWorldFailed(6));
                 return false;
             }
 
             if (_channelId >= Server.Worlds[_worldId].Channels.Length) {
                 Log.Warn($"invalid channel specified {_channelId} for world {_worldId}");
+                Client.Session.Write(GetSelectWorldFailed(6));
                 return false;
             }
 

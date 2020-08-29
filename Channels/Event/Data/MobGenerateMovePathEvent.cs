@@ -10,15 +10,16 @@ namespace NineToFive.Event.Data {
     public class MobGenerateMovePathEvent : VecCtrlEvent {
         private uint _mobId;
         private short _mobCtrlSn;
+        private byte _a;
 
         public MobGenerateMovePathEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
             _mobId = p.ReadUInt();      // dwMobID
             _mobCtrlSn = p.ReadShort(); // m_nMobCtrlSN
-            int a = p.ReadByte();       // v171 | 4 * (v168 | 2 * (a10 | 2 * v61))
-            int b = p.ReadByte();
-            int c = p.ReadInt();
+            _a = p.ReadByte();       // v171 | 4 * (v168 | 2 * (a10 | 2 * v61))
+            int b = p.ReadByte(); // bMovingAttack
+            int c = p.ReadInt(); // ((CMovePathCommon::ELEM) e)._ZtlSecureTear_bSN_CS
 
             for (int i = 0; i < p.ReadInt(); i++) {
                 p.ReadInt();
@@ -52,7 +53,7 @@ namespace NineToFive.Event.Data {
             // tell everyone EXCLUDING the controller owner that the mob has moved
             // including the controller owner will cause mobs to become inactive
             user.Field.BroadcastPacketExclude(user, GetMobMove(mob, Origin, Velocity, Movements));
-            user.Client.Session.Write(GetMobCtrlAck(mob)); // only the controller owner should receive this
+            user.Client.Session.Write(GetMobCtrlAck(mob));
         }
 
         /// <summary>
@@ -65,14 +66,14 @@ namespace NineToFive.Event.Data {
             w.WriteUInt(mob.Id);
 
             w.WriteShort(_mobCtrlSn); // nMobCtrlSN
-            w.WriteByte();            // bNextAttackPossible
-            w.WriteShort();           // m_nMP
-            w.WriteByte();            // m_nUserCtrlCommand
-            w.WriteByte();            // nSLV ( skill level )
+            w.WriteBool((_a & 0xF) != 0);  // bNextAttackPossible
+            w.WriteShort((short) mob.MP); // m_nMP
+            w.WriteByte();  // m_nUserCtrlCommand
+            w.WriteByte();  // nSLV ( skill level )
 
             return w.ToArray();
         }
-
+        
         private static byte[] GetMobMove(Mob mob, Vector2 origin, Vector2 velocity, List<Movement> moves) {
             using Packet w = new Packet();
             w.WriteShort((short) CMob.OnMove);

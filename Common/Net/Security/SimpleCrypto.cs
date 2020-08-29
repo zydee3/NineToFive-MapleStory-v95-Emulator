@@ -1,10 +1,7 @@
 ﻿using System;
-using NineToFive.Security;
 
 namespace NineToFive.Net.Security {
-    public class SimpleCrypto : ICryptograph {
-        public void Dispose() { }
-
+    public class SimpleCrypto {
         /// <summary>
         /// prepends 4 bytes representing the length of the packet buffer 
         /// </summary>

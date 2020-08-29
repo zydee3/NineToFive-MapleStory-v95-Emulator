@@ -48,7 +48,12 @@ namespace NineToFive {
             object instance = Activator.CreateInstance(t, c);
             if (instance is PacketEvent handler) {
                 try {
-                    if (handler.ShouldProcess() && handler.OnProcess(p)) {
+                    if (!handler.ShouldProcess()) {
+                        p.Dispose();
+                        return;
+                    }
+
+                    if (handler.OnProcess(p)) {
                         handler.OnHandle();
                     }
                 } catch (Exception e) {
@@ -65,7 +70,7 @@ namespace NineToFive {
             // Initialize the login server socket
             LoginServer server = new LoginServer(ServerConstants.LoginPort);
             server.Start();
-            Log.Info($"Login server listening on port {server.Port}");
+            Log.Info($"Listening on port {server.Port}");
         }
     }
 }

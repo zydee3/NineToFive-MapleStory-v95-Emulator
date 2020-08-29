@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>NineToFive</RootNamespace>
   </PropertyGroup>
@@ -19,7 +18,7 @@
 
   <ItemGroup>
     <PackageReference Include="ini-parser" Version="2.5.2" />
-    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="log4net" Version="2.0.9" />
     <PackageReference Include="Microsoft.ClearScript" Version="6.0.2" />
     <PackageReference Include="MySqlConnector" Version="0.69.5" />
     <ProjectReference Include="..\MapleLib\MapleLib.csproj" />
@@ -27,7 +26,7 @@
 
   <ItemGroup>
     <None Update="logger-config.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

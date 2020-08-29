@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Timers;
+using NineToFive.Net;
 
 namespace NineToFive.Event {
     public class KeepAliveEvent : PacketEvent {
@@ -9,12 +10,18 @@ namespace NineToFive.Event {
             return true;
         }
 
+        public override bool OnProcess(Packet p) {
+            return true;
+        }
+
         public override void OnHandle() {
-            // response
-            Client.PingTimestamp = DateTime.Now.TimeOfDay;
+            Client.PongTimestamp = DateTime.Now.TimeOfDay;
+            if (Client.User?.IsDebugging == true) {
+                Client.User.SendMessage($"{Client.PongTimestamp - Client.PingTimestamp}");
+            }
 
             if (Client.PingTimer == null) {
-                var timer = (Client.PingTimer = new Timer(1000 * 40));
+                var timer = (Client.PingTimer = new Timer(1000 * 30));
                 timer.Elapsed += DisposeIfNecessary;
                 timer.Enabled = true;
                 timer.AutoReset = true;
@@ -23,7 +30,10 @@ namespace NineToFive.Event {
         }
 
         private void DisposeIfNecessary(object sender, ElapsedEventArgs e) {
-            Client.Session.DisposeIfNecessary();
+            Client.SendKeepAliveRequest();
+            if (Client.Session.ShouldDispose()) {
+                Client.Dispose();
+            }
         }
     }
 }

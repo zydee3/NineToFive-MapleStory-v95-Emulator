@@ -114,10 +114,10 @@ namespace NineToFive.Net {
             return item;
         }
 
-        public Packet WriteUShort(ushort item = 0) {
+        public ushort WriteUShort(ushort item = 0) {
             Writer.Write(item);
             if (Position > Size) Size = Position;
-            return this;
+            return item;
         }
 
         public int WriteInt(int item = 0) {
@@ -126,10 +126,10 @@ namespace NineToFive.Net {
             return item;
         }
 
-        public Packet WriteUInt(uint item = 0) {
+        public uint WriteUInt(uint item = 0) {
             Writer.Write(item);
             if (Position > Size) Size = Position;
-            return this;
+            return item;
         }
 
         public Packet WriteLong(long item = 0) {

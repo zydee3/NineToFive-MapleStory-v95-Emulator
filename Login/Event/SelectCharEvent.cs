@@ -70,7 +70,6 @@ namespace NineToFive.Event {
                 using Packet r = new Packet(Interoperability.GetPacketResponse(w.ToArray(), ServerConstants.InterCentralPort, ServerConstants.CentralServer));
                 if (r.ReadBool()) {
                     _remoteAddress = r.ReadBytes(4);
-                    Log.Info($"Channel {Client.Channel.Id} address found {new IPAddress(_remoteAddress)}");
                 } else {
                     Client.Session.Write(GetSelectCharFailed(6));
                     Client.Session.Write(CWvsPackets.GetBroadcastMessage(null, false, 1, "Server is unavailable.", null));
@@ -82,7 +81,7 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            Log.Info($"Connecting to server {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
+            Log.Info($"Migrating Client {Client.Id} to {new IPAddress(_remoteAddress)}:{Client.Channel.Port}");
 
             Client.LoginStatus = 2;
             ClientAuthRequest.RequestClientUpdate(Client);

@@ -104,7 +104,7 @@ namespace NineToFive.Net.Interoperations {
 
                 using Packet p = new Packet(buffer);
                 instance.OnInteroperationReceived(client, p);
-            } catch (IOException) {
+            } catch (SocketException) {
                 // forcibly closed or smth
             } catch (Exception e) {
                 Log.Error("Error while processing", e);

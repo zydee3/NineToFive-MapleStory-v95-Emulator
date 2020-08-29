@@ -7,12 +7,10 @@ using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
     public class Mob : Life {
-
         public SpawnPoint SpawnPoint { get; set; }
-        
+
         public Tuple<int, int> HealOnDestroy;
         public int SelfDestruction;
-        
 
         public Mob(int templateId) : base(templateId, EntityType.Mob) {
             MobWz.SetMob(this);
@@ -21,11 +19,11 @@ namespace NineToFive.Game.Entity {
         }
 
         public override byte[] EnterFieldPacket() {
-            return MobPool.GetMobEnterField(this);
+            return MobPackets.GetMobEnterField(this);
         }
 
         public override byte[] LeaveFieldPacket() {
-            return MobPool.GetMobLeaveField(this, 1);
+            return MobPackets.GetMobLeaveField(this, 1);
         }
 
         public WeakReference<User> Controller { get; }
@@ -34,32 +32,31 @@ namespace NineToFive.Game.Entity {
         public void UpdateController(User user, bool chaseTarget = false) {
             Controller.SetTarget(user);
             ChaseTarget = user != null && chaseTarget;
-            user?.Client.Session.Write(MobPool.GetMobChangeController(this));
+            user?.Client.Session.Write(MobPackets.GetMobChangeController(this));
         }
 
         public async Task Damage(User attacker, int damage) {
             if (attacker.Field != Field) return;
-            
+
             lock (this) {
                 HP -= damage;
                 Console.WriteLine($"[Damage] MobId: {Id}, Damage: {damage}, New HP: {HP}");
                 if (HP > 0) {
                     byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP);
-                    attacker.Field.BroadcastPacket(MobPool.GetShowHpIndicator((int) Id, indicator));
+                    attacker.Field.BroadcastPacket(MobPackets.GetShowHpIndicator((int) Id, indicator));
                 } else {
                     SpawnPoint.CanSpawn = true;
                     attacker.Field.RemoveLife(this);
                     attacker.CharacterStat.Exp += (uint) Exp;
-                    attacker.CharacterStat.SendUpdate(attacker, (uint)(UserAbility.Level | UserAbility.Exp));
+                    attacker.CharacterStat.SendUpdate(attacker, (uint) (UserAbility.Level | UserAbility.Exp));
                 }
             }
         }
 
-        public async Task SpawnDrops() {
-            
-        }
+        public async Task SpawnDrops() { }
 
         private int _hp;
+
         public int HP {
             get => _hp;
             set => _hp = Math.Max(Math.Min(value, MaxHP), 0);

@@ -76,7 +76,7 @@ namespace NineToFive.Game.Entity {
             using (DatabaseQuery q = Database.Table("keymap")) {
                 using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
                 while (r.Read()) {
-                    KeyMap.TryAdd(r.GetInt32("key"), new Tuple<byte, int>(r.GetByte("type"), r.GetInt32("value")));
+                    KeyMap[r.GetInt32("key")] = new Tuple<byte, int>(r.GetByte("type"), r.GetInt32("value"));
                 }
             }
         }
@@ -156,16 +156,16 @@ namespace NineToFive.Game.Entity {
             using DatabaseQuery deleteSkills = Database.Table("skill_records");
             count = deleteSkills.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} skill records");
-            
+
             if (Skills.Count > 0) {
                 using DatabaseQuery insertSkills = Database.Table("skill_records");
                 foreach (var pair in Skills) {
                     insertSkills.Insert(Database.CreateSkillParameters(this, pair));
                 }
-                count = insertSkills.ExecuteNonQuery();
-            }
 
-            Log.Info($"[Save] {CharacterStat.Username} : Saved {count} skill records");
+                count = insertSkills.ExecuteNonQuery();
+                Log.Info($"[Save] {CharacterStat.Username} : Saved {count} skill records");
+            }
 
             #endregion
 
@@ -175,13 +175,15 @@ namespace NineToFive.Game.Entity {
             count = deleteKeymap.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} key mappings");
 
-            using DatabaseQuery insertKeymap = Database.Table("keymap");
-            foreach (var pair in KeyMap) {
-                insertKeymap.Insert("character_id", CharacterStat.Id, "key", pair.Key, "type", pair.Value.Item1, "value", pair.Value.Item2);
-            }
+            if (KeyMap.Count > 0) {
+                using DatabaseQuery insertKeymap = Database.Table("keymap");
+                foreach (var pair in KeyMap) {
+                    insertKeymap.Insert("character_id", CharacterStat.Id, "key", pair.Key, "type", pair.Value.Item1, "value", pair.Value.Item2);
+                }
 
-            count = insertKeymap.ExecuteNonQuery();
-            Log.Info($"[Save] {CharacterStat.Username} : Saved {count} key mappings");
+                count = insertKeymap.ExecuteNonQuery();
+                Log.Info($"[Save] {CharacterStat.Username} : Saved {count} key mappings");
+            }
 
             #endregion
         }
@@ -319,13 +321,18 @@ namespace NineToFive.Game.Entity {
             p.WriteBytes(new byte[12]); // pets
         }
 
-        public void Decode(User user, Packet p) { }
+        public void Decode(User user, Packet p) {
+            user.AvatarLook.Gender = p.ReadByte();
+            user.AvatarLook.Skin = p.ReadByte();
+            user.AvatarLook.Face = p.ReadInt();
+            user.AvatarLook.Hair = p.ReadInt();
+        }
     }
 
     public class CharacterStat : IPacketSerializer<User> {
         private readonly short[] _skillPoints;
-        private int _hp = 50, _mp = 5, _exp;
-
+        private int _hp = 50, _mp = 5;
+        private uint _exp;
 
         public CharacterStat(MySqlDataReader r = null) {
             _skillPoints = new short[10];
@@ -365,30 +372,25 @@ namespace NineToFive.Game.Entity {
             set => _mp = Math.Min(Math.Max(value, 0), MaxMP);
         }
 
-        public int MaxMP { get; set; } = 5;
-        public short AP { get; set; }
-
         public int HP {
             get => _hp;
             set => _hp = Math.Min(Math.Max(value, 0), MaxHP);
         }
-        
-        public uint Exp { 
-            get => (uint) _exp;
+
+        public uint Exp {
+            get => _exp;
             set {
-                int expToLevel = GameConstants.getExpToLevel(Level);
-                if (value >= expToLevel) {
-                    int expToLevelAgain = GameConstants.getExpToLevel(++Level);
-                    
-                    // cap the exp at 99% to prevent multi-leveling in the event of overflow
-                    int expLeftOver = Math.Min((expToLevelAgain - 1), ((int) value - expToLevel));
-                    Interlocked.Exchange(ref _exp, expLeftOver);
-                } else {
-                    // prevent exp 
-                    Interlocked.Exchange(ref _exp, Math.Max(0, (int) value));
+                uint needed = GameConstants.GetExpToLevel(Level);
+                _exp = Math.Min(Math.Max(needed, 0), value);
+                while (_exp >= needed) {
+                    _exp -= needed;
+                    Level++;
                 }
-            } 
+            }
         }
+
+        public int MaxMP { get; set; } = 5;
+        public short AP { get; set; }
 
         public short SP {
             get {
@@ -408,7 +410,7 @@ namespace NineToFive.Game.Entity {
                 _skillPoints[index] = value;
             }
         }
-        
+
         public short[] SkillPoints => _skillPoints;
         public short Popularity { get; set; }
         public int FieldId { get; set; } = 10000;
@@ -437,19 +439,20 @@ namespace NineToFive.Game.Entity {
             p.WriteLong();
             p.WriteLong();
 
-            p.WriteByte(Level);
-            p.WriteShort(Job);
-            p.WriteShort(Str);
-            p.WriteShort(Dex);
-            p.WriteShort(Int);
-            p.WriteShort(Luk);
-            p.WriteInt(HP);
-            p.WriteInt(MaxHP);
-            p.WriteInt(MP);
-            p.WriteInt(MaxMP);
-            p.WriteShort(AP);
-            if (JobConstants.IsExtendedSpJob(Job)) {
-                byte advancements = (byte) (9 - Math.Min(9, 2218 - Job));
+            p.WriteByte(user.CharacterStat.Level);
+            var jobId = p.WriteShort(user.CharacterStat.Job);
+            p.WriteShort(user.CharacterStat.Str);
+            p.WriteShort(user.CharacterStat.Dex);
+            p.WriteShort(user.CharacterStat.Int);
+            p.WriteShort(user.CharacterStat.Luk);
+            p.WriteInt(user.CharacterStat.HP);
+            p.WriteInt(user.CharacterStat.MaxHP);
+            p.WriteInt(user.CharacterStat.MP);
+            p.WriteInt(user.CharacterStat.MaxMP);
+            p.WriteShort(user.CharacterStat.AP);
+
+            if (JobConstants.IsExtendedSpJob(jobId)) {
+                byte advancements = (byte) (9 - Math.Min(9, 2218 - jobId));
                 p.WriteByte(advancements);
                 for (byte i = 0; i < advancements; i++) {
                     p.WriteByte(i);
@@ -459,7 +462,7 @@ namespace NineToFive.Game.Entity {
                 p.WriteShort(SP);
             }
 
-            p.WriteInt((int) Exp);
+            p.WriteUInt(Exp);
             p.WriteShort(Popularity);
             p.WriteInt();
             p.WriteInt(FieldId);
@@ -502,12 +505,50 @@ namespace NineToFive.Game.Entity {
                 }
             }
 
-            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteInt((int) Exp);
+            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteUInt(Exp);
             if ((dwcharFlag & 0x20000) == 0x20000) p.WriteShort(Popularity);
             if ((dwcharFlag & 0x40000) == 0x40000) p.WriteInt();
             if ((dwcharFlag & 0x200000) == 0x200000) p.WriteInt(FieldId);
         }
 
-        public void Decode(User user, Packet p) { }
+        public void Decode(User user, Packet p) {
+            user.CharacterStat.Id = p.ReadUInt();
+            user.CharacterStat.Username = p.ReadString(13).Trim();
+            user.AvatarLook.Gender = p.ReadByte();
+            user.AvatarLook.Skin = p.ReadByte();
+            user.AvatarLook.Face = p.ReadInt();
+            user.AvatarLook.Hair = p.ReadInt();
+            p.ReadLong();
+            p.ReadLong();
+            p.ReadLong();
+            user.CharacterStat.Level = p.ReadByte();
+            var jobId = (user.CharacterStat.Job = p.ReadShort());
+            user.CharacterStat.Str = p.ReadShort();
+            user.CharacterStat.Dex = p.ReadShort();
+            user.CharacterStat.Int = p.ReadShort();
+            user.CharacterStat.Luk = p.ReadShort();
+            user.CharacterStat._hp = p.ReadInt();
+            user.CharacterStat.MaxHP = p.ReadInt();
+            user.CharacterStat._mp = p.ReadInt();
+            user.CharacterStat.MaxMP = p.ReadInt();
+            user.CharacterStat.AP = p.ReadShort();
+
+            if (JobConstants.IsExtendedSpJob(jobId)) {
+                byte advancements = p.ReadByte();
+                for (int i = 0; i < advancements; i++) {
+                    user.CharacterStat.SkillPoints[p.ReadByte()] = p.ReadByte();
+                }
+            } else {
+                user.CharacterStat.SP = p.ReadShort();
+            }
+
+            user.CharacterStat.Exp = p.ReadUInt();
+            user.CharacterStat.Popularity = p.ReadShort();
+            p.ReadInt();
+            user.CharacterStat.FieldId = p.ReadInt();
+            user.CharacterStat.Portal = p.ReadByte();
+            p.ReadInt();
+            p.ReadShort();
+        }
     }
 }

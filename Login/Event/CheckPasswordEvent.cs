@@ -22,15 +22,6 @@ namespace NineToFive.Event {
             Client.Session.Write(GetLoginFailed(6));
         }
 
-        public override void OnHandle() {
-            byte loginResult = GetAuthRequest();
-            if (loginResult == 1) {
-                Client.Session.Write(GetLoginSuccess(Client));
-            } else {
-                Client.Session.Write(GetLoginFailed(loginResult));
-            }
-        }
-
         public override bool OnProcess(Packet packet) {
             _password = packet.ReadString();
             _username = packet.ReadString();
@@ -47,6 +38,15 @@ namespace NineToFive.Event {
             }
 
             return true;
+        }
+
+        public override void OnHandle() {
+            byte loginResult = GetAuthRequest();
+            if (loginResult == 1) {
+                Client.Session.Write(GetLoginSuccess(Client));
+            } else {
+                Client.Session.Write(GetLoginFailed(loginResult));
+            }
         }
 
         public byte GetAuthRequest() {

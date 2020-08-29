@@ -403,7 +403,7 @@ namespace MapleLib.WzLib.WzProperties
                     }
                 }
             }
-            catch (InvalidDataException exp) 
+            catch (InvalidDataException) 
             { 
                 png = null;
             }

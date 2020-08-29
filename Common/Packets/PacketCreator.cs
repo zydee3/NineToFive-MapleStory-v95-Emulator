@@ -163,8 +163,8 @@ namespace NineToFive.Packets {
         }
     }
 
-    public static class MobPool {
-        private static void InitMob(Mob mob, Packet w) {
+    public static class MobPackets {
+        private static void PoolInitMob(Mob mob, Packet w) {
             w.WriteShort((short) mob.Location.X);
             w.WriteShort((short) mob.Location.Y);
             w.WriteByte(mob.MoveAction);
@@ -178,16 +178,6 @@ namespace NineToFive.Packets {
             w.WriteByte(); // carnival team
             w.WriteInt((mob.HP / mob.MaxHP) * 100);
             w.WriteInt(); // nEffectItemID
-        }
-
-        private static void SetMobLocal(Mob mob, Packet w, bool init) {
-            w.WriteInt(mob.TemplateId);
-            if (init) {
-                SetMobTemporaryStat(mob, w);
-            } else {
-                SetMobTemporaryStat(mob, w);
-                InitMob(mob, w);
-            }
         }
 
         private static void SetMobTemporaryStat(Mob mob, Packet w) {
@@ -207,7 +197,7 @@ namespace NineToFive.Packets {
             w.WriteInt(mob.TemplateId);
 
             SetMobTemporaryStat(mob, w);
-            InitMob(mob, w);
+            PoolInitMob(mob, w);
 
             return w.ToArray();
         }
@@ -237,7 +227,7 @@ namespace NineToFive.Packets {
             SetMobTemporaryStat(mob, w);
             // CMob::InitMob is only necessary if the controller is being set
             // and the client hasn't registered the mob (CMobPool::GetMob returns false) 
-            InitMob(mob, w);
+            PoolInitMob(mob, w);
 
             return w.ToArray();
         }
@@ -335,9 +325,9 @@ namespace NineToFive.Packets {
                 // CBattleRecordMan::SetBattleRecoveryInfo
             }
 
-            if ((dwcharFlag & 0x400) == 0x400) ;     // CWvsContext::CheckDarkForce
-            if ((dwcharFlag & 0x1000) == 0x1000) ;   // CWvsContext::CheckDragonFury
-            if ((dwcharFlag & 0x40000) == 0x40000) ; // CWvsContext::CheckQuestCompleteByMeso
+            // if ((dwcharFlag & 0x400) == 0x400) ;     // CWvsContext::CheckDarkForce
+            // if ((dwcharFlag & 0x1000) == 0x1000) ;   // CWvsContext::CheckDragonFury
+            // if ((dwcharFlag & 0x40000) == 0x40000) ; // CWvsContext::CheckQuestCompleteByMeso
 
             return w.ToArray();
         }

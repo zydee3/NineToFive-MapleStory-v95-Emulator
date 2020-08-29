@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapleLib", "MapleLib\MapleL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerTests", "ServerTests\ServerTests.csproj", "{180C4DD6-2B67-4A52-A02C-381E5E0A8365}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Central", "Central\Central.csproj", "{8C782165-856D-4109-96A6-8F3BD8929F31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{180C4DD6-2B67-4A52-A02C-381E5E0A8365}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{180C4DD6-2B67-4A52-A02C-381E5E0A8365}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{180C4DD6-2B67-4A52-A02C-381E5E0A8365}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C782165-856D-4109-96A6-8F3BD8929F31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C782165-856D-4109-96A6-8F3BD8929F31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C782165-856D-4109-96A6-8F3BD8929F31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C782165-856D-4109-96A6-8F3BD8929F31}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
