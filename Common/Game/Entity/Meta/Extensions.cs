@@ -50,7 +50,7 @@ namespace NineToFive.Game.Entity.Meta {
                 case UserAbility.MP:         return user.CharacterStat.MP;
                 case UserAbility.MaxMP:      return user.CharacterStat.MaxMP;
                 case UserAbility.AP:         return user.CharacterStat.AP;
-                case UserAbility.Exp:        return user.CharacterStat.Exp;
+                case UserAbility.Exp:        return (int) user.CharacterStat.Exp;
                 case UserAbility.Popularity: return user.CharacterStat.Popularity;
                 case UserAbility.FieldId:    return user.CharacterStat.FieldId;
                 case UserAbility.Money:      return (int) user.Money;

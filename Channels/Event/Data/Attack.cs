@@ -69,7 +69,7 @@ namespace NineToFive.Event.Data {
         }
 
         public async Task Complete() {
-            await Task.WhenAll(Hits.Select(hit => hit.Complete()));
+            foreach (Hit hit in Hits) hit.Complete();
         }
     }
 
@@ -101,6 +101,7 @@ namespace NineToFive.Event.Data {
                     _damage += p.ReadInt();
                 }
 
+                p.ReadInt();
             } catch (Exception exception) {
                 Console.WriteLine(exception.Message);
                 _complete = false;
@@ -108,17 +109,9 @@ namespace NineToFive.Event.Data {
         }
 
         public async Task Complete() {
-            if (!_complete) {
-                return;
-            }
-            
+            if (!_complete) return;
             Mob mob = _user.Field.LifePools[EntityType.Mob][_mobId] as Mob;
-            if (mob == null) {
-                return;
-            }
-
-            
-            await mob.Damage(_user, _damage);
+            mob?.Damage(_user, _damage);
         }
     }
 }

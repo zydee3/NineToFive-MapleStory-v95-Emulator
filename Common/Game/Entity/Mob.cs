@@ -38,30 +38,25 @@ namespace NineToFive.Game.Entity {
         }
 
         public async Task Damage(User attacker, int damage) {
+            if (attacker.Field != Field) return;
+            
             lock (this) {
                 HP -= damage;
+                Console.WriteLine($"[Damage] MobId: {Id}, Damage: {damage}, New HP: {HP}");
                 if (HP > 0) {
                     byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP);
                     attacker.Field.BroadcastPacket(MobPool.GetShowHpIndicator((int) Id, indicator));
                 } else {
-                    int expToLevel = GameConstants.getExpToLevel(attacker.CharacterStat.Level);
-                    int expNeededToLevel = expToLevel - attacker.CharacterStat.Exp;
-                    int rewardExp = Exp;
-                    if (rewardExp >= expNeededToLevel) {
-                        attacker.CharacterStat.Level++;
-                        
-                        //cap the exp at 99% to prevent multi-leveling in the event of overflow
-                        attacker.CharacterStat.Exp = Math.Min(rewardExp - expNeededToLevel, GameConstants.getExpToLevel(attacker.CharacterStat.Level) - 1);
-                        attacker.CharacterStat.SendUpdate(attacker, (uint)(UserAbility.Level | UserAbility.Exp));
-                    } else {
-                        attacker.CharacterStat.Exp += rewardExp;
-                        attacker.CharacterStat.SendUpdate(attacker, (uint) UserAbility.Exp);
-                    }
-
                     SpawnPoint.CanSpawn = true;
                     attacker.Field.RemoveLife(this);
+                    attacker.CharacterStat.Exp += (uint) Exp;
+                    attacker.CharacterStat.SendUpdate(attacker, (uint)(UserAbility.Level | UserAbility.Exp));
                 }
             }
+        }
+
+        public async Task SpawnDrops() {
+            
         }
 
         private int _hp;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using log4net;
 using Microsoft.ClearScript.V8;
 using MySql.Data.MySqlClient;
@@ -323,7 +324,7 @@ namespace NineToFive.Game.Entity {
 
     public class CharacterStat : IPacketSerializer<User> {
         private readonly short[] _skillPoints;
-        private int _hp = 50, _mp = 5;
+        private int _hp = 50, _mp = 5, _exp;
 
 
         public CharacterStat(MySqlDataReader r = null) {
@@ -342,7 +343,7 @@ namespace NineToFive.Game.Entity {
             MP = r.GetInt32("mp");
             MaxMP = r.GetInt32("max_mp");
             AP = r.GetInt16("ability_points");
-            Exp = r.GetInt32("exp");
+            Exp = r.GetUInt32("exp");
             Popularity = r.GetInt16("popularity");
             FieldId = r.GetInt32("field_id");
             Portal = r.GetByte("portal");
@@ -371,6 +372,23 @@ namespace NineToFive.Game.Entity {
             get => _hp;
             set => _hp = Math.Min(Math.Max(value, 0), MaxHP);
         }
+        
+        public uint Exp { 
+            get => (uint) _exp;
+            set {
+                int expToLevel = GameConstants.getExpToLevel(Level);
+                if (value >= expToLevel) {
+                    int expToLevelAgain = GameConstants.getExpToLevel(++Level);
+                    
+                    // cap the exp at 99% to prevent multi-leveling in the event of overflow
+                    int expLeftOver = Math.Min((expToLevelAgain - 1), ((int) value - expToLevel));
+                    Interlocked.Exchange(ref _exp, expLeftOver);
+                } else {
+                    // prevent exp 
+                    Interlocked.Exchange(ref _exp, Math.Max(0, (int) value));
+                }
+            } 
+        }
 
         public short SP {
             get {
@@ -390,10 +408,8 @@ namespace NineToFive.Game.Entity {
                 _skillPoints[index] = value;
             }
         }
-
+        
         public short[] SkillPoints => _skillPoints;
-
-        public int Exp { get; set; }
         public short Popularity { get; set; }
         public int FieldId { get; set; } = 10000;
         public byte Portal { get; set; }
@@ -443,7 +459,7 @@ namespace NineToFive.Game.Entity {
                 p.WriteShort(SP);
             }
 
-            p.WriteInt(Exp);
+            p.WriteInt((int) Exp);
             p.WriteShort(Popularity);
             p.WriteInt();
             p.WriteInt(FieldId);
@@ -486,7 +502,7 @@ namespace NineToFive.Game.Entity {
                 }
             }
 
-            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteInt(Exp);
+            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteInt((int) Exp);
             if ((dwcharFlag & 0x20000) == 0x20000) p.WriteShort(Popularity);
             if ((dwcharFlag & 0x40000) == 0x40000) p.WriteInt();
             if ((dwcharFlag & 0x200000) == 0x200000) p.WriteInt(FieldId);
