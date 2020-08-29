@@ -14,13 +14,12 @@ namespace NineToFive.Event {
         public QuestUpdateEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
-            return false; // i ain't processing dis till we need it -vincent (08.24.2020 @9:03PM)
 
             _type = p.ReadByte();
             _questId = p.ReadShort();
             _targetNpcId = p.ReadInt();
             _position = new Vector2(p.ReadShort(), p.ReadShort());
-            return true;
+            return false;
         }
 
         public override void OnHandle() {
