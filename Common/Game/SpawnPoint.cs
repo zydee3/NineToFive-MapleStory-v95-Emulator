@@ -29,7 +29,7 @@ namespace NineToFive.Game {
                 _field.BroadcastPacket(mob.EnterFieldPacket());
 
                 mob.SpawnPoint = this;
-                //mob.UpdateController(controller); // i disabled this because the packet dcing us is mob movement
+                mob.UpdateController(controller);
 
                 _field.LastUpdate = LastSummon = DateTime.Now.ToFileTime();
                 CanSpawn = false;

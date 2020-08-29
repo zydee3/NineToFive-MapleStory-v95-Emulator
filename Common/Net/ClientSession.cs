@@ -53,17 +53,17 @@ namespace NineToFive.Net {
                 _cts.Cancel();
             }
 
-            if (ShouldDispose()) {
-                Dispose();
-                return;
-            }
-
             byte[] packet;
             ushort seq;
             using (Packet r = new Packet(_packetHeader)) {
                 seq = r.ReadUShort();
                 var len = (ushort) (r.ReadShort() ^ seq);
                 packet = new byte[len];
+            }
+
+            if (ShouldDispose()) {
+                Dispose();
+                return;
             }
 
             await _socket.ReceiveAsync(packet, SocketFlags.None, _cts.Token);

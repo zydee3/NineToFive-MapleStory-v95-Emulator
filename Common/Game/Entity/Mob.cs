@@ -39,6 +39,10 @@ namespace NineToFive.Game.Entity {
             if (attacker.Field != Field) return;
 
             lock (this) {
+                if (Controller.TryGetTarget(out var ctrl)) {
+                    UpdateController(ctrl, true);
+                }
+
                 HP -= damage;
                 Console.WriteLine($"[Damage] MobId: {Id}, Damage: {damage}, New HP: {HP}");
                 if (HP > 0) {

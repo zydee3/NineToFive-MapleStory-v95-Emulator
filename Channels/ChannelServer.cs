@@ -114,7 +114,7 @@ namespace NineToFive {
                 Environment.Exit(0);
             }
 
-            (world.UpdateFieldTimer = new Timer(TimeSpan.FromSeconds(5).Milliseconds) {
+            (world.UpdateFieldTimer = new Timer(5 * 1000) {
                 AutoReset = true,
                 Enabled = true
             }).Elapsed += world.DoUpdateFields;
