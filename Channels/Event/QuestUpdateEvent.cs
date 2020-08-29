@@ -2,19 +2,17 @@
 using System.Numerics;
 using NineToFive.Constants;
 using NineToFive.Net;
-using static NineToFive.Constants.QuestType;
 
 namespace NineToFive.Event {
     public class QuestUpdateEvent : PacketEvent {
-        private byte _type;
-        private int _targetNpcId;
         private Vector2 _position;
         private short _questId;
+        private int _targetNpcId;
+        private byte _type;
 
         public QuestUpdateEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
-
             _type = p.ReadByte();
             _questId = p.ReadShort();
             _targetNpcId = p.ReadInt();
@@ -24,11 +22,11 @@ namespace NineToFive.Event {
 
         public override void OnHandle() {
             switch ((QuestType) _type) {
-                case Start:
-                case Complete:
-                case Resign:
-                case StartScriptLinked:
-                case CompleteScriptLinked:
+                case QuestType.Start:
+                case QuestType.Complete:
+                case QuestType.Resign:
+                case QuestType.StartScriptLinked:
+                case QuestType.CompleteScriptLinked:
                     break;
                 default:
                     Console.WriteLine($"Unhandled quest type: {_type}");
