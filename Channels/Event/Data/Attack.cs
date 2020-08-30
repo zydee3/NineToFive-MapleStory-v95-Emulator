@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using NineToFive.Constants;
 using NineToFive.Game.Entity;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
 
 namespace NineToFive.Event.Data {
@@ -68,8 +69,16 @@ namespace NineToFive.Event.Data {
             }
         }
 
-        public async Task Complete() {
-            foreach (Hit hit in Hits) hit.Complete();
+        public async Task Complete(User user) {
+            long totalExpGained = 0;
+            
+            foreach (int exp in Task.WhenAll(Hits.Select(Hit => Hit.Complete())).Result) {
+                totalExpGained += exp;
+                // send packet for exp at bottom right
+            }
+            
+            user.CharacterStat.Exp += totalExpGained;
+            user.CharacterStat.SendUpdate(user, (uint) (UserAbility.Level | UserAbility.Exp));
         }
     }
 
@@ -108,10 +117,10 @@ namespace NineToFive.Event.Data {
             }
         }
 
-        public async Task Complete() {
-            if (!_complete) return;
+        public async Task<int> Complete() {
+            if (!_complete) return 0;
             Mob mob = _user.Field.LifePools[EntityType.Mob][_mobId] as Mob;
-            mob?.Damage(_user, _damage);
+            return mob?.Damage(_user, _damage).Result ?? 0;
         }
     }
 }

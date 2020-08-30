@@ -14,7 +14,7 @@ namespace NineToFive.Event {
         }
 
         public override void OnHandle() {
-            _attack.Complete();
+            _attack.Complete(Client.User);
         }
     }
 }

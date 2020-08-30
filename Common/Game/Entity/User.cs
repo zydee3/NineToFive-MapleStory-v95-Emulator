@@ -379,14 +379,21 @@ namespace NineToFive.Game.Entity {
             set => _hp = Math.Min(Math.Max(value, 0), MaxHP);
         }
 
-        public uint Exp {
+        public float Exp {
             get => _exp;
             set {
-                uint needed = GameConstants.GetExpToLevel(Level);
-                _exp = Math.Min(Math.Max(needed, 0), value);
-                while (_exp >= needed) {
-                    _exp -= needed;
-                    Level++;
+                float expGained = Math.Max(0, value - _exp);
+                uint neededForLevel = GameConstants.GetExpToLevel(Level);
+                uint neededToLevel = neededForLevel - Math.Min(_exp, neededForLevel - 1);
+                if (expGained >= neededToLevel) {
+                    while (expGained >= neededToLevel) {
+                        expGained -= neededToLevel;
+                        neededToLevel = GameConstants.GetExpToLevel(++Level);
+                    }
+
+                    _exp = (uint) expGained;
+                } else {
+                    _exp = (uint) (expGained + _exp);
                 }
             }
         }
@@ -464,7 +471,7 @@ namespace NineToFive.Game.Entity {
                 p.WriteShort(SP);
             }
 
-            p.WriteUInt(Exp);
+            p.WriteUInt((uint) Exp);
             p.WriteShort(Popularity);
             p.WriteInt();
             p.WriteInt(FieldId);
@@ -507,7 +514,7 @@ namespace NineToFive.Game.Entity {
                 }
             }
 
-            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteUInt(Exp);
+            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteUInt((uint) Exp);
             if ((dwcharFlag & 0x20000) == 0x20000) p.WriteShort(Popularity);
             if ((dwcharFlag & 0x40000) == 0x40000) p.WriteInt();
             if ((dwcharFlag & 0x200000) == 0x200000) p.WriteInt(FieldId);
