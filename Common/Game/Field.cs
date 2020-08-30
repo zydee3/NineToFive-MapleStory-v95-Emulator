@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -89,7 +89,10 @@ namespace NineToFive.Game {
                 return;
             }
 
-            if (user != null) foreach (var point in SpawnPoints) point.SummonMob(user); // OwO
+            if (user != null) {
+                long currentTime = Time.GetCurrent();
+                foreach (SpawnPoint point in SpawnPoints) point.SummonMob(user, currentTime); 
+            }
 
             //todo remove drops, update reactors and etc
             // LifePools[EntityType.Drop].Values.Select(async drop => );

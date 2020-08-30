@@ -15,13 +15,17 @@ namespace NineToFive.Game {
             CanSpawn = true;
         }
 
-        public long LastSummon { get; set; }
+        public long NextSummon { get; set; }
 
         /// <summary>
         /// Summons the mob associated to _mobId if the previous monster has been killed.
         /// </summary>
-        public async Task SummonMob(User controller) {
-            if (controller == null || !CanSpawn || _field.SpawnedMobCount > _field.SpawnedMobLimit) return;
+        public async Task SummonMob(User controller, long currentTime) {
+            if (controller == null 
+                || !CanSpawn
+                || _field.SpawnedMobCount > _field.SpawnedMobLimit
+                || currentTime < NextSummon) 
+                return;
 
             Mob mob = (Mob) _life.Create();
             if (mob != null) {
@@ -31,7 +35,7 @@ namespace NineToFive.Game {
                 mob.SpawnPoint = this;
                 mob.UpdateController(controller);
 
-                _field.LastUpdate = LastSummon = DateTime.Now.ToFileTime();
+                _field.LastUpdate = currentTime;
                 CanSpawn = false;
             }
         }

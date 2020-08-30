@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Packets;
+using NineToFive.Util;
 using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
@@ -40,17 +41,18 @@ namespace NineToFive.Game.Entity {
 
             lock (this) {
                 HP -= damage;
-                Console.WriteLine($"[Damage] MobId: {Id}, Damage: {damage}, New HP: {HP}");
                 if (HP > 0) {
                     byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP);
                     attacker.Field.BroadcastPacket(MobPackets.GetShowHpIndicator((int) Id, indicator));
-                    return 0;
                 } else {
+                    SpawnPoint.NextSummon = Time.GetFuture(5);
                     SpawnPoint.CanSpawn = true;
                     attacker.Field.RemoveLife(this);
                     return Exp;
                 }
             }
+            
+            return 0;
         }
 
         public async Task SpawnDrops() { }

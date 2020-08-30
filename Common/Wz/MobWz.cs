@@ -134,7 +134,7 @@ namespace NineToFive.Wz {
                             template.Level = ((WzIntProperty) property).Value;
                             break;
                         case "exp":
-                            template.Exp = (uint) ((WzIntProperty) property).Value;
+                            template.Exp = ((WzIntProperty) property).Value;
                             break;
                         case "hpRecovery":
                             template.HpRecovery = ((WzIntProperty) property).Value;
