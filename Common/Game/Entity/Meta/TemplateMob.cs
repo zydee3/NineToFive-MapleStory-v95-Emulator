@@ -36,7 +36,7 @@ namespace NineToFive.Game.Entity.Meta {
         public int HpTagColor { get; set; }
         public int HpTagBgColor { get; set; }
         public int FirstAttack { get; set; }
-        public int Exp { get; set; }
+        public uint Exp { get; set; }
         public int HpRecovery { get; set; }
         public int MpRecovery { get; set; }
         public int ExplosiveReward { get; set; }

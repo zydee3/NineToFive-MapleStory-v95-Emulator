@@ -242,6 +242,40 @@ namespace NineToFive.Packets {
     }
 
     public static class CWvsPackets {
+        private static Packet GetMessage(byte type) {
+            var w = new Packet();
+            w.WriteShort((short) CWvsContext.OnMessage);
+            w.WriteByte(type);
+            return w;
+        }
+
+        public static byte[] GetIncExpMessage(uint exp) {
+            using var w = GetMessage(3);
+
+            w.WriteByte();
+            w.WriteInt();
+            var v48 = w.WriteByte();
+            w.WriteInt();
+            var v6 = w.WriteByte();
+            w.WriteByte();
+            w.WriteInt();
+            if (v6 > 0) w.WriteByte();
+            if (v48 > 0) {
+                var v7 = w.WriteByte();
+                if (v7 > 0) w.WriteByte();
+            }
+
+            w.WriteByte();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+            w.WriteInt();
+
+            return w.ToArray();
+        }
+
         public static byte[] GetTemporaryStatSet(Skill skill, SkillRecord record) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnTemporaryStatSet);
@@ -281,10 +315,16 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetForcedStatSet(User user, int dwcharFlags) {
+        public static byte[] GetForcedStatSet(User user, uint dwcharFlags) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnForcedStatSet);
-            w.WriteInt(dwcharFlags);
+            w.WriteUInt(dwcharFlags);
+            foreach (var type in Enum /**/.GetValues(typeof(ForcedStatType)).Cast<ForcedStatType>()) {
+                if (((ForcedStatType) dwcharFlags).HasFlag(type)) {
+                    type.EncodeType(user, w);
+                }
+            }
+
             return w.ToArray();
         }
 

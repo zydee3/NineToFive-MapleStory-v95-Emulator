@@ -28,6 +28,7 @@ namespace NineToFive.Game.Entity {
 
             if (reader == null) return;
 
+            ForcedStat = new ForcedStat();
             Skills = new Dictionary<int, SkillRecord>();
             KeyMap = new Dictionary<int, Tuple<byte, int>>(89);
 
@@ -89,6 +90,7 @@ namespace NineToFive.Game.Entity {
         public bool IsDebugging { get; set; }
         public AvatarLook AvatarLook { get; }
         public CharacterStat CharacterStat { get; }
+        public ForcedStat ForcedStat { get; }
         public Dictionary<InventoryType, Inventory> Inventories { get; }
         public Dictionary<int, Tuple<byte, int>> KeyMap { get; set; }
         public int[] QuickslotKeyMap { get; set; }

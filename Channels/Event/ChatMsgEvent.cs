@@ -29,7 +29,10 @@ namespace NineToFive.Event {
                 using var ctx = new CmdScriptMan(Client, _msg);
                 try {
                     using V8ScriptEngine engine = Scriptable.GetEngine($"Commands/{ctx.Name}.js", ctx).Result;
-                    Scriptable.RunScriptAsync(engine);
+                    var task = Scriptable.RunScriptAsync(engine);
+                    if (task.Exception != null) {
+                        user.SendMessage(task.Exception.Message);
+                    }
                     return;
                 } catch (Exception e) {
                     if (e is AggregateException ae) {

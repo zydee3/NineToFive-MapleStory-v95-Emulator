@@ -38,7 +38,7 @@ namespace NineToFive.Wz {
 
             mob.HP = t.MaxHp;
             mob.MP = t.MaxMp;
-            
+
             mob.Speed = t.Speed;
             mob.PADamage = t.PADamage;
             mob.PDDamage = t.PDDamage;
@@ -134,7 +134,7 @@ namespace NineToFive.Wz {
                             template.Level = ((WzIntProperty) property).Value;
                             break;
                         case "exp":
-                            template.Exp = ((WzIntProperty) property).Value;
+                            template.Exp = (uint) ((WzIntProperty) property).Value;
                             break;
                         case "hpRecovery":
                             template.HpRecovery = ((WzIntProperty) property).Value;

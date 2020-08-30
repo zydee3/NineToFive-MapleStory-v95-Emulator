@@ -51,7 +51,8 @@ namespace NineToFive.Game.Entity {
                 } else {
                     SpawnPoint.CanSpawn = true;
                     attacker.Field.RemoveLife(this);
-                    attacker.CharacterStat.Exp += (uint) Exp;
+                    attacker.CharacterStat.Exp += Exp;
+                    attacker.Client.Session.Write(CWvsPackets.GetIncExpMessage(Exp));
                     attacker.CharacterStat.SendUpdate(attacker, (uint) (UserAbility.Level | UserAbility.Exp));
                 }
             }
@@ -96,7 +97,7 @@ namespace NineToFive.Game.Entity {
         public int HpTagColor { get; set; }
         public int HpTagBgColor { get; set; }
         public int FirstAttack { get; set; }
-        public int Exp { get; set; }
+        public uint Exp { get; set; }
         public int HpRecovery { get; set; }
         public int MpRecovery { get; set; }
         public int ExplosiveReward { get; set; }
