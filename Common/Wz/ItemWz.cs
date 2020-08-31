@@ -114,6 +114,9 @@ namespace NineToFive.Wz {
             item.Weakness = t.Weakness;
             item.Seal = t.Seal;
             item.Curse = t.Curse;
+            if (item.SlotMax == 0) {
+                item.SlotMax = 100;
+            }
         }
 
         internal static void InitializeItem(out Item item, int itemId) {

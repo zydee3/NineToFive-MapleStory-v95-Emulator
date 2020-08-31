@@ -163,11 +163,11 @@ namespace NineToFive.Game {
         /// removes the life from the field if it exists and zeroes the <see cref="Life.Id"/>
         /// <para>Sends the <see cref="Life.LeaveFieldPacket"/> to everybody in the field</para>
         /// </summary>
-        public void RemoveLife(Life life) {
+        public void RemoveLife(Life life, bool sendPacket = true) {
             if (!LifePools[life.Type].RemoveLife(life)) return;
             if (life.Type == EntityType.Mob) SpawnedMobCount--;
-            BroadcastPacket(life.LeaveFieldPacket());
-
+            if(sendPacket) BroadcastPacket(life.LeaveFieldPacket());
+            
             life.Id = 0;
             life.Field = null;
             if (life is User user) {

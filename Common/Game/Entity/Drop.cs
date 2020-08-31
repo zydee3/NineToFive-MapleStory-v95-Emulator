@@ -5,12 +5,11 @@ using NineToFive.Packets;
 
 namespace NineToFive.Game.Entity {
     public class Drop : Life {
-        public Drop(int id, Life creator, bool money = false) : base(money ? 0 : id, EntityType.Drop) {
+        public Drop(int id, int quantity, Life creator, bool money = false) : base(money ? 0 : id, EntityType.Drop) {
             Fh = creator.Fh;
             Location = creator.Location;
             Origin = creator.Location;
-
-            if (money) Money = id;
+            Quantity = quantity;
         }
 
         public override byte[] EnterFieldPacket() {
@@ -22,10 +21,9 @@ namespace NineToFive.Game.Entity {
         }
 
         public Vector2 Origin { get; set; }
-        public int Money { get; set; }
-
+        public int Quantity { get; set; }
         private Item _item;
 
-        public Item Item => _item ??= new Item((int) Id);
+        public Item Item => _item ??= new Item(TemplateId, true) { Quantity = (ushort) Quantity };
     }
 }

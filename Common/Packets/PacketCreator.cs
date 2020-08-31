@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Numerics;
 using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
+using NineToFive.Game.Storage.Meta;
 using NineToFive.Net;
 using NineToFive.SendOps;
 
@@ -442,6 +445,43 @@ namespace NineToFive.Packets {
                 w.WriteInt(2000);
             }
 
+            return w.ToArray();
+        }
+
+        public static byte[] GetInventoryOperation(List<InventoryUpdateEntry> updates) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnInventoryOperation);
+            w.WriteBool(true); // a3
+            w.WriteByte((byte) updates.Count);
+            foreach (var entry in updates) {
+                Item item = entry.Item;
+                w.WriteByte((byte) entry.Operation);
+                w.WriteByte((byte) item.InventoryType);
+                w.WriteShort(entry.PreviousBagIndex);
+                switch (entry.Operation) {
+                    case InventoryOperation.Add:
+                        item.Encode(item, w);
+                        break;
+                    case InventoryOperation.Update:
+                        w.WriteShort((short) item.Quantity);
+                        break;
+                    case InventoryOperation.Move:
+                        w.WriteShort(item.BagIndex);
+                        break;
+                    case InventoryOperation.Remove:
+                        break;
+                    case InventoryOperation.UpdateStat:
+                        w.WriteInt();// v37
+                        break;
+                    default:
+                        throw new InvalidEnumArgumentException();
+                }
+            }
+            
+            //LABEL_341:
+            //if ( TSingleton<CUserLocal>::ms_pInstance._m_pStr )
+            //v145 = CInPacket::Decode1(iPacket);
+            
             return w.ToArray();
         }
     }

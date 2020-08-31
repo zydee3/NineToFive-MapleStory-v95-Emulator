@@ -221,7 +221,7 @@ namespace NineToFive {
                 throw new ArgumentException($"Unknown inventory type for item {itemId}");
             }
 
-            return (InventoryType) (type - 1);
+            return (InventoryType) type;
         }
 
         public static byte GetGenderFromId(int itemId) {

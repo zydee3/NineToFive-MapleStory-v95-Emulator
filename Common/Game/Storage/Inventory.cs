@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NineToFive.Constants;
+using NineToFive.Game.Storage.Meta;
 
 namespace NineToFive.Game.Storage {
     public enum InventoryType {
+        Undefined,
         Equip,
         Use,
         Setup,
@@ -30,6 +33,11 @@ namespace NineToFive.Game.Storage {
             return _items.TryAdd(equip.BagIndex, equip);
         }
 
+        /// <summary>
+        /// Checks how much of the item can be held. This is used because GMS picks up as much as you can hold, leaving the remainder on the floor.
+        /// </summary>
+        /// <param name="item">Item to be picked up.</param>
+        /// <returns>Quantity of item that can be held.</returns>
         public int GetHoldableQuantity(Item item) {
             if (Items.Count >= Size) return 0;
             int remaining = item.Quantity;
@@ -47,19 +55,28 @@ namespace NineToFive.Game.Storage {
             return item.Quantity - Math.Max(0, remaining);
         }
 
-        public void AddItem(Item item) {
-            if (Items.Count >= Size) return;
+        /// <summary>
+        /// Adds an item to the inventory.
+        /// </summary>
+        /// <param name="item"></param>
+        public List<InventoryUpdateEntry> AddItem(Item item) {
+            List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
+            
+            if (Items.Count >= Size) return updates;
             ushort slotMax = (ushort) item.SlotMax;
             
             for (byte slot = 1; slot <= Size; slot++) {
                 if (this[slot] == null) { // add to empty slot
                     if(item.Quantity > slotMax) { // deposit to slot max quantity of item in slot and continue with remaining
                         item.Quantity -= slotMax;
-                        Item fullStackItem = new Item(item.Id) { Quantity = slotMax };
+                        Item fullStackItem = new Item(item.Id) { Quantity = slotMax, BagIndex = slot};
+                        updates.Add(new InventoryUpdateEntry(ref fullStackItem, InventoryOperation.Add));
                         this[slot] = fullStackItem;
                     } else { // slot can hold the max quantity, put everything in and we're done
+                        item.BagIndex = slot;
                         this[slot] = item;
-                        return;
+                        updates.Add(new InventoryUpdateEntry(ref item, InventoryOperation.Add));
+                        break;
                     }
                 }
 
@@ -71,10 +88,17 @@ namespace NineToFive.Game.Storage {
                     } else { // two instances total do fit in slot, so combine them and delete previous item
                         current.Quantity = (ushort) (slotMax + current.Quantity);
                         item = null;
-                        return;
+                        break;
                     }
+                    updates.Add(new InventoryUpdateEntry(ref current, InventoryOperation.Update));
                 }
             }
+
+            return updates;
+        }
+
+        public Item RemoveSlot(byte slot) {
+            return null;
         }
 
         public Item this[short bagIndex] {

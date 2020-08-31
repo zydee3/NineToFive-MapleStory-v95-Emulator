@@ -7,13 +7,21 @@
     }
 
     public enum QuestType : byte {
-        Start = 1,
-        Complete = 2,
-        Resign = 3,
-        StartScriptLinked = 4,
-        CompleteScriptLinked = 5,
+        Undefined,
+        Start,
+        Complete,
+        Resign,
+        StartScriptLinked,
+        CompleteScriptLinked,
     }
 
+    public enum InventoryOperation : byte {
+        Add,
+        Update,
+        Move, 
+        Remove,
+        UpdateStat, // CUserLocal::SetSecondaryStatChangedPoint ?
+    }
     public static class GameConstants {
         private static readonly uint[] ExpTable = {
             // wow a waterfall
