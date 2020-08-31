@@ -170,7 +170,7 @@ namespace NineToFive.Packets {
             w.WriteByte(mob.MoveAction);
             w.WriteShort((short) mob.Fh); // cur fh
             w.WriteShort((short) mob.Fh); // home fh
-            w.WriteByte((byte) (mob.SummonType == 1 ? 255 : mob.SummonType));
+            w.WriteByte((byte) (mob.SummonType == 1 ? 254 : mob.SummonType));
             if (mob.SummonType == -3 || mob.SummonType >= 0) {
                 w.WriteInt();
             }
