@@ -249,18 +249,19 @@ namespace NineToFive.Packets {
             return w;
         }
 
-        public static byte[] GetIncExpMessage(uint exp) {
+        public static byte[] GetIncExpMessage(int exp) {
             using var w = GetMessage(3);
 
-            w.WriteByte();
-            w.WriteInt();
-            var v48 = w.WriteByte();
-            w.WriteInt();
+            w.WriteBool(true);            // bIsLastHit
+            w.WriteInt(exp);              // nIncExp
+            var v48 = w.WriteBool(false); // bOnQuest
+            w.WriteInt();                 // nSelectedMobBonusExp
+
             var v6 = w.WriteByte();
             w.WriteByte();
-            w.WriteInt();
+            w.WriteInt(); // nWeddingBonusExp
             if (v6 > 0) w.WriteByte();
-            if (v48 > 0) {
+            if (v48) {
                 var v7 = w.WriteByte();
                 if (v7 > 0) w.WriteByte();
             }

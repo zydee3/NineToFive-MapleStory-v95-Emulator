@@ -47,6 +47,7 @@ namespace NineToFive.Game.Entity {
                 } else {
                     SpawnPoint.NextSummon = Time.GetFuture(5);
                     SpawnPoint.CanSpawn = true;
+                    attacker.Client.Session.Write(CWvsPackets.GetIncExpMessage(Exp));
                     attacker.Field.RemoveLife(this);
                     return Exp;
                 }
