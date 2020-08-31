@@ -53,13 +53,13 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetDropLeaveField(Drop drop, byte type) {
+        public static byte[] GetDropLeaveField(Drop drop, byte type, int pickupId = 0) {
             using Packet w = new Packet();
             w.WriteShort((short) CDropPool.OnDropLeaveField);
             w.WriteByte(type);
             w.WriteUInt(drop.Id);
-
-            if (type == 2 || type == 3 || type == 5) w.WriteInt();
+            
+            if (type == 2 || type == 3 || type == 5) w.WriteInt(pickupId);
             else if (type == 4) w.WriteShort();
             if (type == 5) w.WriteInt();
 
