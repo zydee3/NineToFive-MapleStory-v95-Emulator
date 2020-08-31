@@ -118,7 +118,7 @@ namespace NineToFive {
             (world.UpdateFieldTimer = new Timer(1000) {
                 AutoReset = true,
                 Enabled = true
-            }).Elapsed += world.DoUpdateFields;
+            }).Elapsed += world.OnUpdateFields;
 
             var skills = SkillWz.LoadSkills();
             Log.Info($"Loaded {skills.Count} skills");
