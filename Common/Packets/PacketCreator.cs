@@ -467,14 +467,13 @@ namespace NineToFive.Packets {
                                 break;
                             //case Pet pet: // this is a life, needs to be item
                             default:
-                                w.WriteByte(item.Type); // 2
                                 item.Encode(item, w);
                                 w.WriteShort((short) item.Quantity);
                                 w.WriteString(item.Tag ?? "");
                                 w.WriteShort(item.Attribute);
                                 if (item.IsRechargable)
                                     w.WriteLong(); // OwO
-                                    break;
+                                break;
                         }
                         break;
                     case InventoryOperation.Update:
