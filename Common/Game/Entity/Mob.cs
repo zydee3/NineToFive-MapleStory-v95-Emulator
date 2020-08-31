@@ -8,8 +8,9 @@ using NineToFive.Wz;
 
 namespace NineToFive.Game.Entity {
     public class Mob : Life {
-        public SpawnPoint SpawnPoint { get; set; }
+        public delegate void MobDeathHandler(Mob mob);
 
+        private MobDeathHandler _onDeath;
         public Tuple<int, int> HealOnDestroy;
         public int SelfDestruction;
 
@@ -45,14 +46,13 @@ namespace NineToFive.Game.Entity {
                     byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP);
                     attacker.Field.BroadcastPacket(MobPackets.GetShowHpIndicator((int) Id, indicator));
                 } else {
-                    SpawnPoint.NextSummon = Time.GetFuture(5);
-                    SpawnPoint.CanSpawn = true;
+                    _onDeath(this);
                     attacker.Client.Session.Write(CWvsPackets.GetIncExpMessage(Exp));
                     attacker.Field.RemoveLife(this);
                     return Exp;
                 }
             }
-            
+
             return 0;
         }
 
@@ -84,6 +84,11 @@ namespace NineToFive.Game.Entity {
         public int[] DamagedBySelectedMob { get; set; }
         public int[] Revives { get; set; }
         public TemplateMob.MobSkill[] Skills { get; set; }
+
+        public event MobDeathHandler Death {
+            add => _onDeath += value;
+            remove => _onDeath -= value;
+        }
 
         public int BodyAttack { get; set; }
         public int Pushed { get; set; }

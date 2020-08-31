@@ -21,7 +21,10 @@ namespace NineToFive.Game {
     /// </summary>
     public class Field : PacketBroadcaster {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Field));
-        public static readonly int InvalidField = 999999999;
+        public const int InvalidField = 999999999;
+
+        private long _lastUpdate;
+        private int _spawnedMobCount;
 
         public Field(int id) {
             Id = id;
@@ -56,16 +59,12 @@ namespace NineToFive.Game {
         public List<SpawnPoint> SpawnPoints { get; }
         public Dictionary<EntityType, LifePool<Life>> LifePools { get; }
         public uint FieldLimit { get; set; }
-
         public int SpawnedMobLimit { get; set; } = 20;
-        
-        private int _spawnedMobCount;
+
         public int SpawnedMobCount {
             get => _spawnedMobCount;
             set => Interlocked.Exchange(ref _spawnedMobCount, value);
         }
-
-        private long _lastUpdate;
 
         public long LastUpdate {
             get => _lastUpdate;
@@ -81,21 +80,17 @@ namespace NineToFive.Game {
         ///
         /// I probably shouldn't be passing in channel like this but idk how else to access it.
         /// </summary>
-        public async Task Update(Channel channel) {
-            
-                User user = (User) LifePools[EntityType.User].Values.FirstOrDefault();
+        public async Task Update() {
+            foreach (var sp in SpawnPoints) {
+                sp.SummonMob().ConfigureAwait(false);
+            }
 
-                if (user != null) {
-                    long currentTime = Time.GetCurrent();
-                    foreach (SpawnPoint point in SpawnPoints) point.SummonMob(user, currentTime); 
-                }
-            
             //todo remove drops, update reactors and etc
             // LifePools[EntityType.Drop].Values.Select(async drop => );
         }
 
         public async Task SpawnDrop(Item drop) {
-            Item[] drops = { new Item(0) };
+            Item[] drops = {new Item(0)};
         }
 
         /// <summary>
@@ -145,7 +140,7 @@ namespace NineToFive.Game {
             }
 
             if (life.Type == EntityType.Mob) SpawnedMobCount++;
-            
+
             life.Field = this;
             LifePools[life.Type].AddLife(life);
             if (life is User user) {
@@ -157,6 +152,10 @@ namespace NineToFive.Game {
                         }
                     }
                 }
+            } else if (life is Mob mob) {
+                SpawnedMobCount++;
+                var ctrl = LifePools[EntityType.User].Values.Select(l => (User) l).FirstOrDefault();
+                mob.UpdateController(ctrl);
             }
         }
 
@@ -168,7 +167,7 @@ namespace NineToFive.Game {
             if (!LifePools[life.Type].RemoveLife(life)) return;
             if (life.Type == EntityType.Mob) SpawnedMobCount--;
             BroadcastPacket(life.LeaveFieldPacket());
-            
+
             life.Id = 0;
             life.Field = null;
             if (life is User user) {
@@ -181,6 +180,9 @@ namespace NineToFive.Game {
                 if (LifePools[EntityType.User].Count == 0) {
                     Log.Info($"There are no more players in field {Id}, channel {user.Client.Channel.Id}");
                 }
+            } else if (life is Mob mob) {
+                SpawnedMobCount--;
+                mob.Controller.SetTarget(null);
             }
         }
 

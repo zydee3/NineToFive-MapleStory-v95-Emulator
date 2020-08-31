@@ -16,10 +16,10 @@ namespace NineToFive.Game {
         public ConcurrentDictionary<uint, User> Users { get; } = new ConcurrentDictionary<uint, User>();
         public Timer UpdateFieldTimer { get; set; }
 
-        public void DoUpdateFields(object o, ElapsedEventArgs e) {
+        public void OnUpdateFields(object o, ElapsedEventArgs e) {
             foreach (Channel channel in Channels) {
                 foreach (Field field in channel.Fields.Values) {
-                    field.Update(channel).ConfigureAwait(false);
+                    field.Update().ConfigureAwait(false);
                 }
             }
         }
