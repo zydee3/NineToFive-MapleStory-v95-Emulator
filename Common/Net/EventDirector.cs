@@ -54,6 +54,7 @@ namespace NineToFive.Net {
         CWvsContext_OnCheckOpBoardHasNew = 192,
         CWvsContext_OnUiMenu = 218,
         CWvsContext_CancelPartyWanted = 267,
+        CWvsContext_SendDropPickUpRequest = 246,
 
         User_OnUserMove = 44,
         User_OnChatMsg = 54,

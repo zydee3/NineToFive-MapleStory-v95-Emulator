@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using log4net;
 using NineToFive.Constants;
 using NineToFive.Game.Entity;
+using NineToFive.Game.Storage;
 using NineToFive.Packets;
 using NineToFive.Util;
 using NineToFive.Wz;
@@ -81,21 +82,20 @@ namespace NineToFive.Game {
         /// I probably shouldn't be passing in channel like this but idk how else to access it.
         /// </summary>
         public async Task Update(Channel channel) {
-            User user = (User) LifePools[EntityType.User].Values.First();
             
-            if (user == null && (LastUpdate + 180000 <= DateTime.Now.ToFileTime())) {
-                channel.Fields.Remove(Id);
-                Console.WriteLine($"Disposing Field: {ToString()}");
-                return;
-            }
+                User user = (User) LifePools[EntityType.User].Values.FirstOrDefault();
 
-            if (user != null) {
-                long currentTime = Time.GetCurrent();
-                foreach (SpawnPoint point in SpawnPoints) point.SummonMob(user, currentTime); 
-            }
-
+                if (user != null) {
+                    long currentTime = Time.GetCurrent();
+                    foreach (SpawnPoint point in SpawnPoints) point.SummonMob(user, currentTime); 
+                }
+            
             //todo remove drops, update reactors and etc
             // LifePools[EntityType.Drop].Values.Select(async drop => );
+        }
+
+        public async Task SpawnDrop(Item drop) {
+            Item[] drops = { new Item(0) };
         }
 
         /// <summary>

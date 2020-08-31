@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace NineToFive.Game.Storage {
     public enum InventoryType {
@@ -26,6 +27,15 @@ namespace NineToFive.Game.Storage {
             equip.BagIndex = (short) -ItemConstants.GetBodyPartFromId(equip.Id);
             if (replace) _items.Remove(equip.BagIndex);
             return _items.TryAdd(equip.BagIndex, equip);
+        }
+
+        public bool AddItem(Item item) {
+            if (Items.Count >= Size) return false;
+            Item found = _items.Values.FirstOrDefault(inventoryItem => inventoryItem.Id == item.Id);
+            if (found != null) {
+                
+            }
+            return true;
         }
 
         public Item this[short bagIndex] {

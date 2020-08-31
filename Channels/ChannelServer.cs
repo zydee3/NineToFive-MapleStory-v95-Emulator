@@ -32,6 +32,7 @@ namespace NineToFive {
                 [(short) ReceiveOperations.CWvsContext_CancelPartyWanted] = typeof(CancelPartyWantedEvent),
                 [(short) ReceiveOperations.CWvsContext_OnCheckOpBoardHasNew] = typeof(CheckOpBoardHasNewEvent),
                 [(short) ReceiveOperations.CWvsContext_OnUiMenu] = typeof(CWvsUiMenuEvent),
+                [(short) ReceiveOperations.CWvsContext_SendDropPickUpRequest] = typeof(SendDropPickUpRequestEvent),
 
                 [(short) ReceiveOperations.User_OnUserMove] = typeof(UserMoveEvent),
                 [(short) ReceiveOperations.User_OnChatMsg] = typeof(ChatMsgEvent),
