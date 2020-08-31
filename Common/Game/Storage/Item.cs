@@ -27,6 +27,9 @@ namespace NineToFive.Game.Storage {
         public long CashItemSn { get; set; } // FILETIME
         public long DateExpire { get; set; }
         
+        public string Tag { get; set; }
+        public short Attribute { get; set; }
+        
         public int SlotMax { get; set; }
         public int Price { get; set; }
         public double UnitPrice { get; set; }
@@ -140,6 +143,13 @@ namespace NineToFive.Game.Storage {
         public int RecoveryMP { get; set; }
         public int ConsumeHP { get; set; }
         public int ConsumeMP { get; set; }
+
+        public bool IsRechargable {
+            get {
+                int category = Id / 10000;
+                return category == 207 || category == 233;
+            }
+        }
 
         public virtual void Encode(Item item, Packet p) {
             p.WriteByte(item.Type);

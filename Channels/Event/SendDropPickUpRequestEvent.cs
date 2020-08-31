@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using MapleLib.PacketLib;
 using NineToFive.Constants;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
@@ -46,7 +47,7 @@ namespace NineToFive.Event {
                 }
                 
                 if (holdableQuantity >= item.Quantity) { // user can hold all of it, pick it up and remove from field
-                    //user.Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.AddItem(item)));
+                    user.Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.AddItem(item)));
                     user.Field.BroadcastPacket(DropPool.GetDropLeaveField(drop, 2, (int) user.Id));
                     user.Field.RemoveLife(drop, false);
                 } else { // user can hold some, pick up as much as possible and leave rest on the floor
