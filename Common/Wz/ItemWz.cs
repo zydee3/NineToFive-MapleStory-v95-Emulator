@@ -191,70 +191,70 @@ namespace NineToFive.Wz {
                                     item.MasterLevel = infoNode.GetInt();
                                     break;
                                 case "incPERIOD":
-                                    item.IncPERIOD = infoNode.GetInt();
+                                    item.IncPERIOD = (short) infoNode.GetInt();
                                     break;
                                 case "incPAD":
-                                    item.IncPAD = infoNode.GetInt();
+                                    item.IncPAD = (short) infoNode.GetInt();
                                     break;
                                 case "incMDD":
-                                    item.IncMDD = infoNode.GetInt();
+                                    item.IncMDD = (short) infoNode.GetInt();
                                     break;
                                 case "incACC":
-                                    item.IncACC = infoNode.GetInt();
+                                    item.IncACC = (short) infoNode.GetInt();
                                     break;
                                 case "incMHP":
-                                    item.IncMHP = infoNode.GetInt();
+                                    item.IncMHP = (short) infoNode.GetInt();
                                     break;
                                 case "cursed":
-                                    item.Cursed = infoNode.GetInt();
+                                    item.Cursed = (short) infoNode.GetInt();
                                     break;
                                 case "incINT":
-                                    item.IncINT = infoNode.GetInt();
+                                    item.IncINT = (short) infoNode.GetInt();
                                     break;
                                 case "incDEX":
-                                    item.IncDEX = infoNode.GetInt();
+                                    item.IncDEX = (short) infoNode.GetInt();
                                     break;
                                 case "incMAD":
-                                    item.IncMAD = infoNode.GetInt();
+                                    item.IncMAD = (short) infoNode.GetInt();
                                     break;
                                 case "incEVA":
-                                    item.IncEVA = infoNode.GetInt();
+                                    item.IncEVA = (short) infoNode.GetInt();
                                     break;
                                 case "incSTR":
-                                    item.IncSTR = infoNode.GetInt();
+                                    item.IncSTR = (short) infoNode.GetInt();
                                     break;
                                 case "incLUK":
-                                    item.IncLUK = infoNode.GetInt();
+                                    item.IncLUK = (short) infoNode.GetInt();
                                     break;
                                 case "incSpeed":
-                                    item.IncSpeed = infoNode.GetInt();
+                                    item.IncSpeed = (short) infoNode.GetInt();
                                     break;
                                 case "incMMP":
-                                    item.IncMMP = infoNode.GetInt();
+                                    item.IncMMP = (short) infoNode.GetInt();
                                     break;
                                 case "incJump":
-                                    item.IncJump = infoNode.GetInt();
+                                    item.IncJump = (short) infoNode.GetInt();
                                     break;
                                 case "incIUC":
-                                    item.IncIUC = infoNode.GetInt();
+                                    item.IncIUC = (short) infoNode.GetInt();
                                     break;
                                 case "incCraft":
-                                    item.IncCraft = infoNode.GetInt();
+                                    item.IncCraft = (short) infoNode.GetInt();
                                     break;
                                 case "incRandVol":
-                                    item.IncRandVol = infoNode.GetInt();
+                                    item.IncRandVol = (short) infoNode.GetInt();
                                     break;
                                 case "incLEV":
-                                    item.IncLEV = infoNode.GetInt();
+                                    item.IncLEV = (short) infoNode.GetInt();
                                     break;
                                 case "incMaxHP":
-                                    item.IncMaxHP = infoNode.GetInt();
+                                    item.IncMaxHP = (short) infoNode.GetInt();
                                     break;
                                 case "incMaxMP":
-                                    item.IncMaxMP = infoNode.GetInt();
+                                    item.IncMaxMP = (short) infoNode.GetInt();
                                     break;
                                 case "incReqLevel":
-                                    item.IncReqLevel = infoNode.GetInt();
+                                    item.IncReqLevel = (short) infoNode.GetInt();
                                     break;
                                 case "recoveryHP":
                                     item.RecoveryHP = infoNode.GetInt();
@@ -266,16 +266,16 @@ namespace NineToFive.Wz {
                                     item.ConsumeHP = infoNode.GetInt();
                                     break;
                                 case "consumeMP":
-                                    item.ConsumeMP = infoNode.GetInt();
+                                    item.ConsumeMP = (short) infoNode.GetInt();
                                     break;
                                 case "reqLevel":
-                                    item.ReqLevel = infoNode.GetInt();
+                                    item.ReqLevel = (short) infoNode.GetInt();
                                     break;
                                 case "reqCUC":
-                                    item.ReqCUC = infoNode.GetInt();
+                                    item.ReqCUC = (short) infoNode.GetInt();
                                     break;
                                 case "reqRUC":
-                                    item.ReqRUC = infoNode.GetInt();
+                                    item.ReqRUC = (short) infoNode.GetInt();
                                     break;
                             }
                         }
@@ -294,107 +294,106 @@ namespace NineToFive.Wz {
                                     item.ConsumeOnPickup = specNode.GetInt();
                                     break;
                                 case "hp":
-                                    item.Hp = specNode.GetInt();
+                                    item.Hp = (short) specNode.GetInt();
                                     break;
                                 case "mp":
-                                    item.Mp = specNode.GetInt();
+                                    item.Mp = (short) specNode.GetInt();
                                     break;
                                 case "pad":
-                                    item.Pad = specNode.GetInt();
+                                    item.Pad = (short) specNode.GetInt();
                                     break;
                                 case "mad":
-                                    item.Mad = specNode.GetInt();
+                                    item.Mad = (short) specNode.GetInt();
                                     break;
                                 case "prob":
-                                    item.Prob = specNode.GetInt();
+                                    item.Prob = (short) specNode.GetInt();
                                     break;
                                 case "eva":
-                                    item.Eva = specNode.GetInt();
+                                    item.Eva = (short) specNode.GetInt();
                                     break;
                                 case "defenseAtt":
                                     item.DefenseAtt = ((WzStringProperty) specNode).Value;
-                                    ;
                                     break;
                                 case "jump":
-                                    item.Jump = specNode.GetInt();
+                                    item.Jump = (short) specNode.GetInt();
                                     break;
                                 case "acc":
-                                    item.Acc = specNode.GetInt();
+                                    item.Acc = (short) specNode.GetInt();
                                     break;
                                 case "str":
-                                    item.Str = specNode.GetInt();
+                                    item.Str = (short) specNode.GetInt();
                                     break;
                                 case "luk":
-                                    item.Luk = specNode.GetInt();
+                                    item.Luk = (short) specNode.GetInt();
                                     break;
                                 case "int":
-                                    item.Int = specNode.GetInt();
+                                    item.Int = (short) specNode.GetInt();
                                     break;
                                 case "dex":
-                                    item.Dex = specNode.GetInt();
+                                    item.Dex = (short) specNode.GetInt();
                                     break;
                                 case "pdd":
-                                    item.Pdd = specNode.GetInt();
+                                    item.Pdd = (short) specNode.GetInt();
                                     break;
                                 case "mdd":
-                                    item.Mdd = specNode.GetInt();
+                                    item.Mdd = (short) specNode.GetInt();
                                     break;
                                 case "speed":
-                                    item.Speed = specNode.GetInt();
+                                    item.Speed = (short) specNode.GetInt();
                                     break;
                                 case "morph":
-                                    item.Morph = specNode.GetInt();
+                                    item.Morph = (short) specNode.GetInt();
                                     break;
                                 case "time":
-                                    item.Time = specNode.GetInt();
+                                    item.Time = (short) specNode.GetInt();
                                     break;
                                 case "inc":
-                                    item.Inc = specNode.GetInt();
+                                    item.Inc = (short) specNode.GetInt();
                                     break;
                                 case "expinc":
-                                    item.Expinc = specNode.GetInt();
+                                    item.Expinc = (short) specNode.GetInt();
                                     break;
                                 case "incFatigue":
-                                    item.IncFatigue = specNode.GetInt();
+                                    item.IncFatigue = (short) specNode.GetInt();
                                     break;
                                 case "padRate":
-                                    item.PadRate = specNode.GetInt();
+                                    item.PadRate = (short) specNode.GetInt();
                                     break;
                                 case "madRate":
-                                    item.MadRate = specNode.GetInt();
+                                    item.MadRate = (short) specNode.GetInt();
                                     break;
                                 case "pddRate":
-                                    item.PddRate = specNode.GetInt();
+                                    item.PddRate = (short) specNode.GetInt();
                                     break;
                                 case "mddRate":
-                                    item.MddRate = specNode.GetInt();
+                                    item.MddRate = (short) specNode.GetInt();
                                     break;
                                 case "accRate":
-                                    item.AccRate = specNode.GetInt();
+                                    item.AccRate = (short) specNode.GetInt();
                                     break;
                                 case "evaRate":
-                                    item.EvaRate = specNode.GetInt();
+                                    item.EvaRate = (short) specNode.GetInt();
                                     break;
                                 case "speedRate":
-                                    item.SpeedRate = specNode.GetInt();
+                                    item.SpeedRate = (short) specNode.GetInt();
                                     break;
                                 case "mhpRRate":
-                                    item.MhpRRate = specNode.GetInt();
+                                    item.MhpRRate = (short) specNode.GetInt();
                                     break;
                                 case "mmpRRate":
-                                    item.MmpRRate = specNode.GetInt();
+                                    item.MmpRRate = (short) specNode.GetInt();
                                     break;
                                 case "hpR":
-                                    item.HpR = specNode.GetInt();
+                                    item.HpR = (short) specNode.GetInt();
                                     break;
                                 case "mpR":
-                                    item.MpR = specNode.GetInt();
+                                    item.MpR = (short) specNode.GetInt();
                                     break;
                                 case "mmpR":
-                                    item.MmpR = specNode.GetInt();
+                                    item.MmpR = (short) specNode.GetInt();
                                     break;
                                 case "mhpR":
-                                    item.MhpR = specNode.GetInt();
+                                    item.MhpR = (short) specNode.GetInt();
                                     break;
                                 case "poison":
                                     item.Poison = specNode.GetInt();

@@ -48,7 +48,7 @@ namespace NineToFive.Wz {
             equip.KnockBack = t.KnockBack;
             equip.Walk = t.Walk;
             equip.Stand = t.Stand;
-            equip.Speed = (short) t.Speed;
+            equip.Speed = t.Speed;
             equip.ReqLevel = t.ReqLevel;
             equip.ReqJob = t.ReqJob;
             equip.ReqSTR = t.ReqSTR;
@@ -266,10 +266,10 @@ namespace NineToFive.Wz {
                                 templateEquip.SweepForDrop = ((WzStringProperty) property).Value;
                                 break;
                             case "consumeHP":
-                                templateEquip.ConsumeHP = ((WzStringProperty) property).Value;
+                                templateEquip.ConsumeHP = property.GetInt();
                                 break;
                             case "consumeMP":
-                                templateEquip.ConsumeMP = ((WzStringProperty) property).Value;
+                                templateEquip.ConsumeMP = property.GetInt();
                                 break;
                             case "longRange":
                                 templateEquip.LongRange = ((WzStringProperty) property).Value;

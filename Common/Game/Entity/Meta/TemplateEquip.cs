@@ -92,7 +92,10 @@
         public int MedalTag { get; set; }
         public int NoExpend { get; set; }
         public int SpecialID { get; set; }
-
+        
+        public int ConsumeHP { get; set; }
+        public int ConsumeMP { get; set; }
+        
         public string VSlot { get; set; }
         public string ISlot { get; set; }
         public string AfterImage { get; set; }
@@ -101,9 +104,7 @@
         public string PickupItem { get; set; }
         public string PickupOthers { get; set; }
         public string SweepForDrop { get; set; }
-        public string ConsumeHP { get; set; }
         public string LongRange { get; set; }
-        public string ConsumeMP { get; set; }
 
         public float Recovery { get; set; }
         public short Attack { get; set; }

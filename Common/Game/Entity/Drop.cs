@@ -23,7 +23,9 @@ namespace NineToFive.Game.Entity {
 
         public Vector2 Origin { get; set; }
         public int Money { get; set; }
-        
-        public Item Item => new Item((int) Id);
+
+        private Item _item;
+
+        public Item Item => _item ??= new Item((int) Id);
     }
 }

@@ -49,75 +49,75 @@ namespace NineToFive.Game.Storage {
         
         #region Stats
         
-        public int Hp { get; set; }
-        public int Mp { get; set; }
-        public int Pad { get; set; }
-        public int Mad { get; set; }
-        public int Prob { get; set; }
-        public int Eva { get; set; }
+        public short Hp { get; set; }
+        public short Mp { get; set; }
+        public short Pad { get; set; }
+        public short Mad { get; set; }
+        public short Prob { get; set; }
+        public short Eva { get; set; }
         public string DefenseAtt { get; set; }
-        public int Jump { get; set; }
-        public int Acc { get; set; }
-        public int Str { get; set; }
-        public int Luk { get; set; }
-        public int Int { get; set; }
-        public int Dex { get; set; }
-        public int Pdd { get; set; }
-        public int Mdd { get; set; }
-        public int Speed { get; set; }
+        public short Jump { get; set; }
+        public short Acc { get; set; }
+        public short Str { get; set; }
+        public short Luk { get; set; }
+        public short Int { get; set; }
+        public short Dex { get; set; }
+        public short Pdd { get; set; }
+        public short Mdd { get; set; }
+        public short Speed { get; set; }
         
         #endregion
         #region Increase
         
-        public int IncPERIOD { get; set; }
-        public int IncPAD { get; set; }
-        public int IncMDD { get; set; }
-        public int IncACC { get; set; }
-        public int IncMHP { get; set; }
-        public int Cursed { get; set; }
-        public int IncINT { get; set; }
-        public int IncDEX { get; set; }
-        public int IncMAD { get; set; }
-        public int IncEVA { get; set; }
-        public int IncSTR { get; set; }
-        public int IncLUK { get; set; }
-        public int IncSpeed { get; set; }
-        public int IncMMP { get; set; }
-        public int IncJump { get; set; }
-        public int Inc { get; set; }
-        public int IncIUC { get; set; }
-        public int IncCraft { get; set; }
-        public int IncRandVol { get; set; }
-        public int Expinc { get; set; }
-        public int IncLEV { get; set; }
-        public int IncFatigue { get; set; }
-        public int IncMaxHP { get; set; }
-        public int IncMaxMP { get; set; }
-        public int IncReqLevel { get; set; }
+        public short IncPERIOD { get; set; }
+        public short IncPAD { get; set; }
+        public short IncMDD { get; set; }
+        public short IncACC { get; set; }
+        public short IncMHP { get; set; }
+        public short Cursed { get; set; }
+        public short IncINT { get; set; }
+        public short IncDEX { get; set; }
+        public short IncMAD { get; set; }
+        public short IncEVA { get; set; }
+        public short IncSTR { get; set; }
+        public short IncLUK { get; set; }
+        public short IncSpeed { get; set; }
+        public short IncMMP { get; set; }
+        public short IncJump { get; set; }
+        public short Inc { get; set; }
+        public short IncIUC { get; set; }
+        public short IncCraft { get; set; }
+        public short IncRandVol { get; set; }
+        public short Expinc { get; set; }
+        public short IncLEV { get; set; }
+        public short IncFatigue { get; set; }
+        public short IncMaxHP { get; set; }
+        public short IncMaxMP { get; set; }
+        public short IncReqLevel { get; set; }
         
         #endregion
         #region Require
         
-        public int ReqLevel { get; set; }
-        public int ReqCUC { get; set; }
-        public int ReqRUC { get; set; }
+        public short ReqLevel { get; set; }
+        public short ReqCUC { get; set; }
+        public short ReqRUC { get; set; }
         
         #endregion
         #region Rate
         
-        public int PadRate { get; set; }
-        public int MadRate { get; set; }
-        public int PddRate { get; set; }
-        public int MddRate { get; set; }
-        public int AccRate { get; set; }
-        public int EvaRate { get; set; }
-        public int SpeedRate { get; set; }
-        public int MhpRRate { get; set; }
-        public int MmpRRate { get; set; }
-        public int HpR { get; set; }
-        public int MpR { get; set; }
-        public int MmpR { get; set; }
-        public int MhpR { get; set; }
+        public short PadRate { get; set; }
+        public short MadRate { get; set; }
+        public short PddRate { get; set; }
+        public short MddRate { get; set; }
+        public short AccRate { get; set; }
+        public short EvaRate { get; set; }
+        public short SpeedRate { get; set; }
+        public short MhpRRate { get; set; }
+        public short MmpRRate { get; set; }
+        public short HpR { get; set; }
+        public short MpR { get; set; }
+        public short MmpR { get; set; }
+        public short MhpR { get; set; }
         
         #endregion
         #region States

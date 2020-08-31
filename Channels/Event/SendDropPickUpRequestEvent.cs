@@ -33,8 +33,23 @@ namespace NineToFive.Event {
             
             if (drop.Money > 0) {
                 
-            } else if (inventory.AddItem(drop.Item)) {
+            } else {
+                Item item = drop.Item;
+                int holdableQuantity = inventory.GetHoldableQuantity(item);
+                if (holdableQuantity == 0) {
+                    // send inventory full packet
+                    return;
+                }
+
+                if (holdableQuantity == item.Quantity) {
+                    inventory.AddItem(item);
+                    // send remove drop packet
+                } else {
+                    item.Quantity -= (ushort) holdableQuantity;
+                    inventory.AddItem(new Item(item.Id) { Quantity = (ushort) holdableQuantity });
+                }
                 
+                user.Field.RemoveLife(drop);
             }
         }
     }
