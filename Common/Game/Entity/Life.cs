@@ -32,6 +32,7 @@ namespace NineToFive.Game.Entity {
 
         public virtual void Dispose() {
             Field?.RemoveLife(this);
+            Field?.BroadcastPacket(LeaveFieldPacket());
             Field = null;
         }
 

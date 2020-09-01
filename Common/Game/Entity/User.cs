@@ -199,6 +199,7 @@ namespace NineToFive.Game.Entity {
         /// <param name="characterData">to re-encode character data (a refresh essentially)</param>
         public void SetField(int fieldId, Portal portal = null, bool characterData = true) {
             Field?.RemoveLife(this);
+            Field?.BroadcastPacket(LeaveFieldPacket());
             Field = Client.Channel.GetField(fieldId);
             if (portal != null) {
                 Location = portal.Location;

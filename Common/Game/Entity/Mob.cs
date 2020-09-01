@@ -38,8 +38,6 @@ namespace NineToFive.Game.Entity {
         }
 
         public async Task<int> Damage(User attacker, int damage) {
-            if (attacker.Field != Field) return 0;
-
             lock (this) {
                 HP -= damage;
                 if (HP > 0) {
@@ -48,7 +46,8 @@ namespace NineToFive.Game.Entity {
                 } else {
                     _onDeath(this);
                     attacker.Client.Session.Write(CWvsPackets.GetIncExpMessage(Exp));
-                    attacker.Field.RemoveLife(this);
+                    Field.RemoveLife(this);
+                    Field.BroadcastPacket(LeaveFieldPacket());
                     return Exp;
                 }
             }
