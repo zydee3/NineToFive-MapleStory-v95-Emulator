@@ -10,8 +10,8 @@ namespace NineToFive.Game.Storage.Meta {
         public short PreviousBagIndex => Operation == InventoryOperation.Move ? _previousBagIndex : Item.BagIndex;
 
         public InventoryUpdateEntry(ref Item item, InventoryOperation operation, short previousBagIndex = 0) {
-            if(operation == InventoryOperation.Move && previousBagIndex <= 0) 
-                throw new InvalidDataException("PreviousBagIndex cannot be zero / negative when performing move item operations");
+            if(operation == InventoryOperation.Move && previousBagIndex == 0) 
+                throw new InvalidDataException("PreviousBagIndex cannot be zero");
             
             Item = item;
             Operation = operation;

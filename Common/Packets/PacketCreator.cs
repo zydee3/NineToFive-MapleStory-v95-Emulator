@@ -456,13 +456,12 @@ namespace NineToFive.Packets {
             foreach (var entry in updates) {
                 Item item = entry.Item;
                 w.WriteByte((byte) entry.Operation);
-                w.WriteByte((byte) item.InventoryType);
+                w.WriteByte((byte) (item.InventoryType + 1));
                 w.WriteShort(entry.PreviousBagIndex);
                 switch (entry.Operation) {
                     case InventoryOperation.Add:
                         switch (item) {
                             case Equip equip:
-                                w.WriteByte(1);
                                 equip.Encode(equip, w);
                                 break;
                             //case Pet pet: // this is a life, needs to be item

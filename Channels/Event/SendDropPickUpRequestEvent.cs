@@ -33,9 +33,8 @@ namespace NineToFive.Event {
             Drop drop = user.Field.LifePools[EntityType.Drop][_objectId] as Drop;
             if (drop == null) return;
 
-            InventoryType inventoryType = ItemConstants.GetInventoryType((int) drop.TemplateId);
+            InventoryType inventoryType = ItemConstants.GetInventoryType(drop.TemplateId);
             Inventory inventory = user.Inventories[inventoryType];
-            
             if (drop.Id == 0) {
                 
             } else {

@@ -6,7 +6,6 @@ using NineToFive.Game.Storage.Meta;
 
 namespace NineToFive.Game.Storage {
     public enum InventoryType {
-        Undefined,
         Equip,
         Use,
         Setup,
@@ -66,39 +65,104 @@ namespace NineToFive.Game.Storage {
             ushort slotMax = (ushort) item.SlotMax;
             
             for (byte slot = 1; slot <= Size; slot++) {
-                if (this[slot] == null) { // add to empty slot
-                    if(item.Quantity > slotMax) { // deposit to slot max quantity of item in slot and continue with remaining
-                        item.Quantity -= slotMax;
-                        Item fullStackItem = new Item(item.Id) { Quantity = slotMax, BagIndex = slot};
-                        updates.Add(new InventoryUpdateEntry(ref fullStackItem, InventoryOperation.Add));
-                        this[slot] = fullStackItem;
-                    } else { // slot can hold the max quantity, put everything in and we're done
-                        item.BagIndex = slot;
-                        this[slot] = item;
+                if (this[slot] == null) {
+                    if (item.Quantity <= slotMax && Insert(item, slot)) {
                         updates.Add(new InventoryUpdateEntry(ref item, InventoryOperation.Add));
                         break;
+                    }
+                    
+                    Item newSlotItem = new Item(item.Id) {Quantity = slotMax};
+                    if (Insert(newSlotItem, slot)) {
+                        item.Quantity -= slotMax;
+                        updates.Add(new InventoryUpdateEntry(ref newSlotItem, InventoryOperation.Add));
                     }
                 }
 
                 Item current = this[slot];
-                if(current.Id == item.Id){ // another instance of item found, merge the two instances
-                    if (item.Quantity + current.Quantity > slotMax) { // two instances total cannot fit in slot, max current slot and continue
-                        item.Quantity = (ushort) (slotMax - current.Quantity);
-                        current.Quantity = slotMax;
-                    } else { // two instances total do fit in slot, so combine them and delete previous item
-                        current.Quantity = (ushort) (slotMax + current.Quantity);
-                        item = null;
-                        break;
-                    }
+                if(item.Id == current.Id) {
+                    int remaining = Merge(item, current);
                     updates.Add(new InventoryUpdateEntry(ref current, InventoryOperation.Update));
+                    if (remaining == 0) break;
+                }
+            }
+            
+            return updates;
+        }
+
+        public List<InventoryUpdateEntry> MoveItem(byte from, byte to) {
+            List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
+            Item itemToMove = this[from], itemInTheWay = this[to];
+
+            if (itemToMove != null) {
+                if (itemInTheWay == null) {
+                    itemToMove.BagIndex = to;
+                    _items.Remove(from);
+                    _items.TryAdd(to, itemToMove);
+                    updates.Add(new InventoryUpdateEntry(ref itemToMove, InventoryOperation.Move, from));
+                } else {
+                    if (itemToMove.Id == itemInTheWay.Id) {
+                        int remaining = Merge(itemToMove, itemInTheWay);
+                        updates.Add(new InventoryUpdateEntry(ref itemToMove, remaining == 0 ? InventoryOperation.Remove : InventoryOperation.Update));
+                        updates.Add(new InventoryUpdateEntry(ref itemInTheWay, InventoryOperation.Update));
+                    } else {
+                        if (Swap(itemToMove, itemInTheWay)) {
+                            updates.Add(new InventoryUpdateEntry(ref itemToMove, InventoryOperation.Move, from));
+                            updates.Add(new InventoryUpdateEntry(ref itemInTheWay, InventoryOperation.Update, to));
+                        }
+                    }
                 }
             }
 
             return updates;
         }
 
-        public Item RemoveSlot(byte slot) {
-            return null;
+        private bool Insert(Item item, byte slot) {
+            if (item == null || this[slot] != null) return false;
+            item.BagIndex = slot;
+            return _items.TryAdd(slot, item);
+        }
+        
+        private ushort Merge(Item origin, Item target) {
+            if (origin == null || target == null) return 0;
+            if (_items.ContainsKey(origin.BagIndex)) _items.Remove(origin.BagIndex);
+
+            int slotMax = target.SlotMax;
+            int originQuantity = origin.Quantity;
+            int targetQuantity = target.Quantity;
+
+            if (originQuantity + targetQuantity > slotMax) {
+                target.Quantity = (ushort) slotMax;
+                origin.Quantity -= (ushort) (slotMax - targetQuantity);
+            } else {
+                target.Quantity += (ushort) originQuantity;
+                origin.Quantity = 0;
+            }
+            
+            return origin.Quantity;
+        }
+
+        private bool Swap(Item first, Item second) {
+            if (first == null || second == null) return false;
+            
+            _items.Remove(first.BagIndex);
+            _items.Remove(second.BagIndex);
+
+            short temp = first.BagIndex;
+            first.BagIndex = second.BagIndex;
+            second.BagIndex = temp;
+
+            return _items.TryAdd(first.BagIndex, first) 
+                   && _items.TryAdd(second.BagIndex, second);
+        }
+
+        public Item Remove(byte slot) {
+            Item target = this[slot];
+            if (target != null) {
+                target.BagIndex = -1;
+                _items.Remove(slot);
+            }
+
+            return target;
         }
 
         public Item this[short bagIndex] {
