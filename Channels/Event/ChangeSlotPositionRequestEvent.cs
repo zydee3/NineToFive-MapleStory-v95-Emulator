@@ -8,13 +8,13 @@ using NineToFive.Net;
 using NineToFive.Packets;
 
 namespace NineToFive.Event {
-    public class SendChangeSlotPositionRequestEvent : PacketEvent {
+    public class ChangeSlotPositionRequestEvent : PacketEvent {
 
         private byte _inventoryType;
         private sbyte _oldPos;
         private sbyte _newPos;
         private short _count;
-        public SendChangeSlotPositionRequestEvent(Client client) : base(client) { }
+        public ChangeSlotPositionRequestEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
             p.ReadInt(); // get_update_time();

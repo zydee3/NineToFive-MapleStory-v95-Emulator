@@ -11,11 +11,11 @@ using NineToFive.Packets;
 using NineToFive.SendOps;
 
 namespace NineToFive.Event {
-    public class SendDropPickUpRequestEvent : PacketEvent {
+    public class DropPickUpRequestEvent : PacketEvent {
 
         private uint _objectId;
         
-        public SendDropPickUpRequestEvent(Client client) : base(client) { }
+        public DropPickUpRequestEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
             p.ReadByte();  // type  
