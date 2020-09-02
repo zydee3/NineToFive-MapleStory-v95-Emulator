@@ -121,7 +121,7 @@ namespace NineToFive.Game.Storage {
             p.WriteShort(equip.Speed);
             p.WriteShort(equip.Jump);
             p.WriteString(equip.Title);
-            p.WriteShort();
+            p.WriteShort(equip.Attribute);
 
             p.WriteByte(); // iLevelUpType
             p.WriteByte(); // iLevel

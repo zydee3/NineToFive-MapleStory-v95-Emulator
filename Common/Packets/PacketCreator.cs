@@ -460,20 +460,7 @@ namespace NineToFive.Packets {
                 w.WriteShort(entry.PreviousBagIndex);
                 switch (entry.Operation) {
                     case InventoryOperation.Add:
-                        switch (item) {
-                            case Equip equip:
-                                equip.Encode(equip, w);
-                                break;
-                            //case Pet pet: // this is a life, needs to be item
-                            default:
-                                item.Encode(item, w);
-                                w.WriteShort((short) item.Quantity);
-                                w.WriteString(item.Tag ?? "");
-                                w.WriteShort(item.Attribute);
-                                if (item.IsRechargable)
-                                    w.WriteLong(); // OwO
-                                break;
-                        }
+                        EncodeGWItemSlot(item, w);
                         break;
                     case InventoryOperation.Update:
                         w.WriteShort((short) item.Quantity);
@@ -504,6 +491,24 @@ namespace NineToFive.Packets {
             }
 
             return w.ToArray();
+        }
+
+        public static void EncodeGWItemSlot(Item item, Packet w) {
+            if (item == null) return;
+            switch (item) {
+                case Equip equip:
+                    equip.Encode(equip, w);
+                    break;
+                //case Pet pet: // this is a life, needs to be item
+                default:
+                    item.Encode(item, w);
+                    w.WriteShort((short) item.Quantity);
+                    w.WriteString(item.Tag ?? "");
+                    w.WriteShort(item.Attribute);
+                    if (item.IsRechargable)
+                        w.WriteLong(); // OwO
+                    break;
+            }
         }
     }
 

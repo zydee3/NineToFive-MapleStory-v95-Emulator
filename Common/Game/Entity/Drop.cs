@@ -6,7 +6,7 @@ using NineToFive.Packets;
 namespace NineToFive.Game.Entity {
     public class Drop : Life {
         private Item _item;
-
+        
         public Drop(int id, int quantity, Life creator) : base(id, EntityType.Drop) {
             Fh = creator.Fh;
             Location = creator.Location;
@@ -20,12 +20,17 @@ namespace NineToFive.Game.Entity {
             Origin = creator.Location;
             _item = item;
         }
-
+        
         public Vector2 Origin { get; set; }
         public int Quantity { get; set; }
 
         public Item Item {
-            get => _item ?? new Item(TemplateId, true) {Quantity = (ushort) Quantity};
+            get {
+                if (_item != null) return _item;
+                if (ItemConstants.GetInventoryType(TemplateId) == InventoryType.Equip) return new Equip(TemplateId, false, true) {Quantity = (ushort) Quantity};
+                return new Item(TemplateId, true) {Quantity = (ushort) Quantity};
+            }
+            
             set => _item = value;
         }
         
