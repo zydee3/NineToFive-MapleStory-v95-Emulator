@@ -687,7 +687,7 @@ namespace NineToFive.Packets {
                     var inventory = user.Inventories[(InventoryType) i];
                     foreach (var item in inventory.Items) {
                         w.WriteByte((byte) item.BagIndex);
-                        item.Encode(item, w);
+                        CWvsPackets.EncodeGWItemSlot(item, w);
                     }
 
                     w.WriteByte();
