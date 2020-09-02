@@ -5,7 +5,7 @@ namespace NineToFive.Game.Storage.Meta {
     public class InventoryUpdateEntry {
         public Item Item { get; set; }
         public InventoryOperation Operation { get; set; }
-
+        public bool unequipping { get; set; }
         private readonly short _previousBagIndex;
         public short PreviousBagIndex => Operation == InventoryOperation.Move ? _previousBagIndex : Item.BagIndex;
 

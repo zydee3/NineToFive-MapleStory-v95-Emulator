@@ -480,8 +480,20 @@ namespace NineToFive.Packets {
                         break;
                     case InventoryOperation.Move:
                         w.WriteShort(item.BagIndex);
+
+                        //LABEL_341:
+                        //if ( TSingleton<CUserLocal>::ms_pInstance._m_pStr )
+                        //v145 = CInPacket::Decode1(iPacket);
+                        if (entry.PreviousBagIndex < 0) {
+                            w.WriteByte(1);
+                        } else if (item.BagIndex < 0) {
+                            w.WriteByte(2);
+                        }
                         break;
                     case InventoryOperation.Remove:
+                        if (item.BagIndex < 0) {
+                            w.WriteByte(2);
+                        }
                         break;
                     case InventoryOperation.UpdateStat:
                         w.WriteInt();// v37
@@ -490,11 +502,7 @@ namespace NineToFive.Packets {
                         throw new InvalidEnumArgumentException();
                 }
             }
-            
-            //LABEL_341:
-            //if ( TSingleton<CUserLocal>::ms_pInstance._m_pStr )
-            //v145 = CInPacket::Decode1(iPacket);
-            
+
             return w.ToArray();
         }
     }

@@ -104,6 +104,7 @@ namespace NineToFive.Wz {
             equip.ConsumeMP = t.ConsumeMP;
             equip.Recovery = t.Recovery;
             equip.Attack = t.Attack;
+            equip.SlotMax = 1;
         }
 
         internal static void InitializeTemplate(out TemplateEquip templateEquip, int equipId) {

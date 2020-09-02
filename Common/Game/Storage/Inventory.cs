@@ -32,6 +32,43 @@ namespace NineToFive.Game.Storage {
             return _items.TryAdd(equip.BagIndex, equip);
         }
 
+        public List<InventoryUpdateEntry> EquipItem(Inventory equippedInventory, sbyte from, sbyte to) {
+            List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
+
+            if (Type == InventoryType.Equip && equippedInventory.Type == InventoryType.Equipped) {
+                Item equipToAdd = null, equipInTheWay = equippedInventory.Remove(to);
+                
+                if (equipInTheWay != null 
+                    && (equipToAdd = Remove(from)) != null
+                    && equippedInventory.Insert(equipToAdd, to)
+                    && Insert(equipInTheWay, from))
+                {
+                    updates.Add(new InventoryUpdateEntry(ref equipToAdd, InventoryOperation.Move, from));
+                    updates.Add(new InventoryUpdateEntry(ref equipInTheWay, InventoryOperation.Move, to));
+                } else if ((equipToAdd = Remove(from)) != null
+                    && equippedInventory.Insert(equipToAdd, to))
+                {
+                    updates.Add(new InventoryUpdateEntry(ref equipToAdd, InventoryOperation.Move, from));
+                }
+            }
+            
+            return updates;
+        }
+
+        public List<InventoryUpdateEntry> UnequipItem(Inventory equipInventory, sbyte from, sbyte to) {
+            List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
+            Item equip;
+
+            if (Type == InventoryType.Equipped               // are we taking from equipped?
+            && equipInventory.Type == InventoryType.Equip    // is the receiving inventory equip?
+            && equipInventory[to] == null                    // is the receiving slot empty?
+            && (equip = Remove(from)) != null                // does the item we're un-equipping exist?
+            && equipInventory.Insert(equip, to))             // was the equip successfully added? this last bool should never fail honestly
+                updates.Add(new InventoryUpdateEntry(ref equip, InventoryOperation.Move, from));
+            
+            return updates;
+        }
+
         /// <summary>
         /// Checks how much of the item can be held. This is used because GMS picks up as much as you can hold, leaving the remainder on the floor.
         /// </summary>
@@ -40,7 +77,7 @@ namespace NineToFive.Game.Storage {
         public int GetHoldableQuantity(Item item) {
             if (Items.Count >= Size) return 0;
             int remaining = item.Quantity;
-            byte slot = 0;
+            sbyte slot = 0;
             
             while (remaining > 0 && ++slot <= Size) {
                 Item current = this[slot];
@@ -64,7 +101,7 @@ namespace NineToFive.Game.Storage {
             if (Items.Count >= Size) return updates;
             ushort slotMax = (ushort) item.SlotMax;
             
-            for (byte slot = 1; slot <= Size; slot++) {
+            for (sbyte slot = 1; slot <= Size; slot++) {
                 if (this[slot] == null) {
                     if (item.Quantity <= slotMax && Insert(item, slot)) {
                         updates.Add(new InventoryUpdateEntry(ref item, InventoryOperation.Add));
@@ -89,7 +126,7 @@ namespace NineToFive.Game.Storage {
             return updates;
         }
 
-        public List<InventoryUpdateEntry> MoveItem(byte from, byte to) {
+        public List<InventoryUpdateEntry> MoveItem(sbyte from, sbyte to) {
             List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
             Item itemToMove = this[from], itemInTheWay = this[to];
 
@@ -101,9 +138,11 @@ namespace NineToFive.Game.Storage {
                     updates.Add(new InventoryUpdateEntry(ref itemToMove, InventoryOperation.Move, from));
                 } else {
                     if (itemToMove.Id == itemInTheWay.Id) {
-                        int remaining = Merge(itemToMove, itemInTheWay);
-                        updates.Add(new InventoryUpdateEntry(ref itemToMove, remaining == 0 ? InventoryOperation.Remove : InventoryOperation.Update));
-                        updates.Add(new InventoryUpdateEntry(ref itemInTheWay, InventoryOperation.Update));
+                        if (itemInTheWay.Quantity < itemInTheWay.SlotMax) {
+                            int remaining = Merge(itemToMove, itemInTheWay);
+                            updates.Add(new InventoryUpdateEntry(ref itemToMove, remaining == 0 ? InventoryOperation.Remove : InventoryOperation.Update));
+                            updates.Add(new InventoryUpdateEntry(ref itemInTheWay, InventoryOperation.Update));
+                        }
                     } else {
                         if (Swap(itemToMove, itemInTheWay)) {
                             updates.Add(new InventoryUpdateEntry(ref itemToMove, InventoryOperation.Move, from));
@@ -116,7 +155,7 @@ namespace NineToFive.Game.Storage {
             return updates;
         }
 
-        private bool Insert(Item item, byte slot) {
+        public bool Insert(Item item, sbyte slot) {
             if (item == null || this[slot] != null) return false;
             item.BagIndex = slot;
             return _items.TryAdd(slot, item);
@@ -155,10 +194,10 @@ namespace NineToFive.Game.Storage {
                    && _items.TryAdd(second.BagIndex, second);
         }
 
-        public Item Remove(byte slot) {
+        public Item Remove(sbyte slot, bool resetSlot = true) {
             Item target = this[slot];
             if (target != null) {
-                target.BagIndex = -1;
+                if(resetSlot) target.BagIndex = -1;
                 _items.Remove(slot);
             }
 

@@ -11,31 +11,31 @@ namespace NineToFive.Event {
     public class SendChangeSlotPositionRequestEvent : PacketEvent {
 
         private byte _inventoryType;
-        private short _oldPos;
-        private short _newPos;
+        private sbyte _oldPos;
+        private sbyte _newPos;
         private short _count;
         public SendChangeSlotPositionRequestEvent(Client client) : base(client) { }
 
         public override bool OnProcess(Packet p) {
             p.ReadInt(); // get_update_time();
             _inventoryType = p.ReadByte();
-            _oldPos = p.ReadShort();
-            _newPos = p.ReadShort();
+            _oldPos = (sbyte) p.ReadShort();
+            _newPos = (sbyte) p.ReadShort();
             _count = p.ReadShort();
             return true;
         }
 
         public override void OnHandle() {
             User user = Client.User;
-            InventoryType inventoryType = (InventoryType) (_inventoryType - 1);
+            InventoryType inventoryType = _oldPos < 0 ? InventoryType.Equipped : (InventoryType) (_inventoryType - 1);
             Inventory inventory = user.Inventories[inventoryType];
 
-            if (_oldPos < 0) {
-                Item equip = inventory.Remove((byte) _oldPos);
-            } else if (_newPos < 0) {
-                Item equip = inventory.Remove((byte) _oldPos);
-            } else if (_newPos == 0) {
-                Item item = inventory.Remove((byte) _oldPos);
+            if (_oldPos < 0) { // un-equipping
+                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.UnequipItem(user.Inventories[InventoryType.Equip], _oldPos, _newPos)));
+            } else if (_newPos < 0) { // equipping 
+                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.EquipItem(user.Inventories[InventoryType.Equipped], _oldPos, _newPos)));
+            } else if (_newPos == 0) { // dropping item
+                Item item = inventory.Remove(_oldPos);
                 if (item != null) {
                     item.BagIndex = _oldPos;
                     Drop drop = new Drop(item, user);
@@ -43,7 +43,7 @@ namespace NineToFive.Event {
                     Client.Session.Write(CWvsPackets.GetInventoryOperation(new List<InventoryUpdateEntry>{ new InventoryUpdateEntry(ref item, InventoryOperation.Remove)}));
                 }
             } else {
-                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.MoveItem((byte)_oldPos, (byte)_newPos)));
+                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.MoveItem(_oldPos, _newPos)));
             }
         }
     }
