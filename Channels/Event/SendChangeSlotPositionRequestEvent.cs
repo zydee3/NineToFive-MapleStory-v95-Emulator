@@ -31,20 +31,34 @@ namespace NineToFive.Event {
             Inventory inventory = user.Inventories[inventoryType];
 
             if (_oldPos < 0) { // un-equipping
-                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.UnequipItem(user.Inventories[InventoryType.Equip], _oldPos, _newPos)));
+                if(_newPos == 0) DropFromInventory(ref inventory, ref user);
+                else Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.UnequipItem(user.Inventories[InventoryType.Equip], _oldPos, _newPos)));
             } else if (_newPos < 0) { // equipping 
                 Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.EquipItem(user.Inventories[InventoryType.Equipped], _oldPos, _newPos)));
             } else if (_newPos == 0) { // dropping item
-                Item item = inventory.Remove(_oldPos);
+                DropFromInventory(ref inventory, ref user);
+            } else {
+                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.MoveItem(_oldPos, _newPos)));
+            }
+        }
+
+        private void DropFromInventory(ref Inventory inventory, ref User user) {
+            Item item = inventory.Remove(_oldPos);
+            if (item != null) {
+                item.BagIndex = _oldPos;
+                Drop drop = new Drop(item, user);
+                user.Field.SummonLife(drop);
+                Client.Session.Write(CWvsPackets.GetInventoryOperation(new List<InventoryUpdateEntry>{ new InventoryUpdateEntry(ref item, InventoryOperation.Remove)}));
+            }
+        }
+    }
+}
+/*
+Item item = inventory.Remove(_oldPos);
                 if (item != null) {
                     item.BagIndex = _oldPos;
                     Drop drop = new Drop(item, user);
                     user.Field.SummonLife(drop);
                     Client.Session.Write(CWvsPackets.GetInventoryOperation(new List<InventoryUpdateEntry>{ new InventoryUpdateEntry(ref item, InventoryOperation.Remove)}));
                 }
-            } else {
-                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.MoveItem(_oldPos, _newPos)));
-            }
-        }
-    }
-}
+                */
