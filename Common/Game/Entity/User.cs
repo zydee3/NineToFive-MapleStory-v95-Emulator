@@ -406,7 +406,7 @@ namespace NineToFive.Game.Entity {
             get {
                 byte index = 0;
                 if (JobConstants.IsExtendedSpJob(Job)) {
-                    index = (byte) (9 - Math.Min(9, 2218 - Job));
+                    index = (byte) JobConstants.GetJobLevel(Job);
                 }
 
                 return _skillPoints[index];
@@ -414,7 +414,7 @@ namespace NineToFive.Game.Entity {
             set {
                 byte index = 0;
                 if (JobConstants.IsExtendedSpJob(Job)) {
-                    index = (byte) (9 - Math.Min(9, 2218 - Job));
+                    index = (byte) JobConstants.GetJobLevel(Job);
                 }
 
                 _skillPoints[index] = value;
@@ -462,7 +462,7 @@ namespace NineToFive.Game.Entity {
             p.WriteShort(user.CharacterStat.AP);
 
             if (JobConstants.IsExtendedSpJob(jobId)) {
-                byte advancements = (byte) (9 - Math.Min(9, 2218 - jobId));
+                byte advancements = (byte) JobConstants.GetJobLevel(Job);
                 p.WriteByte(advancements);
                 for (byte i = 0; i < advancements; i++) {
                     p.WriteByte(i);
@@ -489,36 +489,35 @@ namespace NineToFive.Game.Entity {
             if ((dwcharFlag & 8) == 8) p.WriteLong();               // pet 1
             if ((dwcharFlag & 0x80000) == 0x80000) p.WriteLong();   // pet 2
             if ((dwcharFlag & 0x100000) == 0x100000) p.WriteLong(); // pet 3
-            if ((dwcharFlag & 0x10) == 0x10) p.WriteByte(Level);
-            if ((dwcharFlag & 0x20) == 0x20) p.WriteShort(Job);
-            if ((dwcharFlag & 0x40) == 0x40) p.WriteShort(Str);
-            if ((dwcharFlag & 0x80) == 0x80) p.WriteShort(Dex);
-            if ((dwcharFlag & 0x100) == 0x100) p.WriteShort(Int);
-            if ((dwcharFlag & 0x200) == 0x200) p.WriteShort(Luk);
-            if ((dwcharFlag & 0x400) == 0x400) p.WriteInt(HP);
-            if ((dwcharFlag & 0x800) == 0x800) p.WriteInt(MaxHP);
-            if ((dwcharFlag & 0x1000) == 0x1000) p.WriteInt(MP);
-            if ((dwcharFlag & 0x2000) == 0x2000) p.WriteInt(MaxMP);
-            if ((dwcharFlag & 0x4000) == 0x4000) p.WriteShort(AP);
+            if ((dwcharFlag & 0x10) == 0x10) p.WriteByte(user.CharacterStat.Level);
+            if ((dwcharFlag & 0x20) == 0x20) p.WriteShort(user.CharacterStat.Job);
+            if ((dwcharFlag & 0x40) == 0x40) p.WriteShort(user.CharacterStat.Str);
+            if ((dwcharFlag & 0x80) == 0x80) p.WriteShort(user.CharacterStat.Dex);
+            if ((dwcharFlag & 0x100) == 0x100) p.WriteShort(user.CharacterStat.Int);
+            if ((dwcharFlag & 0x200) == 0x200) p.WriteShort(user.CharacterStat.Luk);
+            if ((dwcharFlag & 0x400) == 0x400) p.WriteInt(user.CharacterStat.HP);
+            if ((dwcharFlag & 0x800) == 0x800) p.WriteInt(user.CharacterStat.MaxHP);
+            if ((dwcharFlag & 0x1000) == 0x1000) p.WriteInt(user.CharacterStat.MP);
+            if ((dwcharFlag & 0x2000) == 0x2000) p.WriteInt(user.CharacterStat.MaxMP);
+            if ((dwcharFlag & 0x4000) == 0x4000) p.WriteShort(user.CharacterStat.AP);
             if ((dwcharFlag & 0x40000) == 0x40000) p.WriteInt((int) user.Money);
 
             if ((dwcharFlag & 0x8000) == 0x8000) {
-                if (JobConstants.IsExtendedSpJob(Job)) {
-                    byte advancements = (byte) (9 - Math.Min(9, 2218 - Job));
-                    p.WriteByte(advancements);
-                    for (byte i = 0; i < advancements; i++) {
+                if (JobConstants.IsExtendedSpJob(user.CharacterStat.Job)) {
+                    byte length = p.WriteByte((byte) user.CharacterStat.SkillPoints.Length);
+                    for (byte i = 0; i < length; i++) {
                         p.WriteByte(i);
-                        p.WriteByte((byte) SkillPoints[i]);
+                        p.WriteByte((byte) user.CharacterStat.SkillPoints[i]);
                     }
                 } else {
-                    p.WriteShort(SP);
+                    p.WriteShort(user.CharacterStat.SP);
                 }
             }
 
-            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteUInt((uint) Exp);
-            if ((dwcharFlag & 0x20000) == 0x20000) p.WriteShort(Popularity);
+            if ((dwcharFlag & 0x10000) == 0x10000) p.WriteInt((int) user.CharacterStat.Exp);
+            if ((dwcharFlag & 0x20000) == 0x20000) p.WriteShort(user.CharacterStat.Popularity);
             if ((dwcharFlag & 0x40000) == 0x40000) p.WriteInt();
-            if ((dwcharFlag & 0x200000) == 0x200000) p.WriteInt(FieldId);
+            if ((dwcharFlag & 0x200000) == 0x200000) p.WriteInt(user.CharacterStat.FieldId);
         }
 
         public void Decode(User user, Packet p) {
