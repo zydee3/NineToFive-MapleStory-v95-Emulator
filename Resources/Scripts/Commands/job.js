@@ -1,6 +1,7 @@
 async function run() {
     let user = ctx.User;
     if (ctx.Args.Length != 1) {
+        user.SendMessage(`Current job : ${user.CharacterStat.Job}`);
         return user.SendMessage("[command] !job <new job>");
     }
     let n = parseInt(ctx.Args[0]);
