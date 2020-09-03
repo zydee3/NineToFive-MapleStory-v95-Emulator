@@ -17,7 +17,8 @@ namespace NineToFive.Net.Interoperations.Event {
                 using DatabaseQuery query = Database.Table("accounts");
                 query.Update(
                     "login_status", (client.LoginStatus = r.ReadByte()),
-                    "last_known_ip", r.ReadString()).ExecuteNonQuery();
+                    "last_known_ip", r.ReadString(),
+                    "last_login", Time.CurrentTimestamp).ExecuteNonQuery();
                 return new byte[0]; // result not used
             }
 
@@ -65,7 +66,16 @@ namespace NineToFive.Net.Interoperations.Event {
                 // account not found
                 if (!r.Read()) return 5;
                 if ((client.LoginStatus = r.GetByte("login_status")) != 0) {
-                    return 7;
+                    var nLoginOrdinal = r.GetOrdinal("last_login");
+                    var dtNow = DateTime.Now;
+                    var dtLastLogin = r.IsDBNull(nLoginOrdinal) ? DateTime.Now.AddHours(-1) : r.GetDateTime(nLoginOrdinal);
+
+                    if (dtNow - dtLastLogin > TimeSpan.FromMinutes(2)) {
+                        Log.Info($"{client.Username} timed out; Login status will be reset");
+                        client.LoginStatus = 0;
+                    } else {
+                        return 7;
+                    }
                 }
             }
 

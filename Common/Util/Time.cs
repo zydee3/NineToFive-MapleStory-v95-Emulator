@@ -10,6 +10,8 @@ namespace NineToFive.Util {
             return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }
 
+        public static string CurrentTimestamp => DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
         /// <summary>
         /// Calculates a timestamp for after a specified duration has passed.
         /// For example, 5 seconds in the future for an if statement if(CurrentTime > LastTime) to check if a duration has passed, where LastTime = Time.GetFuture(x in seconds).
