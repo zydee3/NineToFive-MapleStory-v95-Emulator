@@ -41,11 +41,11 @@ namespace ServerTests {
 
         public static void TestSkill() {
             var skills = SkillWz.LoadSkills();
-            Console.WriteLine($"Loaded {skills.Count} skills");
-            Console.WriteLine("=============================");
+            //Console.WriteLine($"Loaded {skills.Count} skills");
+            //Console.WriteLine("=============================");
 
-            var skill = skills[9101003];
-            Console.WriteLine(skill);
+            //var skill = skills[9101003];
+            //Console.WriteLine(skill);
         }
     }
 }

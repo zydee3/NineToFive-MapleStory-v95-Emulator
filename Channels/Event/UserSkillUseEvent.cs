@@ -3,6 +3,7 @@ using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
 using NineToFive.Packets;
+using NineToFive.Resources;
 using NineToFive.Wz;
 
 namespace NineToFive.Event {
@@ -33,7 +34,7 @@ namespace NineToFive.Event {
             User user = Client.User;
             if (user.IsDebugging) user.SendMessage($"Skill: {_skillId}, Level: {_playerskill.Level}, Received: {_skillLevel}");
 
-            if (SkillWz.Skills.TryGetValue(_playerskill.Id, out var skill)) {
+            if (WzCache.Skills.TryGetValue(_playerskill.Id, out var skill)) {
                 _playerskill.Proc = true;
                 if (skill.Id == 9101004) {
                     if (user.IsHidden = !user.IsHidden) {

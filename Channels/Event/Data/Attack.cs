@@ -45,12 +45,25 @@ namespace NineToFive.Event.Data {
             // check mob hit and hits per mob is valid
             
             p.ReadByte();
+
+            if (AttackType == AttackType.Magic) {
+                p.ReadInt();  
+                p.ReadInt();
+                p.ReadInt(); // v59
+                p.ReadInt();
+                p.ReadInt();
+                p.ReadInt();
+            }
+            
             p.ReadInt();  
             p.ReadInt();
             p.ReadInt();
             p.ReadInt();
             p.ReadByte();
-            
+            if (AttackType == AttackType.Shoot) {
+                p.ReadByte();
+            }
+
             short a14 = p.ReadShort();
             IsFacingRight = a14 >> 15 == 0;
             AttackStance = a14 & 0x7FFF;
@@ -63,10 +76,18 @@ namespace NineToFive.Event.Data {
             p.ReadInt();
             p.ReadInt();
 
+            if (AttackType == AttackType.Shoot) {
+                p.ReadShort();
+                p.ReadShort();
+                p.ReadByte();
+            }
+
             Hits = new Hit[MobsHit];
             for (int i = 0; i < MobsHit; i++) {
                 Hits[i] = new Hit(user, p, HitsPerMob);
             }
+
+            Console.WriteLine($"Mobs hit: {MobsHit}, Hits Per: {HitsPerMob}, SkillId: {SkillId}, Right: {IsFacingRight}, Stance: {AttackStance}, Speed: {AttackSpeed}");
         }
 
         public async Task Complete(User user) {
@@ -111,6 +132,7 @@ namespace NineToFive.Event.Data {
                 }
 
                 p.ReadInt();
+                Console.WriteLine($"Damage Dealth: {_damage}");
             } catch (Exception exception) {
                 Console.WriteLine(exception.Message);
                 _complete = false;

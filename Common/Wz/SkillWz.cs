@@ -8,16 +8,17 @@ using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
 using NineToFive.Game;
 using NineToFive.Game.Entity.Meta;
+using NineToFive.Resources;
 
 namespace NineToFive.Wz {
     public static class SkillWz {
         private const string WzName = "Skill";
         private static readonly ILog Log = LogManager.GetLogger(typeof(SkillWz));
-        public static readonly Dictionary<int, Skill> Skills = new Dictionary<int, Skill>();
 
-        public static Dictionary<int, Skill> LoadSkills() {
+        public static int LoadSkills() {
             WzFile wz = WzProvider.Load(WzName);
-
+            var Skills = WzCache.Skills;
+            
             foreach (WzImage job in wz.WzDirectory.WzImages) {
                 var name = job.Name.Substring(0, job.Name.LastIndexOf(".", StringComparison.Ordinal));
                 if (!int.TryParse(name, out var jobId)) continue;
@@ -53,7 +54,7 @@ namespace NineToFive.Wz {
                 }
             }
 
-            return Skills;
+            return Skills.Count;
         }
 
         /// <summary>

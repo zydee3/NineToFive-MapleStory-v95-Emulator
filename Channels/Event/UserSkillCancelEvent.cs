@@ -1,5 +1,6 @@
 ﻿using NineToFive.Net;
 using NineToFive.Packets;
+using NineToFive.Resources;
 using NineToFive.SendOps;
 using NineToFive.Wz;
 
@@ -19,7 +20,7 @@ namespace NineToFive.Event {
             if (!user.Skills.TryGetValue(_skillId, out var record)) return;
             record.Proc = false;
             user.Field.BroadcastPacketExclude(user, GetUserSkillCancel(user.CharacterStat.Id, _skillId));
-            SkillWz.Skills.TryGetValue(record.Id, out var skill);
+            WzCache.Skills.TryGetValue(record.Id, out var skill);
             Client.Session.Write(CWvsPackets.GetTemporaryStatReset(skill));
         }
 
