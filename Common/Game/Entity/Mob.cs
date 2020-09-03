@@ -42,7 +42,7 @@ namespace NineToFive.Game.Entity {
                 HP -= damage;
                 if (HP > 0) {
                     byte indicator = (byte) Math.Ceiling(HP * 100.0 / MaxHP);
-                    attacker.Field.BroadcastPacket(MobPackets.GetShowHpIndicator((int) Id, indicator));
+                    attacker.Client.Session.Write(MobPackets.GetShowHpIndicator((int) Id, indicator));
                 } else {
                     _onDeath(this);
                     attacker.Client.Session.Write(CWvsPackets.GetIncExpMessage(Exp));
