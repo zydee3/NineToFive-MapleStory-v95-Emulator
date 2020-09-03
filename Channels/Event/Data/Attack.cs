@@ -87,7 +87,7 @@ namespace NineToFive.Event.Data {
                 Hits[i] = new Hit(user, p, HitsPerMob);
             }
 
-            Console.WriteLine($"Mobs hit: {MobsHit}, Hits Per: {HitsPerMob}, SkillId: {SkillId}, Right: {IsFacingRight}, Stance: {AttackStance}, Speed: {AttackSpeed}");
+            //Console.WriteLine($"Mobs hit: {MobsHit}, Hits Per: {HitsPerMob}, SkillId: {SkillId}, Right: {IsFacingRight}, Stance: {AttackStance}, Speed: {AttackSpeed}");
         }
 
         public async Task Complete(User user) {
@@ -132,9 +132,8 @@ namespace NineToFive.Event.Data {
                 }
 
                 p.ReadInt();
-                Console.WriteLine($"Damage Dealth: {_damage}");
+                //Console.WriteLine($"Damage Dealth: {_damage}");
             } catch (Exception exception) {
-                Console.WriteLine(exception.Message);
                 _complete = false;
             }
         }

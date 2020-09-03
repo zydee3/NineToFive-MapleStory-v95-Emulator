@@ -25,6 +25,7 @@ namespace NineToFive.Game {
 
         private long _lastUpdate;
         private int _spawnedMobCount;
+        private int _spawnMobInterval = 5;
 
         public Field(int id) {
             Id = id;
@@ -65,6 +66,11 @@ namespace NineToFive.Game {
             get => _spawnedMobCount;
             set => Interlocked.Exchange(ref _spawnedMobCount, value);
         }
+        
+        public int SpawnMobInterval {
+            get => _spawnMobInterval;
+            set => Interlocked.Exchange(ref _spawnMobInterval, value);
+        }
 
         public long LastUpdate {
             get => _lastUpdate;
@@ -87,10 +93,6 @@ namespace NineToFive.Game {
 
             //todo remove drops, update reactors and etc
             // LifePools[EntityType.Drop].Values.Select(async drop => );
-        }
-
-        public async Task SpawnDrop(Item drop) {
-            Item[] drops = {new Item(0)};
         }
 
         /// <summary>
@@ -138,8 +140,6 @@ namespace NineToFive.Game {
                 Log.Info("Life already exists in a field");
                 return;
             }
-
-            if (life.Type == EntityType.Mob) SpawnedMobCount++;
 
             life.Field = this;
             LifePools[life.Type].AddLife(life);

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Util;
@@ -23,7 +24,7 @@ namespace NineToFive.Game {
 
             var mob = (Mob) _life.Create();
             mob.Death += m => {
-                NextSummon = Time.GetFuture(5);
+                NextSummon = Time.GetFuture(_field.SpawnMobInterval);
                 Enabled = true;
             };
 

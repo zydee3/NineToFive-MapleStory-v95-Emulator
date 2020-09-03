@@ -510,6 +510,21 @@ namespace NineToFive.Packets {
                     break;
             }
         }
+
+        public static byte[] GetChangeSkillRecordResult(List<SkillRecord> records) {
+            using Packet w = new Packet();
+            w.WriteShort((short) CWvsContext.OnChangeSkillRecordResult);
+            w.WriteBool(true);
+            w.WriteShort((short) records.Count);
+            foreach (SkillRecord record in records) {
+                w.WriteInt(record.Id);
+                w.WriteInt(record.Level);
+                w.WriteInt(record.MasterLevel);
+                w.WriteLong(record.Expiration);
+            }
+            w.WriteByte();
+            return w.ToArray();
+        }
     }
 
     public static class UserPackets {
