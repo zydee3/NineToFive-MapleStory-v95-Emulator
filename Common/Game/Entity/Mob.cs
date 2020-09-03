@@ -46,8 +46,8 @@ namespace NineToFive.Game.Entity {
                 } else {
                     _onDeath(this);
                     attacker.Client.Session.Write(CWvsPackets.GetIncExpMessage(Exp));
-                    Field.RemoveLife(this);
                     Field.BroadcastPacket(LeaveFieldPacket());
+                    Field.RemoveLife(this);
                     return Exp;
                 }
             }

@@ -49,6 +49,9 @@ namespace NineToFive {
                 [(short) ReceiveOperations.UserLocal_SendSkillCancelRequest] = typeof(UserSkillCancelEvent),
 
                 [(short) ReceiveOperations.UserLocal_OnMeleeAttack] = typeof(MeleeAttackEvent),
+                [(short) ReceiveOperations.UserLocal_OnShootAttack] = typeof(ShootAttackEvent),
+                [(short) ReceiveOperations.UserLocal_OnMagicAttack] = typeof(MagicAttackEvent),
+                [(short) ReceiveOperations.UserLocal_OnBodyAttack] = typeof(BodyAttackEvent),
 
                 [(short) ReceiveOperations.Field_LogChatMsgSlash] = typeof(ChatMsgSlashEvent),
                 [(short) ReceiveOperations.Field_SendChatMsgSlash] = typeof(ChatMsgSlashEvent),
@@ -122,8 +125,7 @@ namespace NineToFive {
                 Enabled = true
             }).Elapsed += world.OnUpdateFields;
 
-            var skills = SkillWz.LoadSkills();
-            Log.Info($"Loaded {skills.Count} skills");
+            Log.Info($"Loaded {SkillWz.LoadSkills()} skills");
         }
 
         private static void InitializeChannels(ref string[] args) {

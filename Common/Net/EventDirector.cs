@@ -72,6 +72,9 @@ namespace NineToFive.Net {
         UserLocal_UpdatePassiveSkillData = 217, 
         UserLocal_OnResetNLCPQ = 251,
         UserLocal_OnMeleeAttack = 47,
+        UserLocal_OnShootAttack = 48,
+        UserLocal_OnMagicAttack = 49,
+        UserLocal_OnBodyAttack = 50,
         
         Field_SendChatMsgSlash = 151,
         Field_LogChatMsgSlash = 152,
