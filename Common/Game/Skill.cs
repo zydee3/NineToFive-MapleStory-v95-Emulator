@@ -10,8 +10,9 @@ namespace NineToFive.Game {
         static Skill() {
             Engine = new V8ScriptEngine();
             Engine.Execute(@"
-const d = function(n) { return Math.floor(n); }
-const u = function(n) { return Math.ceil(n); }");
+                const d = function(n) { return Math.floor(n); }
+                const u = function(n) { return Math.ceil(n); }"
+            );
         }
 
         public Skill(int id) {
