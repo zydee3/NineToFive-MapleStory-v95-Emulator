@@ -2,6 +2,7 @@
 #include "stdafx.h"
 #include "Hooker.h"
 #include "Discord.h"
+#include "ClientFunctions.h"
 
 void CreateConsole() {
 	AllocConsole();
@@ -41,11 +42,6 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReser
 		Memory::WriteByte(0x0092A2C3, 0xEB);
 		// CUserLocal__TryDoingBodyAttack CWvsContext__IsUserGM
 		Memory::WriteByte(0x0093075F, 0xEB);
-		
-		// CUISkill::OnSkillLevelUpButton CWvsContext::IsAdminAccount
-		// 0F 85 D0 06 00 00 -> E9 D1 06 00 00 90
-		//char update_b[] = {0xE9, 0xD1, 0x06, 0x00, 0x00, 0x90};
-		//memcpy((void*)0x0084D817, &update_b, sizeof(update_b));
 		break;
 	}
 	default: break;

@@ -133,9 +133,25 @@ namespace NineToFive {
 
         public static bool IsSkillNeedMasterLevel(int skillId) {
             if (IsIgnoreMasterLevelForCommon(skillId)) return false;
+
+            switch (skillId) {
+                case 5220012:
+                case 4120010:
+                case 4220009:
+                case 5120011:
+                    return false;
+                case 4321000:
+                case 4331002:
+                case 4331005:
+                case 4311003:
+                case 5221003:
+                    return true;
+            }
+
             var jobId = skillId / 10000;
             var jobLevel = JobConstants.GetJobLevel(jobId);
-            if (jobId == 2001) {
+
+            if (jobId / 100 == 22 || jobId == 2001) {
                 return jobLevel == 9 || jobLevel == 10 || skillId == 22111001 || skillId == 22141002 || skillId == 22140000;
             }
 
@@ -161,7 +177,7 @@ namespace NineToFive {
 
         public static string GetEquipCategory(int equipId) {
             switch (Math.Floor(equipId / 10000.0)) {
-                case 101: 
+                case 101:
                 case 102:
                 case 103:
                 case 112:

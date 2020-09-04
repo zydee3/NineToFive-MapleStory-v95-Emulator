@@ -175,6 +175,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClientFunctions.h" />
     <ClInclude Include="detours.h" />
     <ClInclude Include="Detours\detver.h" />
     <ClInclude Include="Detours\syelog.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ClientFunctions.cpp" />
     <ClCompile Include="Discord.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Hooker.cpp" />
