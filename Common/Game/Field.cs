@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using log4net;
@@ -100,11 +101,12 @@ namespace NineToFive.Game {
         /// </summary>
         /// <param name="position">Position reference to find point on ground underneath.</param>
         /// <returns>Position as tuple(item1=x, item2=y)</returns>
-        public Tuple<int, int> GetGroundBelow(Tuple<int, int> position) {
+        public Vector2 GetGroundBelow(Vector2 position) {
             int smallestYDistance = 999999;
             Foothold foundFoothold = null;
             foreach (Foothold foothold in Footholds) {
-                (int x, int y) = position;
+                int x = (int)position.X;
+                int y = (int) position.Y;
                 if (foothold.LeftEndPoint.Item1 <= x && foothold.RightEndPoint.Item1 >= x) {
                     int distanceFromUpperY = y - Math.Max(foothold.Y1, foothold.Y2);
                     int distanceFromLowerY = y - Math.Min(foothold.Y1, foothold.Y2);
@@ -119,7 +121,7 @@ namespace NineToFive.Game {
                 }
             }
 
-            return new Tuple<int, int>(position.Item1, foundFoothold.SlopeForm.GetYLocation(position.Item1));
+            return new Vector2(position.X, foundFoothold?.SlopeForm.GetYLocation((int) position.Y) ?? position.Y);
         }
 
         public override IEnumerable<Client> GetClients() {

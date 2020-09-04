@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Packets;
+using NineToFive.Resources;
 using NineToFive.Util;
 using NineToFive.Wz;
 
@@ -46,16 +47,21 @@ namespace NineToFive.Game.Entity {
                 } else {
                     _onDeath(this);
                     attacker.Client.Session.Write(CWvsPackets.GetIncExpMessage(Exp));
+                    SpawnDrops();
                     Field.BroadcastPacket(LeaveFieldPacket());
                     Field.RemoveLife(this);
                     return Exp;
                 }
             }
-
+    
             return 0;
         }
 
-        public async Task SpawnDrops() { }
+        public async Task SpawnDrops() {
+            foreach (int itemId in WzCache.MobDrops[TemplateId]) {
+                Field.SummonLife(new Drop(itemId, 1, this));
+            }
+        }
 
         private int _hp;
 
