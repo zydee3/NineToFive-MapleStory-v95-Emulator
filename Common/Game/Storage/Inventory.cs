@@ -155,6 +155,22 @@ namespace NineToFive.Game.Storage {
             return updates;
         }
 
+        public List<InventoryUpdateEntry> UseItem(sbyte slot, int quantity) {
+            List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
+            Item item = this[slot];
+            if (item == null) return updates;
+
+            bool usable = item.Quantity > 0;
+            if (!usable || (item.Quantity -= (ushort) quantity) == 0) {
+                Remove(slot, false);
+                updates.Add(new InventoryUpdateEntry(ref item, InventoryOperation.Remove) { Complete = usable });
+                return updates;
+            }
+
+            updates.Add(new InventoryUpdateEntry(ref item, InventoryOperation.Update) );
+            return updates;
+        }
+
         public bool Insert(Item item, sbyte slot) {
             if (item == null || this[slot] != null) return false;
             item.BagIndex = slot;
@@ -203,7 +219,7 @@ namespace NineToFive.Game.Storage {
 
             return target;
         }
-
+        
         public Item this[short bagIndex] {
             get {
                 _items.TryGetValue(bagIndex, out Item item);

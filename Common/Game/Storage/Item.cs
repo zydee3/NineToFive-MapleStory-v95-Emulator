@@ -1,4 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using NineToFive.Game.Entity;
+using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
 using NineToFive.Util;
 using NineToFive.Wz;
@@ -165,5 +170,43 @@ namespace NineToFive.Game.Storage {
         }
 
         public virtual void Decode(Item item, Packet p) { }
+
+        public void ApplyToUser(User user, uint flag = 0) {
+            CharacterStat stats = user.CharacterStat;
+            Parallel.ForEach((ItemSpec[]) Enum.GetValues(typeof(ItemSpec)), spec => DoUserStatChange(spec,ref stats, ref flag));
+            user.CharacterStat.SendUpdate(user, flag);
+        }
+
+        private void DoUserStatChange(ItemSpec spec, ref CharacterStat stats, ref uint flag) {
+            switch (spec) {
+                case ItemSpec.Hp when Hp > 0:
+                    stats.HP += Hp;
+                    flag |= (uint) UserAbility.HP;
+                    break;
+                case ItemSpec.HpR when HpR > 0:
+                    stats.HP += (int) (stats.MaxHP * (HpR * 1.0 / 100));
+                    flag |= (uint) UserAbility.HP;
+                    break;
+                case ItemSpec.Mp when Mp > 0:
+                    stats.MP += Mp;
+                    flag |= (uint) UserAbility.MP;
+                    break;
+                case ItemSpec.MpR when MpR > 0:
+                    stats.MP += (int) (stats.MaxMP * (MpR * 1.0 / 100));
+                    flag |= (uint) UserAbility.MP;
+                    break;
+                
+                case ItemSpec.Str when Str > 0:
+                    break;
+                case ItemSpec.Luk when Luk > 0:
+                    break;
+                case ItemSpec.Int when Int > 0:
+                    break;
+                case ItemSpec.Dex when Dex > 0:
+                    break;
+                
+                //todo add rest of ItemSpec values
+            }
+        }
     }
 }

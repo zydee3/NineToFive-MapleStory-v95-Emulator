@@ -51,7 +51,7 @@ namespace NineToFive.Game.Entity {
 
                         item = new Equip(itemId, false, true);
                     } else {
-                        item = new Item(itemId);
+                        item = new Item(itemId, true);
                         item.Quantity = r.GetUInt16("quantity");
                     }
 

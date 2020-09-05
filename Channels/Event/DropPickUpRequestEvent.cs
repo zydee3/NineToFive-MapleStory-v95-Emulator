@@ -5,10 +5,8 @@ using MapleLib.PacketLib;
 using NineToFive.Constants;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
-using NineToFive.Game.Storage.Meta;
 using NineToFive.Net;
 using NineToFive.Packets;
-using NineToFive.SendOps;
 
 namespace NineToFive.Event {
     public class DropPickUpRequestEvent : PacketEvent {
