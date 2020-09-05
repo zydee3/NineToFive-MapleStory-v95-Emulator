@@ -21,6 +21,7 @@ namespace NineToFive.Event {
             // var skill = SkillWz.GetSkills().First(s => s.Key == _skillId).Value;
             Client.User.Skills.TryGetValue(_skillId, out SkillRecord record);
             if (record == null) {
+                if (!JobConstants.CheckLineage((short) (_skillId / 10000), user.CharacterStat.Job)) return; // shouldn't happen unless they're packet editing.
                 record = new SkillRecord(_skillId, 1);
                 Client.User.Skills[_skillId] = record;
             } else record.Level += 1;
