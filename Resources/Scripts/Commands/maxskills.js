@@ -9,6 +9,15 @@ const JobConstants = Libs.NineToFive.JobConstants;
 async function run() {
     let user = ctx.User;
 
+    let maxAll = false;
+    if(ctx.Args.Length > 0){
+        if(ctx.Args[0] != "all"){
+            user.SendMessage("[command] !maxskills or !maxskills all (to max all skills from all jobs)");
+        } else {
+            maxAll = true;
+        }
+    }
+
     let userSkills = user.Skills;
     userSkills.Clear();
 
@@ -18,12 +27,11 @@ async function run() {
     while(iterator.MoveNext()){
         let current = iterator.Current;
         let skillId = current.Key;
-        
-        if(JobConstants.CheckLineage(((skillId/10000) << 16) >> 16, user.CharacterStat.Job)){           
-            let record = new SkillRecord(skillId, current.Value.MaxLevel);
-            list.Add(record);
-            userSkills.TryAdd(skillId, record);
-        }
+        let level = !maxAll && !JobConstants.CheckLineage(((skillId/10000) << 16) >> 16, user.CharacterStat.Job) ? 0 : current.Value.MaxLevel;
+        let record = new SkillRecord(skillId, level);
+            
+        list.Add(record);
+        userSkills.TryAdd(skillId, record);
     }
 
     user.Client.Session.Write(CWvsPackets.GetChangeSkillRecordResult(list))
