@@ -20,11 +20,7 @@ namespace NineToFive.Wz {
                     foreach (WzImageProperty drop in drops.WzProperties) {
                         itemIds[index++] = drop.GetInt();
                     }
-
-                    if (index == 0) {
-                        Console.WriteLine($"No drops for {mobId}");
-                    }
-
+                    
                     if (!WzCache.MobDrops.TryAdd(mobId, itemIds)) {
                         Console.WriteLine($"Duplicate: {mobId}");
                     }

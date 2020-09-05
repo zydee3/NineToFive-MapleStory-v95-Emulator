@@ -81,6 +81,25 @@ namespace NineToFive {
             if (jobId >= 3001 || jobId >= 2001 && jobId <= 2005) return true;
             return (jobId % 1000) == 0;
         }
+        
+        /// <summary>
+        /// returns bool for if job is a child to parent
+        /// 
+        /// foreach (Jobs job in Enum.GetValues(typeof(Jobs)))
+        ///     if (CheckLineage((short) job, 111))
+        ///         Console.WriteLine(job); // output is: Beginner Swordman Fighter Crusader
+        /// </summary>
+        /// <param name="job">job you're checking</param>
+        /// <param name="parent">check as a parent</param>
+        /// <returns>bool if job is in parent</returns>
+        public static bool CheckLineage(short job, short parent) {
+            //checks for beginner job
+            if (job == 0 || job == 1000 || job == 2000 || job == 3000) return parent >= job && parent < job + 1000;
+            // checks for first job
+            if (job % 100 == 0) return (job / 100 == parent / 100);
+            // checks for remainder jobs
+            return (job / 100 == parent / 100) && (job / 10 == parent / 10) && (job % 10 <= parent % 10);
+        }
     }
 
     public static class SkillConstants {

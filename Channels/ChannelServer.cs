@@ -125,6 +125,7 @@ namespace NineToFive {
                 Enabled = true
             }).Elapsed += world.OnUpdateFields;
 
+            Log.Info($"Loaded drops for {StringWz.CacheMobDrops()} mobs");
             Log.Info($"Loaded {SkillWz.LoadSkills()} skills");
         }
 
