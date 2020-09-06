@@ -100,28 +100,28 @@ namespace NineToFive.Game {
         /// Calculates the projected position on a foothold directly under the provided argument.
         /// </summary>
         /// <param name="position">Position reference to find point on ground underneath.</param>
+        /// <param name="offset"></param>
         /// <returns>Position as tuple(item1=x, item2=y)</returns>
-        public Vector2 GetGroundBelow(Vector2 position) {
-            int smallestYDistance = 999999;
-            Foothold foundFoothold = null;
+        public Vector2 GetGroundBelow(Vector2 position, int offset = 0) {
+            int smallestRange = int.MaxValue;
+            float y = position.Y; // default the y position if new location isn't found.
+            bool found = false;   // only add an offset if items
+            
             foreach (Foothold foothold in Footholds) {
-                int x = (int)position.X;
-                int y = (int) position.Y;
-                if (foothold.LeftEndPoint.Item1 <= x && foothold.RightEndPoint.Item1 >= x) {
-                    int distanceFromUpperY = y - Math.Max(foothold.Y1, foothold.Y2);
-                    int distanceFromLowerY = y - Math.Min(foothold.Y1, foothold.Y2);
-
-                    if (distanceFromUpperY >= 0 && distanceFromUpperY < smallestYDistance) {
-                        smallestYDistance = distanceFromUpperY;
-                        foundFoothold = foothold;
-                    } else if (distanceFromLowerY >= 0 && distanceFromLowerY < smallestYDistance) {
-                        smallestYDistance = distanceFromLowerY;
-                        foundFoothold = foothold;
-                    }
+                if (!foothold.InDomain(position, offset)) continue; // is the current position between the left and right foothold endpoints?
+                int distance = foothold.GetRange(position);         // distance vertically between position and the platform; positive if the platform is under position and negative if above
+                
+                // is this platform closer to the position in comparison to previously found platforms? -70 is for if a platform is close and above, spawn there instead of below if below is far.
+                if (distance >= -70 && distance < smallestRange) { 
+                    smallestRange = distance;
+                    y = foothold.GetYFromX(position.X);
+                    found = true;
                 }
             }
-
-            return new Vector2(position.X, foundFoothold?.SlopeForm.GetYLocation((int) position.Y) ?? position.Y);
+            
+            //bound it so it doesn't spawn outside of the map
+            int boundedX = (int) Math.Max(VrLeft + 30, Math.Min(VrRight - 30, position.X + (found ? offset : 0)));
+            return new Vector2(boundedX, y);
         }
 
         public override IEnumerable<Client> GetClients() {

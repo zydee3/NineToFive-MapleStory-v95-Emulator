@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Threading.Tasks;
 using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
@@ -58,8 +59,13 @@ namespace NineToFive.Game.Entity {
         }
 
         public async Task SpawnDrops() {
-            foreach (int itemId in WzCache.MobDrops[TemplateId]) {
-                Field.SummonLife(new Drop(itemId, 1, this));
+            int offset = 0;
+            int[] dropIds = WzCache.MobDrops[TemplateId];
+            
+            for (int i = 0; i < dropIds.Length; i++) {
+                offset = (Math.Abs(offset) + 10) * (i % 2 == 0 ? -1 : 1);
+                Vector2 dropLocation = Field.GetGroundBelow(Location, offset);
+                Field.SummonLife(new Drop(dropIds[i], 1, dropLocation));
             }
         }
 

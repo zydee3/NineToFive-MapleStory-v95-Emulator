@@ -20,7 +20,17 @@ namespace NineToFive.Game.Entity {
             Origin = creator.Location;
             _item = item;
         }
-        
+
+        public Drop(int id, int quantity, Vector2 location) : base(id, EntityType.Drop) {
+            Location = Origin = location;
+            Quantity = quantity;
+        }
+
+        public Drop(Item item, Vector2 location) : base(item.Id, EntityType.Drop) {
+            Location = Origin = location;
+            _item = item;
+        }
+
         public Vector2 Origin { get; set; }
         public int Quantity { get; set; }
 

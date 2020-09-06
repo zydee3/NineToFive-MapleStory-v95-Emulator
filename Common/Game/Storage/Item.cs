@@ -197,12 +197,20 @@ namespace NineToFive.Game.Storage {
                     break;
                 
                 case ItemSpec.Str when Str > 0:
+                    stats.Str += Str;
+                    flag |= (uint) UserAbility.Str;
                     break;
                 case ItemSpec.Luk when Luk > 0:
+                    stats.Luk += Luk;
+                    flag |= (uint) UserAbility.Luk;
                     break;
                 case ItemSpec.Int when Int > 0:
+                    stats.Int += Int;
+                    flag |= (uint) UserAbility.Int;
                     break;
                 case ItemSpec.Dex when Dex > 0:
+                    stats.Dex += Dex;
+                    flag |= (uint) UserAbility.Dex;
                     break;
                 
                 //todo add rest of ItemSpec values

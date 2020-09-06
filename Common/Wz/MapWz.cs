@@ -68,6 +68,11 @@ namespace NineToFive.Wz {
             LoadLife(templateField, (WzImageProperty) wzObject["life"]);
             LoadPortals(templateField, (WzImageProperty) wzObject["portal"]);
             // todo back, clock, reactor
+
+            foreach (Foothold foothold in templateField.Footholds) {
+                if (foothold.LeftEndPoint.X < templateField.VRLeft) templateField.VRLeft = (int) foothold.LeftEndPoint.X;
+                else if (foothold.RightEndPoint.X > templateField.VRRight) templateField.VRRight = (int) foothold.RightEndPoint.X;
+            }
         }
 
         private static void LoadFootholds(TemplateField template, WzImageProperty footholdsImage) {
@@ -108,7 +113,7 @@ namespace NineToFive.Wz {
                         }
 
                         foothold.Id = childId;
-                        foothold.SetEndPoints();
+                        foothold.SetVariables();
                         footholds.Add((uint) childId, foothold);
                     }
                 }
