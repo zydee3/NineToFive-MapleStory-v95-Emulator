@@ -59,13 +59,14 @@ namespace NineToFive.Game.Entity {
         }
 
         public async Task SpawnDrops() {
-            int offset = 0;
-            int[] dropIds = WzCache.MobDrops[TemplateId];
-            
-            for (int i = 0; i < dropIds.Length; i++) {
-                offset = (Math.Abs(offset) + 10) * (i % 2 == 0 ? -1 : 1);
+            int offset = 0, counter = 0;
+            Random random = new Random();
+
+            foreach (int dropId in WzCache.MobDrops[TemplateId]) {
+                if (random.Next(1, 100) > 10) continue;
+                offset = (Math.Abs(offset) + 10) * (counter++ % 2 == 0 ? -1 : 1);
                 Vector2 dropLocation = Field.GetGroundBelow(Location, offset);
-                Field.SummonLife(new Drop(dropIds[i], 1, dropLocation));
+                Field.SummonLife(new Drop(dropId, 1, Location, dropLocation));
             }
         }
 

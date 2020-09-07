@@ -7,6 +7,7 @@ namespace NineToFive.Game.Entity {
     public class Drop : Life {
         private Item _item;
         
+        
         public Drop(int id, int quantity, Life creator) : base(id, EntityType.Drop) {
             Fh = creator.Fh;
             Location = creator.Location;
@@ -21,8 +22,9 @@ namespace NineToFive.Game.Entity {
             _item = item;
         }
 
-        public Drop(int id, int quantity, Vector2 location) : base(id, EntityType.Drop) {
-            Location = Origin = location;
+        public Drop(int id, int quantity, Vector2 origin, Vector2 location) : base(id, EntityType.Drop) {
+            Location = location;
+            Origin = origin;
             Quantity = quantity;
         }
 
