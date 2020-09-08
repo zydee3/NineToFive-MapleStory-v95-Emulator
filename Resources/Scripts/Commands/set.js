@@ -16,34 +16,34 @@ async function run() {
     switch(stat){
         case "hp":
             user.CharacterStat.HP = amount;
-            user.CharacterStat.SendUpdate(user, 0x400);
+            user.CharacterStat.SendUpdate(0x400);
             break;   
         case "mp":
             user.CharacterStat.MP = amount;
-            user.CharacterStat.SendUpdate(user, 0x1000);
+            user.CharacterStat.SendUpdate(0x1000);
             break;
         case "str":
             user.CharacterStat.Str = amount;
-            user.CharacterStat.SendUpdate(user, 0x40);
+            user.CharacterStat.SendUpdate(0x40);
             break;
         case "dex":
             user.CharacterStat.Dex = amount;
-            user.CharacterStat.SendUpdate(user, 0x80);
+            user.CharacterStat.SendUpdate(0x80);
             break;
         case "int":
             user.CharacterStat.Int = amount;
-            user.CharacterStat.SendUpdate(user, 0x100);
+            user.CharacterStat.SendUpdate(0x100);
             break;
         case "luk":
             user.CharacterStat.Luk = amount;
-            user.CharacterStat.SendUpdate(user, 0x200);
+            user.CharacterStat.SendUpdate(0x200);
             break;
         case "all":
             user.CharacterStat.Str = amount;
             user.CharacterStat.Dex = amount;
             user.CharacterStat.Int = amount;
             user.CharacterStat.Luk = amount;
-            user.CharacterStat.SendUpdate(user, (0x40 | 0x80 | 0x100 | 0x200));
+            user.CharacterStat.SendUpdate(0x40 | 0x80 | 0x100 | 0x200);
             break;
         default:
             return user.SendMessage("Invalid option. Options are hp, mp, str, dex, int, luk, and all.");

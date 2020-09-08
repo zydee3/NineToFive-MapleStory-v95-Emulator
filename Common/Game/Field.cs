@@ -112,7 +112,7 @@ namespace NineToFive.Game {
                 int distance = foothold.GetRange(position);         // distance vertically between position and the platform; positive if the platform is under position and negative if above
                 
                 // is this platform closer to the position in comparison to previously found platforms? -70 is for if a platform is close and above, spawn there instead of below if below is far.
-                if (distance >= -70 && distance < smallestRange) { 
+                if (distance >= -110 && distance < smallestRange) { 
                     smallestRange = distance;
                     y = foothold.GetYFromX(position.X);
                     found = true;

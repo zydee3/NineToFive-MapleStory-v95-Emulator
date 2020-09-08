@@ -8,6 +8,6 @@ async function run() {
         return user.SendMessage(`'${ctx.Args[0]}' is not a valid level.`)
     }
     user.CharacterStat.Level = ctx.ArgAsInt(0);
-    user.CharacterStat.SendUpdate(user, 0x10);
+    user.CharacterStat.SendUpdate(0x10);
     user.SendMessage(`Level is now ${user.CharacterStat.Level}`);
 }

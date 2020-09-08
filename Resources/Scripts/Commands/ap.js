@@ -8,6 +8,6 @@ async function run() {
         return user.SendMessage(`'${ctx.Args[0]}' is either too high, or too low.`)
     }
     user.CharacterStat.AP = ctx.ArgAsInt(0);
-    user.CharacterStat.SendUpdate(user, 0x4000);
+    user.CharacterStat.SendUpdate(0x4000);
     user.SendMessage(`AP is now ${user.CharacterStat.AP}`);
 }

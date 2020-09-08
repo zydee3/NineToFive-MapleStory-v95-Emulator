@@ -9,6 +9,6 @@ async function run() {
         return user.SendMessage(`'${ctx.Args[0]}' is not a valid number.`);
     }
     user.CharacterStat.Job = ctx.ArgAsInt(0);
-    user.CharacterStat.SendUpdate(user, 0x20);
+    user.CharacterStat.SendUpdate(0x20);
     user.SendMessage(`Job is now ${user.CharacterStat.Job}`);
 }

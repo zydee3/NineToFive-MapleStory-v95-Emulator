@@ -63,7 +63,7 @@ namespace NineToFive.Game.Entity {
             Random random = new Random();
 
             foreach (int dropId in WzCache.MobDrops[TemplateId]) {
-                if (random.Next(1, 100) > 10) continue;
+                if (random.Next(1, 100) > 20) continue;
                 offset = (Math.Abs(offset) + 10) * (counter++ % 2 == 0 ? -1 : 1);
                 Vector2 dropLocation = Field.GetGroundBelow(Location, offset);
                 Field.SummonLife(new Drop(dropId, 1, Location, dropLocation));
