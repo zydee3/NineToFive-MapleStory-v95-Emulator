@@ -8,103 +8,36 @@ using NineToFive.Resources;
 
 namespace NineToFive.Wz {
     public static class CharacterWz {
-        public static void CopyEquipTemplate(Equip equip) {
+        public static void CopyEquipTemplate(ItemSlotEquip equip) {
             if (equip == null) return;
 
-            int equipId = equip.Id;
+            int equipId = equip.TemplateId;
             if (!WzCache.EquipTemplates.TryGetValue(equipId, out TemplateEquip t)) {
                 InitializeTemplate(out t, equipId);
                 WzCache.EquipTemplates.Add(equipId, t);
             }
             
-            equip.IncHP = t.IncHP;
-            equip.IncMHP = t.IncMHP;
-            equip.IncMP = t.IncMP;
-            equip.IncMMP = t.IncMMP;
-            equip.IncSTR = t.IncSTR;
-            equip.IncDEX = t.IncDEX;
-            equip.IncINT = t.IncINT;
-            equip.IncLUK = t.IncLUK;
-            equip.IncPAD = t.IncPAD;
-            equip.IncMAD = t.IncMAD;
-            equip.IncPDD = t.IncPDD;
-            equip.IncMDD = t.IncMDD;
-            equip.IncACC = t.IncACC;
-            equip.IncEVA = t.IncEVA;
-            equip.IncSpeed = t.IncSpeed;
-            equip.IncJump = t.IncJump;
-            equip.IncRMAF = t.IncRMAF;
-            equip.IncRMAS = t.IncRMAS;
-            equip.IncRMAI = t.IncRMAI;
-            equip.IncRMAL = t.IncRMAL;
-            equip.IncCraft = t.IncCraft;
-            equip.IncMHPR = t.IncMHPR;
-            equip.IncMMPR = t.IncMMPR;
-            equip.IncSwim = t.IncSwim;
-            equip.IncFatigue = t.IncFatigue;
-            equip.AttackSpeed = t.AttackSpeed;
-            equip.HPRecovery = t.HPRecovery;
-            equip.MPRecovery = t.MPRecovery;
-            equip.KnockBack = t.KnockBack;
-            equip.Walk = t.Walk;
-            equip.Stand = t.Stand;
-            equip.Speed = t.Speed;
-            equip.ReqLevel = t.ReqLevel;
-            equip.ReqJob = t.ReqJob;
-            equip.ReqSTR = t.ReqSTR;
-            equip.ReqDEX = t.ReqDEX;
-            equip.ReqINT = t.ReqINT;
-            equip.ReqLUK = t.ReqLUK;
-            equip.ReqPOP = t.ReqPOP;
-            equip.Price = t.Price;
-            equip.NotSale = t.NotSale;
-            equip.TradeBlock = t.TradeBlock;
-            equip.EquipTradeBlock = t.EquipTradeBlock;
-            equip.AccountSharable = t.AccountSharable;
-            equip.DropBlock = t.DropBlock;
-            equip.SlotMax = t.SlotMax;
-            equip.TimeLimited = t.TimeLimited;
-            equip.TradeAvailable = t.TradeAvailable;
-            equip.ExpireOnLogout = t.ExpireOnLogout;
-            equip.NotExtend = t.NotExtend;
-            equip.OnlyEquip = t.OnlyEquip;
-            equip.Pachinko = t.Pachinko;
-            equip.ChatBalloon = t.ChatBalloon;
-            equip.NameTag = t.NameTag;
-            equip.SharableOnce = t.SharableOnce;
-            equip.TamingMob = t.TamingMob;
-            equip.TUC = t.TUC;
-            equip.Cash = t.Cash;
-            equip.IgnorePickup = t.IgnorePickup;
-            equip.SetItemID = t.SetItemID;
-            equip.Only = t.Only;
-            equip.Durability = t.Durability;
-            equip.ElemDefault = t.ElemDefault;
-            equip.ScanTradeBlock = t.ScanTradeBlock;
-            equip.EpicItem = t.EpicItem;
-            equip.Hide = t.Hide;
-            equip.Quest = t.Quest;
-            equip.Weekly = t.Weekly;
-            equip.EnchantCategory = t.EnchantCategory;
-            equip.IUCMax = t.IUCMax;
-            equip.Fs = t.Fs;
-            equip.MedalTag = t.MedalTag;
-            equip.NoExpend = t.NoExpend;
-            equip.SpecialID = t.SpecialID;
-            equip.VSlot = t.VSlot;
-            equip.ISlot = t.ISlot;
-            equip.AfterImage = t.AfterImage;
-            equip.Sfx = t.Sfx;
-            equip.PickupMeso = t.PickupMeso;
-            equip.PickupItem = t.PickupItem;
-            equip.PickupOthers = t.PickupOthers;
-            equip.SweepForDrop = t.SweepForDrop;
-            equip.ConsumeHP = t.ConsumeHP;
-            equip.LongRange = t.LongRange;
-            equip.ConsumeMP = t.ConsumeMP;
-            equip.Recovery = t.Recovery;
-            equip.Attack = t.Attack;
-            equip.SlotMax = 1;
+            equip.MaxHP = t.IncMHP;
+            equip.MaxMP = t.IncMMP;
+            equip.STR = t.IncSTR;
+            equip.DEX = t.IncDEX;
+            equip.INT = t.IncINT;
+            equip.LUK = t.IncLUK;
+            equip.PAD = t.IncPAD;
+            equip.MAD = t.IncMAD;
+            equip.PDD = t.IncPDD;
+            equip.MDD = t.IncMDD;
+            equip.ACC = t.IncACC;
+            equip.EVA = t.IncEVA;
+            equip.Speed = t.IncSpeed;
+            equip.Jump = t.IncJump;
+            equip.RMAF = t.IncRMAF;
+            equip.RMAS = t.IncRMAS;
+            equip.RMAI = t.IncRMAI;
+            equip.RMAL = t.IncRMAL;
+            equip.Craft = t.IncCraft;
+            equip.MaxHPR = t.IncMHPR;
+            equip.MaxMPR = t.IncMMPR;
         }
 
         internal static void InitializeTemplate(out TemplateEquip templateEquip, int equipId) {

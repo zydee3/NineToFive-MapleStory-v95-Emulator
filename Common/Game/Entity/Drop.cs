@@ -5,7 +5,7 @@ using NineToFive.Packets;
 
 namespace NineToFive.Game.Entity {
     public class Drop : Life {
-        private Item _item;
+        private ItemSlot _item;
         
         
         public Drop(int id, int quantity, Life creator) : base(id, EntityType.Drop) {
@@ -15,7 +15,7 @@ namespace NineToFive.Game.Entity {
             Quantity = quantity;
         }
 
-        public Drop(Item item, Life creator) : base(item.Id, EntityType.Drop) {
+        public Drop(ItemSlot item, Life creator) : base(item.TemplateId, EntityType.Drop) {
             Fh = creator.Fh;
             Location = creator.Location;
             Origin = creator.Location;
@@ -28,7 +28,7 @@ namespace NineToFive.Game.Entity {
             Quantity = quantity;
         }
 
-        public Drop(Item item, Vector2 location) : base(item.Id, EntityType.Drop) {
+        public Drop(ItemSlot item, Vector2 location) : base(item.TemplateId, EntityType.Drop) {
             Location = Origin = location;
             _item = item;
         }
@@ -36,11 +36,11 @@ namespace NineToFive.Game.Entity {
         public Vector2 Origin { get; set; }
         public int Quantity { get; set; }
 
-        public Item Item {
+        public ItemSlot Item {
             get {
                 if (_item != null) return _item;
-                if (ItemConstants.GetInventoryType(TemplateId) == InventoryType.Equip) return new Equip(TemplateId, false, true) {Quantity = (ushort) Quantity};
-                return new Item(TemplateId, true) {Quantity = (ushort) Quantity};
+                if (ItemConstants.GetInventoryType(TemplateId) == InventoryType.Equip) return new ItemSlotEquip(TemplateId, false, true) {Quantity = (ushort) Quantity};
+                return new ItemSlotBundle(TemplateId) {Quantity = (ushort) Quantity};
             }
             
             set => _item = value;

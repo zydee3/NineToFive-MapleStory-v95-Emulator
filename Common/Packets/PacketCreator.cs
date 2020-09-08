@@ -376,7 +376,7 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetBroadcastMessage(User user, bool whisper, byte type, string msg, Item item) {
+        public static byte[] GetBroadcastMessage(User user, bool whisper, byte type, string msg, ItemSlot item) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnBroadcastMsg);
             w.WriteByte(type);
@@ -426,10 +426,10 @@ namespace NineToFive.Packets {
                     break;
                 case 11: // CField::BlowWeather
                     w.WriteString(msg);
-                    w.WriteInt(item.Id);
+                    w.WriteInt(item.TemplateId);
                     break;
                 case 12:
-                    w.WriteInt(item.Id);
+                    w.WriteInt(item.TemplateId);
                     w.WriteString(msg);
                     item.Encode(item, w);
                     break;
@@ -454,13 +454,23 @@ namespace NineToFive.Packets {
             w.WriteBool(true); // a3
             w.WriteByte((byte) updates.Count);
             foreach (var entry in updates) {
-                Item item = entry.Item;
+                ItemSlot item = entry.Item;
                 w.WriteByte((byte) entry.Operation);
                 w.WriteByte((byte) (item.InventoryType + 1));
                 w.WriteShort(entry.PreviousBagIndex);
                 switch (entry.Operation) {
                     case InventoryOperation.Add:
-                        EncodeGWItemSlot(item, w);
+                        switch (item) {
+                            case ItemSlotBundle bundle:
+                                bundle.Encode(bundle, w);
+                                break;
+                            case ItemSlotEquip equip: 
+                                equip.Encode(equip, w);
+                                break;
+                            case ItemSlotPet pet:
+                                pet.Encode(pet, w);
+                                break;
+                        }
                         break;
                     case InventoryOperation.Update:
                         w.WriteShort((short) item.Quantity);
@@ -492,25 +502,7 @@ namespace NineToFive.Packets {
 
             return w.ToArray();
         }
-
-        public static void EncodeGWItemSlot(Item item, Packet w) {
-            if (item == null) return;
-            switch (item) {
-                case Equip equip:
-                    equip.Encode(equip, w);
-                    break;
-                //case Pet pet: // this is a life, needs to be item
-                default:
-                    item.Encode(item, w);
-                    w.WriteShort((short) item.Quantity);
-                    w.WriteString(item.Tag ?? "");
-                    w.WriteShort(item.Attribute);
-                    if (item.IsRechargable)
-                        w.WriteLong(); // OwO
-                    break;
-            }
-        }
-
+        
         public static byte[] GetChangeSkillRecordResult(List<SkillRecord> records) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnChangeSkillRecordResult);
@@ -683,26 +675,49 @@ namespace NineToFive.Packets {
                     w.WriteShort(Math.Abs(item.BagIndex));
                     item.Encode(item, w);
                 }
-
+                
                 w.WriteShort();
+                
                 foreach (var item in eqs.Where(i => i.BagIndex <= -100)) {
                     w.WriteShort(Math.Abs(item.BagIndex));
                     item.Encode(item, w);
                 }
+                
+                w.WriteShort();
 
+                foreach (var item in user.Inventories[InventoryType.Equip].Items) {
+                    if (!(item is ItemSlotEquip equip)) continue;
+                    w.WriteShort(equip.BagIndex);
+                    equip.Encode(equip, w);
+                }
+                
                 w.WriteShort();
+                
+                //dragon equipment
                 w.WriteShort();
-                w.WriteShort();
+                
+                //mechanic equipment
                 w.WriteShort();
             }
 
             for (int i = 1; i < 5; i++) {
-                int inventoryFlag = 4 << (i - 1);
+                int inventoryFlag = 4 << i;
                 if ((dwCharFlag & inventoryFlag) == inventoryFlag) {
                     var inventory = user.Inventories[(InventoryType) i];
                     foreach (var item in inventory.Items) {
                         w.WriteByte((byte) item.BagIndex);
-                        CWvsPackets.EncodeGWItemSlot(item, w);
+                        switch (item) {
+                            case ItemSlotBundle bundle:
+                                bundle.Encode(bundle, w);
+                                break;
+                            case ItemSlotEquip equip:
+                                Console.WriteLine("encoding equip");
+                                equip.Encode(equip, w);
+                                break;
+                            case ItemSlotPet pet:
+                                pet.Encode(pet, w);
+                                break;
+                        }
                     }
 
                     w.WriteByte();
@@ -1013,7 +1028,7 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetAskPet(byte speakerTypeID, int speakerTemplateID, byte param, string message, List<Item> pets) {
+        public static byte[] GetAskPet(byte speakerTypeID, int speakerTemplateID, byte param, string message, List<ItemSlotPet> pets) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(speakerTypeID);
@@ -1022,9 +1037,9 @@ namespace NineToFive.Packets {
             w.WriteByte(param);
             w.WriteString(message);
             w.WriteByte((byte) pets.Count);
-            foreach (Item pet in pets) {
+            foreach (ItemSlotPet pet in pets) {
                 if (pet != null) {
-                    w.WriteLong(pet.Id);
+                    w.WriteLong(pet.TemplateId);
                     w.WriteByte((byte) pet.BagIndex); // i think? CharacterData::FindCashItemSlotPosition
                 }
             }
@@ -1032,7 +1047,7 @@ namespace NineToFive.Packets {
             return w.ToArray();
         }
 
-        public static byte[] GetAskPetAll(byte speakerTypeID, int speakerTemplateID, byte param, string message, bool exceptionExist, List<Item> pets) {
+        public static byte[] GetAskPetAll(byte speakerTypeID, int speakerTemplateID, byte param, string message, bool exceptionExist, List<ItemSlotPet> pets) {
             using Packet w = new Packet();
             w.WriteShort((short) CScriptMan.OnScriptMessage);
             w.WriteByte(speakerTypeID);
@@ -1042,9 +1057,9 @@ namespace NineToFive.Packets {
             w.WriteString(message);
             w.WriteByte((byte) pets.Count);
             w.WriteBool(exceptionExist);
-            foreach (Item pet in pets) {
+            foreach (ItemSlotPet pet in pets) {
                 if (pet != null) {
-                    w.WriteLong(pet.Id);
+                    w.WriteLong(pet.TemplateId);
                     w.WriteByte((byte) pet.BagIndex); // i think? CharacterData::FindCashItemSlotPosition
                 }
             }

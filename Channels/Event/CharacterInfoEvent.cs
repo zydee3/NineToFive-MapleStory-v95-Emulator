@@ -80,17 +80,17 @@ namespace NineToFive.Event {
 
             #region MedalAchievementInfo::Decode
 
-            w.WriteInt(user.Inventories[InventoryType.Equipped][-49]?.Id ?? 0);
+            w.WriteInt(user.Inventories[InventoryType.Equipped][-49]?.TemplateId ?? 0);
             for (int i = 0; i < w.WriteShort(); i++) {
                 w.WriteShort();
             }
 
             #endregion
 
-            var chairs = user.Inventories[InventoryType.Setup].Items.Where(i => i.Id / 10000 == 301).ToArray();
+            var chairs = user.Inventories[InventoryType.Setup].Items.Where(i => i.TemplateId / 10000 == 301).ToArray();
             w.WriteInt(chairs.Length);
             foreach (var chair in chairs) {
-                w.WriteInt(chair.Id);
+                w.WriteInt(chair.TemplateId);
             }
 
             return w.ToArray();

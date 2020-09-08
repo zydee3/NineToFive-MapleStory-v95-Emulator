@@ -15,7 +15,7 @@ namespace NineToFive.Game.Storage {
     }
 
     public class Inventory {
-        private readonly Dictionary<short, Item> _items = new Dictionary<short, Item>();
+        private readonly Dictionary<short, ItemSlot> _items = new Dictionary<short, ItemSlot>();
 
         public Inventory(InventoryType type, byte size = 32) {
             Type = type;
@@ -24,10 +24,10 @@ namespace NineToFive.Game.Storage {
 
         public InventoryType Type { get; }
         public byte Size { get; }
-        public Dictionary<short, Item>.ValueCollection Items => _items.Values;
+        public Dictionary<short, ItemSlot>.ValueCollection Items => _items.Values;
 
-        public bool EquipItem(Equip equip, bool replace = false) {
-            equip.BagIndex = (short) -ItemConstants.GetBodyPartFromId(equip.Id);
+        public bool EquipItem(ItemSlotEquip equip, bool replace = false) {
+            equip.BagIndex = (short) -ItemConstants.GetBodyPartFromId(equip.TemplateId);
             if (replace) _items.Remove(equip.BagIndex);
             return _items.TryAdd(equip.BagIndex, equip);
         }
@@ -36,7 +36,7 @@ namespace NineToFive.Game.Storage {
             List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
 
             if (Type == InventoryType.Equip && equippedInventory.Type == InventoryType.Equipped) {
-                Item equipToAdd = null, equipInTheWay = equippedInventory.Remove(to);
+                ItemSlot equipToAdd, equipInTheWay = equippedInventory.Remove(to);
                 
                 if (equipInTheWay != null 
                     && (equipToAdd = Remove(from)) != null
@@ -57,7 +57,7 @@ namespace NineToFive.Game.Storage {
 
         public List<InventoryUpdateEntry> UnequipItem(Inventory equipInventory, sbyte from, sbyte to) {
             List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
-            Item equip;
+            ItemSlot equip;
 
             if (Type == InventoryType.Equipped               // are we taking from equipped?
             && equipInventory.Type == InventoryType.Equip    // is the receiving inventory equip?
@@ -74,16 +74,16 @@ namespace NineToFive.Game.Storage {
         /// </summary>
         /// <param name="item">Item to be picked up.</param>
         /// <returns>Quantity of item that can be held.</returns>
-        public int GetHoldableQuantity(Item item) {
+        public int GetHoldableQuantity(ItemSlot item) {
             if (Items.Count >= Size) return 0;
             int remaining = item.Quantity;
             sbyte slot = 0;
             
             while (remaining > 0 && ++slot <= Size) {
-                Item current = this[slot];
+                ItemSlot current = this[slot];
                 if (current == null) {
                     remaining -= item.SlotMax;
-                } else if (current.Id == item.Id) {
+                } else if (current.TemplateId == item.TemplateId) {
                     remaining -= (item.SlotMax - current.Quantity);
                 }
             }
@@ -95,7 +95,7 @@ namespace NineToFive.Game.Storage {
         /// Adds an item to the inventory.
         /// </summary>
         /// <param name="item"></param>
-        public List<InventoryUpdateEntry> AddItem(Item item) {
+        public List<InventoryUpdateEntry> AddItem(ItemSlot item) {
             List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
             
             if (Items.Count >= Size) return updates;
@@ -107,16 +107,29 @@ namespace NineToFive.Game.Storage {
                         updates.Add(new InventoryUpdateEntry(ref item, InventoryOperation.Add));
                         break;
                     }
-                    
-                    Item newSlotItem = new Item(item.Id) {Quantity = slotMax};
+
+                    ItemSlot newSlotItem = null;
+                    switch (item) {
+                        case ItemSlotBundle bundle:
+                            newSlotItem = new ItemSlotBundle(bundle.TemplateId, slotMax, slotMax);
+                            break;
+                        case ItemSlotEquip equip:
+                            newSlotItem = new ItemSlotEquip(equip.TemplateId);
+                            break;
+                        case ItemSlotPet pet:
+                            newSlotItem = new ItemSlotPet(item.TemplateId);
+                            break;
+                    }
+
+                    if (newSlotItem == null) return updates;
                     if (Insert(newSlotItem, slot)) {
                         item.Quantity -= slotMax;
                         updates.Add(new InventoryUpdateEntry(ref newSlotItem, InventoryOperation.Add));
                     }
                 }
 
-                Item current = this[slot];
-                if(item.Id == current.Id) {
+                ItemSlot current = this[slot];
+                if(Type != InventoryType.Equip && Type != InventoryType.Equipped && item.TemplateId == current.TemplateId) {
                     int remaining = Merge(item, current);
                     updates.Add(new InventoryUpdateEntry(ref current, InventoryOperation.Update));
                     if (remaining == 0) break;
@@ -128,7 +141,7 @@ namespace NineToFive.Game.Storage {
 
         public List<InventoryUpdateEntry> MoveItem(sbyte from, sbyte to) {
             List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
-            Item itemToMove = this[from], itemInTheWay = this[to];
+            ItemSlot itemToMove = this[from], itemInTheWay = this[to];
 
             if (itemToMove != null) {
                 if (itemInTheWay == null) {
@@ -137,7 +150,7 @@ namespace NineToFive.Game.Storage {
                     _items.TryAdd(to, itemToMove);
                     updates.Add(new InventoryUpdateEntry(ref itemToMove, InventoryOperation.Move, from));
                 } else {
-                    if (itemToMove.Id == itemInTheWay.Id) {
+                    if (itemToMove.TemplateId == itemInTheWay.TemplateId) {
                         if (itemInTheWay.Quantity < itemInTheWay.SlotMax) {
                             int remaining = Merge(itemToMove, itemInTheWay);
                             updates.Add(new InventoryUpdateEntry(ref itemToMove, remaining == 0 ? InventoryOperation.Remove : InventoryOperation.Update));
@@ -157,11 +170,11 @@ namespace NineToFive.Game.Storage {
 
         public List<InventoryUpdateEntry> UseItem(sbyte slot, int quantity) {
             List<InventoryUpdateEntry> updates = new List<InventoryUpdateEntry>();
-            Item item = this[slot];
-            if (item == null) return updates;
+            ItemSlot item = this[slot];
+            if (!(item is ItemSlotBundle bundle)) return updates;
 
-            bool usable = item.Quantity > 0;
-            if (!usable || (item.Quantity -= (ushort) quantity) == 0) {
+            bool usable = bundle.Quantity > 0;
+            if (!usable || (bundle.Quantity -= (ushort) quantity) == 0) {
                 Remove(slot, false);
                 updates.Add(new InventoryUpdateEntry(ref item, InventoryOperation.Remove) { Complete = usable });
                 return updates;
@@ -171,13 +184,13 @@ namespace NineToFive.Game.Storage {
             return updates;
         }
 
-        public bool Insert(Item item, sbyte slot) {
+        public bool Insert(ItemSlot item, sbyte slot) {
             if (item == null || this[slot] != null) return false;
             item.BagIndex = slot;
             return _items.TryAdd(slot, item);
         }
         
-        private ushort Merge(Item origin, Item target) {
+        private ushort Merge(ItemSlot origin, ItemSlot target) {
             if (origin == null || target == null) return 0;
             if (_items.ContainsKey(origin.BagIndex)) _items.Remove(origin.BagIndex);
 
@@ -196,7 +209,7 @@ namespace NineToFive.Game.Storage {
             return origin.Quantity;
         }
 
-        private bool Swap(Item first, Item second) {
+        private bool Swap(ItemSlot first, ItemSlot second) {
             if (first == null || second == null) return false;
             
             _items.Remove(first.BagIndex);
@@ -210,8 +223,8 @@ namespace NineToFive.Game.Storage {
                    && _items.TryAdd(second.BagIndex, second);
         }
 
-        public Item Remove(sbyte slot, bool resetSlot = true) {
-            Item target = this[slot];
+        public ItemSlot Remove(sbyte slot, bool resetSlot = true) {
+            ItemSlot target = this[slot];
             if (target != null) {
                 if(resetSlot) target.BagIndex = -1;
                 _items.Remove(slot);
@@ -220,9 +233,9 @@ namespace NineToFive.Game.Storage {
             return target;
         }
         
-        public Item this[short bagIndex] {
+        public ItemSlot this[short bagIndex] {
             get {
-                _items.TryGetValue(bagIndex, out Item item);
+                _items.TryGetValue(bagIndex, out ItemSlot item);
                 return item;
             }
             set => _items.Add(bagIndex, value);

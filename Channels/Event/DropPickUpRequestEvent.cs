@@ -36,7 +36,7 @@ namespace NineToFive.Event {
             if (drop.Id == 0) {
                 
             } else {
-                Item item = drop.Item;
+                ItemSlot item = drop.Item;
                 int holdableQuantity = inventory.GetHoldableQuantity(item);
                 if (holdableQuantity == 0) { // user inventory is full
                     // send inventory full packet
@@ -48,7 +48,8 @@ namespace NineToFive.Event {
                     user.Field.BroadcastPacket(DropPool.GetDropLeaveField(drop, 2, (int) user.Id));
                     user.Field.RemoveLife(drop);
                 } else { // user can hold some, pick up as much as possible and leave rest on the floor
-                    user.Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.AddItem(new Item(item.Id) {Quantity = (ushort) holdableQuantity})));
+                    if (!(item is ItemSlotBundle bundle)) throw new InvalidOperationException(); // equips and pet quantity can never be over 1
+                    user.Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.AddItem(new ItemSlotBundle(item.TemplateId, holdableQuantity))));
                     item.Quantity -= (ushort) holdableQuantity;
                 }
             }

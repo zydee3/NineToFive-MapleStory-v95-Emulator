@@ -80,7 +80,7 @@ namespace NineToFive.Wz {
                     case "time":
                         if (expression != null) s.Time.Eval(s, property.WzValue.ToString());
                         else s.Time[skl] = ((WzIntProperty) property).Value;
-
+                        
                         break;
                     case "cooltime":
                         if (expression != null) s.CoolTime.Eval(s, property.WzValue.ToString());

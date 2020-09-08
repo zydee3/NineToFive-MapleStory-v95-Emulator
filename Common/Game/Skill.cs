@@ -27,6 +27,7 @@ namespace NineToFive.Game {
         public int Id { get; }
         public int Weapon { get; set; }
         public int MasterLevel { get; set; }
+        public bool IsActive { get; set; }
 
         public int MaxLevel {
             get => _maxLevel;

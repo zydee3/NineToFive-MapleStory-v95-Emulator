@@ -34,7 +34,7 @@ namespace NineToFive.Event {
             user.Client.Session.Write(CWvsPackets.GetInventoryOperation(updates));
 
             InventoryUpdateEntry entry = updates[0];
-            if (entry != null && entry.Complete) entry.Item.ApplyToUser(user);
+            //if (entry != null && entry.Complete) entry.Item.ApplyToUser(user);
         }
     }
 }

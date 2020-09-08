@@ -41,25 +41,24 @@ namespace NineToFive.Game.Entity {
                     int itemId = r.GetInt32("item_id");
                     short bagIndex = r.GetInt16("bag_index");
                     InventoryType type = ItemConstants.GetInventoryType(itemId);
-                    Item item;
+                    ItemSlot itemSlot;
 
                     if (type == InventoryType.Equip) {
                         if (bagIndex < 0) {
-                            Inventories[InventoryType.Equipped].EquipItem(new Equip(itemId, true, true));
+                            Inventories[InventoryType.Equipped].EquipItem(new ItemSlotEquip(itemId, true, true));
                             continue;
                         }
 
-                        item = new Equip(itemId, false, true);
+                        itemSlot = new ItemSlotEquip(itemId, false, true);
                     } else {
-                        item = new Item(itemId, true);
-                        item.Quantity = r.GetUInt16("quantity");
+                        itemSlot = new ItemSlotBundle(itemId, r.GetUInt16("quantity"));
                     }
 
-                    item.GeneratedId = r.GetUInt32("generated_id");
-                    item.BagIndex = bagIndex;
-                    item.CashItemSn = r.GetInt64("cash_sn");
-                    item.DateExpire = r.GetInt64("date_expire");
-                    Inventories[item.InventoryType][item.BagIndex] = item;
+                    itemSlot.GeneratedId = r.GetUInt32("generated_id");
+                    itemSlot.BagIndex = bagIndex;
+                    itemSlot.CashItemSN = r.GetInt64("cash_sn");
+                    itemSlot.DateExpire = r.GetInt64("date_expire");
+                    Inventories[itemSlot.InventoryType][itemSlot.BagIndex] = itemSlot;
                 }
             }
 
@@ -308,19 +307,19 @@ namespace NineToFive.Game.Entity {
             p.WriteByte();
             p.WriteInt(user.AvatarLook.Hair);
             var inventory = user.Inventories[InventoryType.Equipped];
-            foreach (Item item in inventory.Items.Where(i => i.BagIndex >= -99)) {
+            foreach (var item in inventory.Items.Where(i => i.BagIndex >= -99)) {
                 p.WriteByte((byte) Math.Abs(item.BagIndex));
-                p.WriteInt(item.Id);
+                p.WriteInt(item.TemplateId);
             }
 
             p.WriteByte(255);
-            foreach (Item item in inventory.Items.Where(i => i.BagIndex <= -100)) {
+            foreach (ItemSlot item in inventory.Items.Where(i => i.BagIndex <= -100)) {
                 p.WriteByte((byte) item.BagIndex);
-                p.WriteInt(item.Id);
+                p.WriteInt(item.TemplateId);
             }
 
             p.WriteByte(255);
-            p.WriteInt(inventory[-11]?.Id ?? 0);
+            p.WriteInt(inventory[-11]?.TemplateId ?? 0);
             p.WriteBytes(new byte[12]); // pets
         }
 

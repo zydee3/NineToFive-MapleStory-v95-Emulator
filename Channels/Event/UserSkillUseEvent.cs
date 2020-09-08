@@ -1,10 +1,10 @@
 ﻿using System.Numerics;
+using NineToFive.Constants;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Net;
 using NineToFive.Packets;
 using NineToFive.Resources;
-using NineToFive.Wz;
 
 namespace NineToFive.Event {
     public class UserSkillUseEvent : PacketEvent {
@@ -21,7 +21,7 @@ namespace NineToFive.Event {
             _skillLevel = p.ReadByte();
             // if ( is_antirepeat_buff_skill )
             //     _origin = new Vector2(p.ReadShort(), p.ReadShort());
-            if (_skillId == 4121006) {
+            if (_skillId == (int) Skills.NightlordShadowStars) {
                 // Shadow Stars
                 p.ReadInt();
             }
@@ -36,7 +36,7 @@ namespace NineToFive.Event {
 
             if (WzCache.Skills.TryGetValue(_playerskill.Id, out var skill)) {
                 _playerskill.Proc = true;
-                if (skill.Id == 9101004) {
+                if (skill.Id == (int) Skills.SuperGameMasterHide) {
                     if (user.IsHidden = !user.IsHidden) {
                         user.SendMessage("Now you don't.");
                     } else {

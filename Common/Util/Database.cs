@@ -40,14 +40,14 @@ namespace NineToFive.Util {
             };
         }
 
-        public static object[] CreateItemParameters(User user, Item item) {
+        public static object[] CreateItemParameters(User user, ItemSlot item) {
             return new object[] {
                 "account_id", user.AccountId,
                 "character_id", user.CharacterStat.Id,
-                "item_id", item.Id,
+                "item_id", item.TemplateId,
                 "bag_index", item.BagIndex,
                 "quantity", item.Quantity,
-                "cash_sn", item.CashItemSn,
+                "cash_sn", item.CashItemSN,
                 "date_expire", item.DateExpire
             };
         }

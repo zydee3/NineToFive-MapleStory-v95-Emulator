@@ -29,7 +29,7 @@ namespace NineToFive.Game.Entity {
             var source = user.Inventories[InventoryType.Equipped];
             var dest = User.Inventories[InventoryType.Equipped];
             foreach (var item in source.Items) {
-                dest.EquipItem(new Equip(item.Id, true));
+                dest.EquipItem(new ItemSlotEquip(item.TemplateId, true));
             }
         }
 
