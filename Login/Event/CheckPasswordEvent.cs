@@ -67,7 +67,7 @@ namespace NineToFive.Event {
             // un-successful login
             if (result != 1) return result;
 
-            Client.Decode(Client, r);
+            Client.Decode(r);
             return result;
         }
 

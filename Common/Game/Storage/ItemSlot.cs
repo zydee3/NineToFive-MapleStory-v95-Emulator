@@ -2,7 +2,7 @@
 using NineToFive.Util;
 
 namespace NineToFive.Game.Storage {
-    public abstract class ItemSlot : IPacketSerializer<ItemSlot> {
+    public abstract class ItemSlot : IPacketSerializer {
         
         public int TemplateId { get; }
         public long CashItemSN { get; set; } // FILETIME
@@ -23,19 +23,19 @@ namespace NineToFive.Game.Storage {
             SlotMax = slotMax;
         }
         
-        public virtual void Encode(ItemSlot itemSlot, Packet p) {
-            p.WriteByte(itemSlot.Type);
-            p.WriteInt(itemSlot.TemplateId);
-            if (p.WriteBool(itemSlot.CashItemSN > 0)) {
+        public virtual void Encode(Packet p) {
+            p.WriteByte(Type);
+            p.WriteInt(TemplateId);
+            if (p.WriteBool(CashItemSN > 0)) {
                 // liCashItemSN->low
                 // liCashItemSN->high
-                p.WriteLong(itemSlot.CashItemSN);
+                p.WriteLong(CashItemSN);
             }
 
             // p.WriteLong(DateTime.FromFileTimeUtc(150842304000000000).ToFileTime()); // No expiration
-            p.WriteLong(itemSlot.DateExpire);
+            p.WriteLong(DateExpire);
         }
 
-        public virtual void Decode(ItemSlot itemSlot, Packet p) { }
+        public virtual void Decode(Packet p) { }
     }
 }

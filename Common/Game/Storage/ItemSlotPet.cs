@@ -22,21 +22,20 @@ namespace NineToFive.Game.Storage {
             
         }
 
-        public override void Encode(ItemSlot itemSlot, Packet p) {
-            if(!(itemSlot is ItemSlotPet pet)) throw new InvalidOperationException();
-            base.Encode(pet, p);
-            p.WriteStringFixed(pet.Name, 13);
-            p.WriteByte(pet.Level);
-            p.WriteShort(pet.Tameness);
-            p.WriteByte(pet.Repleteness);
-            p.WriteLong(pet.DateExpire);
-            p.WriteShort(pet.Attribute);
-            p.WriteShort(pet.Skill);
-            p.WriteInt(pet.RemainLife);
-            p.WriteInt(pet.ActiveState);
-            p.WriteInt(pet.AutoBuffSkill);
-            p.WriteInt(pet.Hue);
-            p.WriteShort(pet.GiantRate);
+        public override void Encode(Packet p) {
+            base.Encode(p);
+            p.WriteStringFixed(Name, 13);
+            p.WriteByte(Level);
+            p.WriteShort(Tameness);
+            p.WriteByte(Repleteness);
+            p.WriteLong(DateExpire);
+            p.WriteShort(Attribute);
+            p.WriteShort(Skill);
+            p.WriteInt(RemainLife);
+            p.WriteInt(ActiveState);
+            p.WriteInt(AutoBuffSkill);
+            p.WriteInt(Hue);
+            p.WriteShort(GiantRate);
         }
     }
 }

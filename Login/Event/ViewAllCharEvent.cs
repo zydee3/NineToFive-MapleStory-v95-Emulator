@@ -38,8 +38,8 @@ namespace NineToFive.Event {
             p.WriteByte();
             p.WriteByte((byte) client.Users.Count);
             foreach (User user in client.Users) {
-                user.CharacterStat.Encode(user, p);
-                user.AvatarLook.Encode(user, p);
+                user.CharacterStat.Encode(p);
+                user.AvatarLook.Encode(p);
                 p.WriteBool(false); // rankings
             }
 

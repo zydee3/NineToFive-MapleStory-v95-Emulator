@@ -67,53 +67,52 @@ namespace NineToFive.Game.Storage {
             CharacterWz.CopyEquipTemplate(this);
         }
 
-        public override void Encode(ItemSlot itemSlot, Packet p) {
-            if(!(itemSlot is ItemSlotEquip equip)) throw new NullReferenceException();
-            base.Encode(equip, p);
+        public override void Encode(Packet p) {
+            base.Encode(p);
             p.WriteByte(); // nRUC
             p.WriteByte(); // nCUC
-            p.WriteShort(equip.STR);
-            p.WriteShort(equip.DEX);
-            p.WriteShort(equip.INT);
-            p.WriteShort(equip.LUK);
+            p.WriteShort(STR);
+            p.WriteShort(DEX);
+            p.WriteShort(INT);
+            p.WriteShort(LUK);
             
-            p.WriteShort(equip.MaxHP);
-            p.WriteShort(equip.MaxMP);
+            p.WriteShort(MaxHP);
+            p.WriteShort(MaxMP);
             
-            p.WriteShort(equip.PAD);
-            p.WriteShort(equip.MAD);
-            p.WriteShort(equip.PDD);
-            p.WriteShort(equip.MDD);
-            p.WriteShort(equip.ACC);
-            p.WriteShort(equip.EVA);
+            p.WriteShort(PAD);
+            p.WriteShort(MAD);
+            p.WriteShort(PDD);
+            p.WriteShort(MDD);
+            p.WriteShort(ACC);
+            p.WriteShort(EVA);
 
-            p.WriteShort(equip.Craft);
-            p.WriteShort(equip.Speed);
-            p.WriteShort(equip.Jump);
-            p.WriteString(equip.Title);
-            p.WriteShort(equip.Attribute);
+            p.WriteShort(Craft);
+            p.WriteShort(Speed);
+            p.WriteShort(Jump);
+            p.WriteString(Title);
+            p.WriteShort(Attribute);
 
-            p.WriteByte(equip.LevelUpType); // iLevelUpType
-            p.WriteByte(equip.Level); // iLevel
-            p.WriteInt(equip.Exp);  // iEXP
-            p.WriteInt(equip.Durability);  // iDurability
+            p.WriteByte(LevelUpType); // iLevelUpType
+            p.WriteByte(Level); // iLevel
+            p.WriteInt(Exp);  // iEXP
+            p.WriteInt(Durability);  // iDurability
 
-            p.WriteInt(equip.IUC); // nIUC
+            p.WriteInt(IUC); // nIUC
 
-            p.WriteByte(equip.Grade); // nGrade
-            p.WriteByte(equip.CHUC);
+            p.WriteByte(Grade); // nGrade
+            p.WriteByte(CHUC);
             
-            p.WriteShort(equip.Option1); // nOption1
-            p.WriteShort(equip.Option2); // nOption2
-            p.WriteShort(equip.Option3); // nOption3
-            p.WriteShort(equip.Socket1); // nOption4/Socket1
-            p.WriteShort(equip.Socket2); // nOption5/Socket2
-            if (equip.CashItemSN == 0) {
-                p.WriteLong(equip.CashItemSN);
+            p.WriteShort(Option1); // nOption1
+            p.WriteShort(Option2); // nOption2
+            p.WriteShort(Option3); // nOption3
+            p.WriteShort(Socket1); // nOption4/Socket1
+            p.WriteShort(Socket2); // nOption5/Socket2
+            if (CashItemSN == 0) {
+                p.WriteLong(CashItemSN);
             }
 
-            p.WriteLong(equip.FTEquipped); // ftEquipped (file time?)
-            p.WriteInt(equip.PrevBonusExpRate);  // nPrevBonusExpRate
+            p.WriteLong(FTEquipped); // ftEquipped (file time?)
+            p.WriteInt(PrevBonusExpRate);  // nPrevBonusExpRate
         }
     }
 }

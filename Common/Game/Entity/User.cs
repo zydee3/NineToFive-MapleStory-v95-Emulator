@@ -23,8 +23,9 @@ namespace NineToFive.Game.Entity {
                 Inventories.Add(type, new Inventory(type));
             }
 
-            AvatarLook = new AvatarLook(reader);
-            CharacterStat = new CharacterStat(reader);
+            var me = this;
+            AvatarLook = new AvatarLook(ref me, reader);
+            CharacterStat = new CharacterStat(ref me, reader);
 
             if (reader == null) return;
 
@@ -278,7 +279,7 @@ namespace NineToFive.Game.Entity {
             int balance = (int) Money + gain;
             if (balance >= 0) {
                 Money = (uint) balance;
-                CharacterStat.SendUpdate(this, (uint) UserAbility.Money);
+                CharacterStat.SendUpdate((uint) UserAbility.Money);
                 return true;
             }
 
@@ -286,27 +287,29 @@ namespace NineToFive.Game.Entity {
         }
     }
 
-    public class AvatarLook : IPacketSerializer<User> {
-        public AvatarLook(MySqlDataReader r = null) {
+    public class AvatarLook : IPacketSerializer {
+        public AvatarLook(ref User user, MySqlDataReader r = null) {
             if (r == null) return;
+            _user = user;
             Gender = r.GetByte("gender");
             Skin = r.GetByte("skin");
             Face = r.GetInt32("face");
             Hair = r.GetInt32("hair");
         }
-
+        
+        private readonly User _user;
         public byte Gender { get; set; }
         public byte Skin { get; set; }
         public int Face { get; set; }
         public int Hair { get; set; }
 
-        public void Encode(User user, Packet p) {
-            p.WriteByte(user.AvatarLook.Gender);
-            p.WriteByte(user.AvatarLook.Skin);
-            p.WriteInt(user.AvatarLook.Face);
+        public void Encode(Packet p) {
+            p.WriteByte(_user.AvatarLook.Gender);
+            p.WriteByte(_user.AvatarLook.Skin);
+            p.WriteInt(_user.AvatarLook.Face);
             p.WriteByte();
-            p.WriteInt(user.AvatarLook.Hair);
-            var inventory = user.Inventories[InventoryType.Equipped];
+            p.WriteInt(_user.AvatarLook.Hair);
+            var inventory = _user.Inventories[InventoryType.Equipped];
             foreach (var item in inventory.Items.Where(i => i.BagIndex >= -99)) {
                 p.WriteByte((byte) Math.Abs(item.BagIndex));
                 p.WriteInt(item.TemplateId);
@@ -323,22 +326,24 @@ namespace NineToFive.Game.Entity {
             p.WriteBytes(new byte[12]); // pets
         }
 
-        public void Decode(User user, Packet p) {
-            user.AvatarLook.Gender = p.ReadByte();
-            user.AvatarLook.Skin = p.ReadByte();
-            user.AvatarLook.Face = p.ReadInt();
-            user.AvatarLook.Hair = p.ReadInt();
+        public void Decode(Packet p) {
+            _user.AvatarLook.Gender = p.ReadByte();
+            _user.AvatarLook.Skin = p.ReadByte();
+            _user.AvatarLook.Face = p.ReadInt();
+            _user.AvatarLook.Hair = p.ReadInt();
         }
     }
 
-    public class CharacterStat : IPacketSerializer<User> {
+    public class CharacterStat : IPacketSerializer {
+        private readonly User _user;
         private readonly short[] _skillPoints;
         private int _hp = 50, _mp = 5;
         private uint _exp;
 
-        public CharacterStat(MySqlDataReader r = null) {
+        public CharacterStat(ref User user, MySqlDataReader r = null) {
             _skillPoints = new short[10];
             if (r == null) return;
+            _user = user;
             Id = r.GetUInt32("character_id");
             Username = r.GetString("username");
             Level = r.GetByte("level");
@@ -425,40 +430,40 @@ namespace NineToFive.Game.Entity {
         public int FieldId { get; set; } = 10000;
         public byte Portal { get; set; }
 
-        public void SendUpdate(User user, uint dwcharFlags) {
+        public void SendUpdate(uint dwcharFlags) {
             if (((UserAbility) dwcharFlags & UserAbility.HP) == UserAbility.HP) {
-                if (user.CharacterStat.HP < 1) {
-                    user.SendMessage("You have died.");
+                if (_user.CharacterStat.HP < 1) {
+                    _user.SendMessage("You have died.");
                 }
             }
 
-            user.Client.Session.Write(CWvsPackets.GetStatChanged(user, dwcharFlags));
+            _user.Client.Session.Write(CWvsPackets.GetStatChanged(_user, dwcharFlags));
         }
 
-        public void Encode(User user, Packet p) {
+        public void Encode(Packet p) {
             if (Id == 0) throw new InvalidOperationException("cannot encode a character which id is 0");
             p.WriteUInt(Id);
             p.WriteStringFixed(Username, 13);
-            p.WriteByte(user.AvatarLook.Gender);
-            p.WriteByte(user.AvatarLook.Skin);
-            p.WriteInt(user.AvatarLook.Face);
-            p.WriteInt(user.AvatarLook.Hair);
+            p.WriteByte(_user.AvatarLook.Gender);
+            p.WriteByte(_user.AvatarLook.Skin);
+            p.WriteInt(_user.AvatarLook.Face);
+            p.WriteInt(_user.AvatarLook.Hair);
             // pets
             p.WriteLong();
             p.WriteLong();
             p.WriteLong();
 
-            p.WriteByte(user.CharacterStat.Level);
-            var jobId = p.WriteShort(user.CharacterStat.Job);
-            p.WriteShort(user.CharacterStat.Str);
-            p.WriteShort(user.CharacterStat.Dex);
-            p.WriteShort(user.CharacterStat.Int);
-            p.WriteShort(user.CharacterStat.Luk);
-            p.WriteInt(user.CharacterStat.HP);
-            p.WriteInt(user.CharacterStat.MaxHP);
-            p.WriteInt(user.CharacterStat.MP);
-            p.WriteInt(user.CharacterStat.MaxMP);
-            p.WriteShort(user.CharacterStat.AP);
+            p.WriteByte(_user.CharacterStat.Level);
+            var jobId = p.WriteShort(_user.CharacterStat.Job);
+            p.WriteShort(_user.CharacterStat.Str);
+            p.WriteShort(_user.CharacterStat.Dex);
+            p.WriteShort(_user.CharacterStat.Int);
+            p.WriteShort(_user.CharacterStat.Luk);
+            p.WriteInt(_user.CharacterStat.HP);
+            p.WriteInt(_user.CharacterStat.MaxHP);
+            p.WriteInt(_user.CharacterStat.MP);
+            p.WriteInt(_user.CharacterStat.MaxMP);
+            p.WriteShort(_user.CharacterStat.AP);
 
             if (JobConstants.IsExtendedSpJob(jobId)) {
                 byte advancements = (byte) JobConstants.GetJobLevel(Job);
@@ -519,42 +524,42 @@ namespace NineToFive.Game.Entity {
             if ((dwcharFlag & 0x200000) == 0x200000) p.WriteInt(user.CharacterStat.FieldId);
         }
 
-        public void Decode(User user, Packet p) {
-            user.CharacterStat.Id = p.ReadUInt();
-            user.CharacterStat.Username = p.ReadString(13).Trim();
-            user.AvatarLook.Gender = p.ReadByte();
-            user.AvatarLook.Skin = p.ReadByte();
-            user.AvatarLook.Face = p.ReadInt();
-            user.AvatarLook.Hair = p.ReadInt();
+        public void Decode(Packet p) {
+            _user.CharacterStat.Id = p.ReadUInt();
+            _user.CharacterStat.Username = p.ReadString(13).Trim();
+            _user.AvatarLook.Gender = p.ReadByte();
+            _user.AvatarLook.Skin = p.ReadByte();
+            _user.AvatarLook.Face = p.ReadInt();
+            _user.AvatarLook.Hair = p.ReadInt();
             p.ReadLong();
             p.ReadLong();
             p.ReadLong();
-            user.CharacterStat.Level = p.ReadByte();
-            var jobId = (user.CharacterStat.Job = p.ReadShort());
-            user.CharacterStat.Str = p.ReadShort();
-            user.CharacterStat.Dex = p.ReadShort();
-            user.CharacterStat.Int = p.ReadShort();
-            user.CharacterStat.Luk = p.ReadShort();
-            user.CharacterStat._hp = p.ReadInt();
-            user.CharacterStat.MaxHP = p.ReadInt();
-            user.CharacterStat._mp = p.ReadInt();
-            user.CharacterStat.MaxMP = p.ReadInt();
-            user.CharacterStat.AP = p.ReadShort();
+            _user.CharacterStat.Level = p.ReadByte();
+            var jobId = (_user.CharacterStat.Job = p.ReadShort());
+            _user.CharacterStat.Str = p.ReadShort();
+            _user.CharacterStat.Dex = p.ReadShort();
+            _user.CharacterStat.Int = p.ReadShort();
+            _user.CharacterStat.Luk = p.ReadShort();
+            _user.CharacterStat._hp = p.ReadInt();
+            _user.CharacterStat.MaxHP = p.ReadInt();
+            _user.CharacterStat._mp = p.ReadInt();
+            _user.CharacterStat.MaxMP = p.ReadInt();
+            _user.CharacterStat.AP = p.ReadShort();
 
             if (JobConstants.IsExtendedSpJob(jobId)) {
                 byte advancements = p.ReadByte();
                 for (int i = 0; i < advancements; i++) {
-                    user.CharacterStat.SkillPoints[p.ReadByte()] = p.ReadByte();
+                    _user.CharacterStat.SkillPoints[p.ReadByte()] = p.ReadByte();
                 }
             } else {
-                user.CharacterStat.SP = p.ReadShort();
+                _user.CharacterStat.SP = p.ReadShort();
             }
 
-            user.CharacterStat.Exp = p.ReadUInt();
-            user.CharacterStat.Popularity = p.ReadShort();
+            _user.CharacterStat.Exp = p.ReadUInt();
+            _user.CharacterStat.Popularity = p.ReadShort();
             p.ReadInt();
-            user.CharacterStat.FieldId = p.ReadInt();
-            user.CharacterStat.Portal = p.ReadByte();
+            _user.CharacterStat.FieldId = p.ReadInt();
+            _user.CharacterStat.Portal = p.ReadByte();
             p.ReadInt();
             p.ReadShort();
         }

@@ -47,7 +47,7 @@ namespace NineToFive.Event {
                 }
             }
 
-            user.CharacterStat.SendUpdate(user, 0);
+            user.CharacterStat.SendUpdate(0);
         }
     }
 }

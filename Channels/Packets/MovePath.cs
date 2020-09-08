@@ -12,7 +12,7 @@ namespace NineToFive.Packets {
             w.WriteShort((short) velocity.Y);
             w.WriteByte((byte) moves.Count);
             foreach (var move in moves) {
-                move.Encode(move, w);
+                move.Encode(w);
             }
 
             for (int i = 0; i < w.WriteByte(); i++) {

@@ -1,10 +1,10 @@
 ﻿using NineToFive.Net;
 
 namespace NineToFive.Util {
-    public interface IPacketSerializer<T> {
+    public interface IPacketSerializer {
 
-        void Encode(T t, Packet p);
+        void Encode(Packet p);
 
-        void Decode(T t, Packet p);
+        void Decode(Packet p);
     }
 }

@@ -99,7 +99,7 @@ namespace NineToFive.Event.Data {
             }
             
             user.CharacterStat.Exp += totalExpGained;
-            user.CharacterStat.SendUpdate(user, (uint) (UserAbility.Level | UserAbility.Exp));
+            user.CharacterStat.SendUpdate((uint) (UserAbility.Level | UserAbility.Exp));
         }
     }
 

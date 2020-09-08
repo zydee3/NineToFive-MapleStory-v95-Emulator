@@ -88,8 +88,8 @@ namespace NineToFive.Event {
             using Packet p = new Packet();
             p.WriteShort((short) CLogin.OnCreateNewCharacterResult);
             p.WriteByte();
-            Client.User.CharacterStat.Encode(Client.User, p);
-            Client.User.AvatarLook.Encode(Client.User, p);
+            Client.User.CharacterStat.Encode(p);
+            Client.User.AvatarLook.Encode(p);
             return p.ToArray();
         }
 

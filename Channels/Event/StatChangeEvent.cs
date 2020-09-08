@@ -21,7 +21,7 @@ namespace NineToFive.Event {
             var user = Client.User;
             user.CharacterStat.HP += _hp;
             user.CharacterStat.MP += _mp;
-            user.CharacterStat.SendUpdate(user, _dwcharFlags);
+            user.CharacterStat.SendUpdate(_dwcharFlags);
         }
     }
 }

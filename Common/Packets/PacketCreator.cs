@@ -161,7 +161,7 @@ namespace NineToFive.Packets {
             w.WriteByte(1);
             w.WriteInt(npc.TemplateId);
             w.WriteString(npc.User.CharacterStat.Username);
-            npc.User.AvatarLook.Encode(npc.User, w);
+            npc.User.AvatarLook.Encode(w);
             return w.ToArray();
         }
     }
@@ -412,7 +412,7 @@ namespace NineToFive.Packets {
                     if (type == 9) break;
                     w.WriteBool(whisper);
                     if (w.WriteBool(item != null)) {
-                        item!.Encode(item, w);
+                        item!.Encode(w);
                     }
 
                     break;
@@ -431,12 +431,12 @@ namespace NineToFive.Packets {
                 case 12:
                     w.WriteInt(item.TemplateId);
                     w.WriteString(msg);
-                    item.Encode(item, w);
+                    item.Encode(w);
                     break;
                 case 13: // {name} duplicated an item from a twin dragons egg congrats
                 case 14: // {name} got an item from the twin dragons egg congrats
                     w.WriteString(msg);
-                    item.Encode(item, w);
+                    item.Encode(w);
                     break;
             }
 
@@ -462,13 +462,13 @@ namespace NineToFive.Packets {
                     case InventoryOperation.Add:
                         switch (item) {
                             case ItemSlotBundle bundle:
-                                bundle.Encode(bundle, w);
+                                bundle.Encode(w);
                                 break;
                             case ItemSlotEquip equip: 
-                                equip.Encode(equip, w);
+                                equip.Encode(w);
                                 break;
                             case ItemSlotPet pet:
-                                pet.Encode(pet, w);
+                                pet.Encode(w);
                                 break;
                         }
                         break;
@@ -560,7 +560,7 @@ namespace NineToFive.Packets {
             #endregion
 
             w.WriteShort();
-            user.AvatarLook.Encode(user, w);
+            user.AvatarLook.Encode(w);
             w.WriteInt();
             w.WriteInt();
             w.WriteInt();
@@ -645,7 +645,7 @@ namespace NineToFive.Packets {
             }
 
             if ((dwCharFlag & 1) == 1) {
-                user.CharacterStat.Encode(user, w);
+                user.CharacterStat.Encode(w);
                 w.WriteByte(); // nPvPExp
                 if (w.WriteBool(true)) {
                     w.WriteString();
@@ -673,14 +673,14 @@ namespace NineToFive.Packets {
 
                 foreach (var item in eqs.Where(i => i.BagIndex >= -99)) {
                     w.WriteShort(Math.Abs(item.BagIndex));
-                    item.Encode(item, w);
+                    item.Encode(w);
                 }
                 
                 w.WriteShort();
                 
                 foreach (var item in eqs.Where(i => i.BagIndex <= -100)) {
                     w.WriteShort(Math.Abs(item.BagIndex));
-                    item.Encode(item, w);
+                    item.Encode(w);
                 }
                 
                 w.WriteShort();
@@ -688,7 +688,7 @@ namespace NineToFive.Packets {
                 foreach (var item in user.Inventories[InventoryType.Equip].Items) {
                     if (!(item is ItemSlotEquip equip)) continue;
                     w.WriteShort(equip.BagIndex);
-                    equip.Encode(equip, w);
+                    equip.Encode(w);
                 }
                 
                 w.WriteShort();
@@ -708,14 +708,14 @@ namespace NineToFive.Packets {
                         w.WriteByte((byte) item.BagIndex);
                         switch (item) {
                             case ItemSlotBundle bundle:
-                                bundle.Encode(bundle, w);
+                                bundle.Encode(w);
                                 break;
                             case ItemSlotEquip equip:
                                 Console.WriteLine("encoding equip");
-                                equip.Encode(equip, w);
+                                equip.Encode(w);
                                 break;
                             case ItemSlotPet pet:
-                                pet.Encode(pet, w);
+                                pet.Encode(w);
                                 break;
                         }
                     }

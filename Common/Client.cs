@@ -11,7 +11,7 @@ using NineToFive.Net.Interoperations.Event;
 using NineToFive.Util;
 
 namespace NineToFive {
-    public class Client : IPacketSerializer<Client>, IDisposable {
+    public class Client : IPacketSerializer, IDisposable {
         private static readonly ILog Log = LogManager.GetLogger(typeof(Client));
         public readonly List<User> Users = new List<User>(15);
         public ClientSession Session;
@@ -51,18 +51,18 @@ namespace NineToFive {
             Session = null;
         }
 
-        public void Encode(Client t, Packet p) {
-            p.WriteUInt(t.Id);
-            p.WriteString(t.Username);
-            p.WriteString(t.Password);
-            p.WriteByte(t.Gender);
-            p.WriteByte(t.GradeCode);
-            p.WriteByte(t.LoginStatus);
-            if (p.WriteBool(t.MachineId != null)) {
-                p.WriteBytes(t.MachineId);
+        public void Encode(Packet p) {
+            p.WriteUInt(Id);
+            p.WriteString(Username);
+            p.WriteString(Password);
+            p.WriteByte(Gender);
+            p.WriteByte(GradeCode);
+            p.WriteByte(LoginStatus);
+            if (p.WriteBool(MachineId != null)) {
+                p.WriteBytes(MachineId);
             }
 
-            if (p.WriteBool(t.SecondaryPassword != null)) {
+            if (p.WriteBool(SecondaryPassword != null)) {
                 p.WriteString(SecondaryPassword);
             }
 
@@ -71,23 +71,23 @@ namespace NineToFive {
             }
         }
 
-        public void Decode(Client t, Packet p) {
-            t.Id = p.ReadUInt();
-            t.Username = p.ReadString();
-            t.Password = p.ReadString();
-            t.Gender = p.ReadByte();
-            t.GradeCode = p.ReadByte();
-            t.LoginStatus = p.ReadByte();
+        public void Decode(Packet p) {
+            Id = p.ReadUInt();
+            Username = p.ReadString();
+            Password = p.ReadString();
+            Gender = p.ReadByte();
+            GradeCode = p.ReadByte();
+            LoginStatus = p.ReadByte();
             if (p.ReadBool()) {
-                t.MachineId = p.ReadBytes(16);
+                MachineId = p.ReadBytes(16);
             }
 
             if (p.ReadBool()) {
-                t.SecondaryPassword = p.ReadString();
+                SecondaryPassword = p.ReadString();
             }
 
             if (p.ReadBool()) {
-                t.LastKnownIp = new IPAddress(p.ReadBytes(4));
+                LastKnownIp = new IPAddress(p.ReadBytes(4));
             }
         }
 

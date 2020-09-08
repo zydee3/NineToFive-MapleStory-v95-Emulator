@@ -36,7 +36,7 @@ namespace NineToFive.Net.Interoperations.Event {
                 client.MachineId = machineId;
                 client.LoginStatus = 1;
                 // successful login, encode client data
-                client.Encode(client, w);
+                client.Encode(w);
                 Server.Clients.TryAdd(username, client);
             }
 

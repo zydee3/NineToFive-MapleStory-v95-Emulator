@@ -19,7 +19,7 @@ namespace NineToFive.Event {
             while (count-- > 0) {
                 byte type = p.ReadByte();
                 Movement move = new Movement(type);
-                move.Decode(move, p);
+                move.Decode(p);
                 Movements.Add(move);
             }
 

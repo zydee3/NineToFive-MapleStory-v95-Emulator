@@ -52,7 +52,7 @@ namespace NineToFive.Event {
 
             stat.AP -= 1;
 
-            user.CharacterStat.SendUpdate(user, _dwcharFlag | (uint) UserAbility.AP);
+            user.CharacterStat.SendUpdate(_dwcharFlag | (uint) UserAbility.AP);
         }
     }
 }

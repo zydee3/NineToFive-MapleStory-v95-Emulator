@@ -14,13 +14,12 @@ namespace NineToFive.Game.Storage {
             Tag ??= "";
         }
         
-        public override void Encode(ItemSlot itemSlot, Packet w) { // todo: are double instance reference necessary?
-            if(!(itemSlot is ItemSlotBundle item)) throw new NullReferenceException();
-            base.Encode(item, w);
-            w.WriteShort((short) item.Quantity);
-            w.WriteString(item.Tag);
-            w.WriteShort(item.Attribute);
-            if (item.IsRechargable) {
+        public override void Encode(Packet w) {
+            base.Encode(w);
+            w.WriteShort((short) Quantity);
+            w.WriteString(Tag);
+            w.WriteShort(Attribute);
+            if (IsRechargable) {
                 w.WriteLong();
             }
         }

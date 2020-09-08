@@ -91,8 +91,8 @@ namespace NineToFive.Event {
             p.WriteByte();                          // failure result
             p.WriteByte((byte) Client.Users.Count); // up to 15 characters
             foreach (User user in Client.Users) {
-                user.CharacterStat.Encode(user, p);
-                user.AvatarLook.Encode(user, p);
+                user.CharacterStat.Encode(p);
+                user.AvatarLook.Encode(p);
                 p.WriteByte();
                 if (p.WriteBool(ServerConstants.EnabledRanking)) {
                     p.WriteInt(); // nTotRank

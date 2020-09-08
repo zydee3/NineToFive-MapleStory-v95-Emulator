@@ -41,7 +41,7 @@ namespace NineToFive.Event {
             }
 
             user.CharacterStat.HP -= _damage;
-            user.CharacterStat.SendUpdate(user, (uint)UserAbility.HP);
+            user.CharacterStat.SendUpdate((uint)UserAbility.HP);
         }
     }
 }
