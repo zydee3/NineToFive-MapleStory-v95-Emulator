@@ -136,7 +136,7 @@ namespace MapleLib.WzLib.WzProperties
 
         public override string ToString()
         {
-            return val.ToString();
+            return $"WzIntProperty(name='{name}', value={val})";
         }
         #endregion
 	}

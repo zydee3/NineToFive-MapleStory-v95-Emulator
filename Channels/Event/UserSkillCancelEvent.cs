@@ -19,7 +19,7 @@ namespace NineToFive.Event {
             var user = Client.User;
             if (!user.Skills.TryGetValue(_skillId, out var record)) return;
             record.Proc = false;
-            user.Field.BroadcastPacketExclude(user, GetUserSkillCancel(user.CharacterStat.Id, _skillId));
+            // user.Field.BroadcastPacketExclude(user, GetUserSkillCancel(user.CharacterStat.Id, _skillId));
             WzCache.Skills.TryGetValue(record.Id, out var skill);
             Client.Session.Write(CWvsPackets.GetTemporaryStatReset(skill));
         }

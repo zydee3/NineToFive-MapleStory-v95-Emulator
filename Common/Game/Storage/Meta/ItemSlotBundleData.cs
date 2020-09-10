@@ -11,48 +11,49 @@ namespace NineToFive.Game.Storage.Meta {
             var buffs = new List<short>();
             if (Pad > 0) {
                 buffs.Add(Pad);
-                BitMask |= TemporaryStat.PAD;
+                BitMask |= SecondaryStat.PAD;
             }
-            
+
             if (Mad > 0) {
                 buffs.Add(Mad);
-                BitMask |= TemporaryStat.MAD;
+                BitMask |= SecondaryStat.MAD;
             }
-            
+
             if (Pdd > 0) {
                 buffs.Add(Pdd);
-                BitMask |= TemporaryStat.PDD;
+                BitMask |= SecondaryStat.PDD;
             }
 
             if (Mdd > 0) {
                 buffs.Add(Mdd);
-                BitMask |= TemporaryStat.MDD;
+                BitMask |= SecondaryStat.MDD;
             }
 
             if (Acc > 0) {
                 buffs.Add(Acc);
-                BitMask |= TemporaryStat.Acc;
+                BitMask |= SecondaryStat.ACC;
             }
 
             if (Eva > 0) {
                 buffs.Add(Eva);
-                BitMask |= TemporaryStat.Eva;
+                BitMask |= SecondaryStat.EVA;
             }
 
             if (Speed > 0) {
                 buffs.Add(Speed);
-                BitMask |= TemporaryStat.Speed;
+                BitMask |= SecondaryStat.Speed;
             }
 
             if (Jump > 0) {
                 buffs.Add(Jump);
-                BitMask |= TemporaryStat.Jump;
+                BitMask |= SecondaryStat.Jump;
             }
+
             return buffs;
         }
 
         public int TemplateId { get; }
-        public TemporaryStat BitMask { get; set; }
+        public SecondaryStat BitMask { get; set; }
 
         public int SlotMax { get; set; }
         public int Price { get; set; }
@@ -65,7 +66,7 @@ namespace NineToFive.Game.Storage.Meta {
         public int AccountSharable { get; set; }
         public int Quest { get; set; }
         public int Only { get; set; }
-        
+
         public int EnchantCategory { get; set; }
         public int Success { get; set; }
         public int NotSale { get; set; }
@@ -73,9 +74,9 @@ namespace NineToFive.Game.Storage.Meta {
         public int Morph { get; set; }
         public int MasterLevel { get; set; }
         public int Time { get; set; }
-        
+
         #region Stats
-        
+
         public short Hp { get; set; }
         public short Mp { get; set; }
         public short Pad { get; set; }
@@ -92,10 +93,11 @@ namespace NineToFive.Game.Storage.Meta {
         public short Pdd { get; set; }
         public short Mdd { get; set; }
         public short Speed { get; set; }
-        
+
         #endregion
+
         #region Increase
-        
+
         public short IncPERIOD { get; set; }
         public short IncPAD { get; set; }
         public short IncMDD { get; set; }
@@ -121,17 +123,19 @@ namespace NineToFive.Game.Storage.Meta {
         public short IncMaxHP { get; set; }
         public short IncMaxMP { get; set; }
         public short IncReqLevel { get; set; }
-        
+
         #endregion
+
         #region Require
-        
+
         public short ReqLevel { get; set; }
         public short ReqCUC { get; set; }
         public short ReqRUC { get; set; }
-        
+
         #endregion
+
         #region Rate
-        
+
         public short PadRate { get; set; }
         public short MadRate { get; set; }
         public short PddRate { get; set; }
@@ -145,24 +149,25 @@ namespace NineToFive.Game.Storage.Meta {
         public short MpR { get; set; }
         public short MmpR { get; set; }
         public short MhpR { get; set; }
-        
+
         #endregion
+
         #region States
-        
+
         public int Poison { get; set; }
         public int Darkness { get; set; }
         public int Weakness { get; set; }
         public int Seal { get; set; }
         public int Curse { get; set; }
-        
+
         #endregion
-        
+
         public int MaxLevel { get; set; }
         public int Exp { get; set; }
         public int MoveTo { get; set; }
         public int MaxDays { get; set; }
         public int QuestId { get; set; }
-        
+
         public int RecoveryHP { get; set; }
         public int RecoveryMP { get; set; }
         public int ConsumeHP { get; set; }

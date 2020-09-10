@@ -19,7 +19,7 @@ namespace NineToFive.Event {
             p.ReadInt(); // get_update_time
             _skillId = p.ReadInt();
             _skillLevel = p.ReadByte();
-            
+
             // if ( is_antirepeat_buff_skill )
             //     _origin = new Vector2(p.ReadShort(), p.ReadShort());
             if (_skillId == (int) Skills.NightlordShadowStars) {
@@ -36,15 +36,26 @@ namespace NineToFive.Event {
 
             if (WzCache.Skills.TryGetValue(_playerskill.Id, out var skill)) {
                 _playerskill.Proc = true;
+
+                if (user.IsDebugging) {
+                    string cts = "CTS : ";
+                    foreach (var pair in skill.CTS) {
+                        cts += $"{pair.Key}={pair.Value[_playerskill.Level - 1]}, ";
+                    }
+                    user.SendMessage(cts);
+                }
+                
                 if (skill.Id == (int) Skills.SuperGameMasterHide) {
                     if (user.IsHidden = !user.IsHidden) {
                         user.SendMessage("Now you don't.");
-                    } else {
-                        user.SendMessage("Now you see me.");
+                        Client.Session.Write(CWvsPackets.GetTemporaryStatReset(skill));
+                        return;
                     }
-                } else {
-                    Client.Session.Write(CWvsPackets.GetTemporaryStatSet(skill, _playerskill));
+
+                    user.SendMessage("Now you see me.");
                 }
+
+                Client.Session.Write(CWvsPackets.GetTemporaryStatSet(skill, _playerskill));
             }
 
             user.CharacterStat.SendUpdate(0);

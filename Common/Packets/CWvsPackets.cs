@@ -51,50 +51,61 @@ namespace NineToFive.Packets {
         public static byte[] GetTemporaryStatSet(Skill skill, SkillRecord record) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnTemporaryStatSet);
+            skill.EncodeBitmask(w);
 
-            w.WriteInt();
-            w.WriteInt();
-            w.WriteInt();
-            w.WriteInt((int) skill.BitMask);
-
-            foreach (var ts in Enum.GetValues(typeof(TemporaryStat)).Cast<TemporaryStat>()) {
-                if ((skill.BitMask & ts) != ts || ts == TemporaryStat.None) continue;
-                w.WriteShort((short) ts.GetFromSkill(skill, record));
+            foreach (var pair in skill.CTS) {
+                w.WriteShort((short) (int) skill.CTS[pair.Key][record.Level - 1]);
                 w.WriteInt(skill.Id);
-                w.WriteInt(skill.Time[record.Level - 1] * 1000);
+                w.WriteInt((int) skill.Time[record.Level - 1] * 1000);
             }
 
-            w.WriteByte();
-            w.WriteByte();
+            w.WriteByte(); // nDefenseAtt
+            w.WriteByte(); // nDefenseState
 
-            w.WriteShort(1);
-            // SecondaryStat::IsMovementAffectingStat
-            w.WriteByte(1);
+            if (skill.CTS.ContainsKey(SecondaryStat.SwallowBuff)) w.WriteByte();
+
+            if (skill.CTS.ContainsKey(SecondaryStat.Dice)) {
+                for (int i = 0; i < 22; i++) {
+                    w.WriteInt();
+                }
+            }
+
+            if (skill.CTS.ContainsKey(SecondaryStat.BlessingArmor)) w.WriteInt();
+
+            for (int i = 122; i < 129; i++) {
+                if (skill.CTS.ContainsKey((SecondaryStat) i)) {
+                    if ((SecondaryStat) i == SecondaryStat.GuidedBullet)
+                        w.WriteInt();
+                    else {
+                        w.WriteInt();
+                        w.WriteInt();
+                    }
+                }
+            }
+
+            w.WriteShort();
+
+            if (skill.CTS.Any(cts => cts.Key.IsMovementAffectingStat())) {
+                w.WriteByte(1);
+            }
+
+            w.WriteBytes(new byte[100]);
+
             return w.ToArray();
         }
-        
+
         public static byte[] GetTemporaryStatReset(Skill skill) {
             using Packet w = new Packet();
-            w.WriteShort((short) CWvsContext.OnTemporaryStatSet);
-            
-            /*
-            int[] mask = new int[4];
-            foreach (TemporaryStat stat in Enum.GetValues(typeof(TemporaryStat))) {
-                if ((skill.BitMask & stat) == stat && stat != TemporaryStat.None) {
-                    mask[]
-                }
-            }*/
-            w.WriteInt();
-            w.WriteInt();
-            w.WriteInt();
-            w.WriteInt((int) skill.BitMask);
+            w.WriteShort((short) CWvsContext.OnTemporaryStatReset);
+            skill.EncodeBitmask(w);
+            if (skill.CTS.Any(cts => cts.Key.IsMovementAffectingStat())) {
+                w.WriteByte();
+            }
 
-            // SecondaryStat::IsMovementAffectingStat
-            w.WriteByte();
             return w.ToArray();
         }
-        
-        
+
+
         public static byte[] GetForcedStatSet(User user, uint dwcharFlags) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnForcedStatSet);
@@ -240,13 +251,14 @@ namespace NineToFive.Packets {
                             case ItemSlotBundle bundle:
                                 bundle.Encode(w);
                                 break;
-                            case ItemSlotEquip equip: 
+                            case ItemSlotEquip equip:
                                 equip.Encode(w);
                                 break;
                             case ItemSlotPet pet:
                                 pet.Encode(w);
                                 break;
                         }
+
                         break;
                     case InventoryOperation.Update:
                         w.WriteShort((short) item.Quantity);
@@ -262,14 +274,16 @@ namespace NineToFive.Packets {
                         } else if (item.BagIndex < 0) {
                             w.WriteByte(2);
                         }
+
                         break;
                     case InventoryOperation.Remove:
                         if (item.BagIndex < 0) {
                             w.WriteByte(2);
                         }
+
                         break;
                     case InventoryOperation.UpdateStat:
-                        w.WriteInt();// v37
+                        w.WriteInt(); // v37
                         break;
                     default:
                         throw new InvalidEnumArgumentException();
@@ -278,7 +292,7 @@ namespace NineToFive.Packets {
 
             return w.ToArray();
         }
-        
+
         public static byte[] GetChangeSkillRecordResult(List<SkillRecord> records) {
             using Packet w = new Packet();
             w.WriteShort((short) CWvsContext.OnChangeSkillRecordResult);
@@ -290,6 +304,7 @@ namespace NineToFive.Packets {
                 w.WriteInt(record.MasterLevel);
                 w.WriteLong(record.Expiration);
             }
+
             w.WriteByte();
             return w.ToArray();
         }

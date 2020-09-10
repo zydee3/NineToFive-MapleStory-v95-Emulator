@@ -4,7 +4,6 @@ using log4net;
 using NineToFive.Game;
 using NineToFive.Game.Entity;
 using NineToFive.Game.Storage;
-using NineToFive.Wz;
 
 namespace ServerTests {
     public static class WzReaderTest {
@@ -39,15 +38,6 @@ namespace ServerTests {
 
         public static void TestMob() {
             Mob mob = new Mob(9001005);
-        }
-
-        public static void TestSkill() {
-            var skills = SkillWz.LoadSkills();
-            //Console.WriteLine($"Loaded {skills.Count} skills");
-            //Console.WriteLine("=============================");
-
-            //var skill = skills[9101003];
-            //Console.WriteLine(skill);
         }
     }
 }

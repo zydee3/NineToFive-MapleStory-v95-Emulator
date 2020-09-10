@@ -1,37 +1,50 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 
 namespace NineToFive.Game.Entity.Meta {
     public static class Extensions {
-        public static int GetFromSkill(this TemporaryStat stat, Skill skill, SkillRecord record) {
-            switch (stat) {
-                case TemporaryStat.None:
-                    break;
-                case TemporaryStat.PAD:
-                    return skill.PAD[record.Level - 1];
-                case TemporaryStat.PDD:
-                    return skill.PDD[record.Level - 1];
-                case TemporaryStat.MAD:
-                    return skill.MAD[record.Level - 1];
-                case TemporaryStat.MDD:
-                    return skill.MDD[record.Level - 1];
-                case TemporaryStat.Acc:
-                    return skill.Acc[record.Level - 1];
-                case TemporaryStat.Eva:
-                    return skill.Eva[record.Level - 1];
-                case TemporaryStat.Hands:
-                    break;
-                case TemporaryStat.Speed:
-                    return skill.Speed[record.Level - 1];
-                case TemporaryStat.Jump:
-                    return skill.Jump[record.Level - 1];
-                case TemporaryStat.Ghost:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(stat), stat, null);
-            }
+        public static bool IsCalcDamageStat(this SecondaryStat stat) {
+            return stat switch {
+                SecondaryStat.MAD              => true,
+                SecondaryStat.ACC              => true,
+                SecondaryStat.Darkness         => true,
+                SecondaryStat.ComboCounter     => true,
+                SecondaryStat.WeaponCharge     => true,
+                SecondaryStat.BasicStatUp      => true,
+                SecondaryStat.SharpEyes        => true,
+                SecondaryStat.MaxLevelBuff     => true,
+                SecondaryStat.EnergyCharge     => true,
+                SecondaryStat.ComboAbilityBuff => true,
+                SecondaryStat.AssistCharge     => true,
+                SecondaryStat.SuddenDeath      => true,
+                SecondaryStat.FinalCut         => true,
+                SecondaryStat.ThornsEffect     => true,
+                SecondaryStat.EPAD             => true,
+                SecondaryStat.DarkAura         => true,
+                SecondaryStat.DamR             => true,
+                SecondaryStat.BlessingArmor    => true,
+                _                              => false
+            };
+        }
 
-            throw new ArgumentOutOfRangeException(nameof(stat), stat, null);
+        public static bool IsMovementAffectingStat(this SecondaryStat stat) {
+            return stat switch {
+                SecondaryStat.Jump        => true,
+                SecondaryStat.Speed       => true,
+                SecondaryStat.Stun        => true,
+                SecondaryStat.Weakness    => true,
+                SecondaryStat.Slow        => true,
+                SecondaryStat.Morph       => true,
+                SecondaryStat.Ghost       => true,
+                SecondaryStat.BasicStatUp => true,
+                SecondaryStat.Attract     => true,
+                SecondaryStat.RideVehicle => true,
+                SecondaryStat.DashSpeed   => true,
+                SecondaryStat.DashJump    => true,
+                SecondaryStat.Flying      => true,
+                SecondaryStat.Frozen      => true,
+                SecondaryStat.YellowAura  => true,
+                _                         => false
+            };
         }
 
         public static int GetFromUser(this UserAbility ability, User user) {

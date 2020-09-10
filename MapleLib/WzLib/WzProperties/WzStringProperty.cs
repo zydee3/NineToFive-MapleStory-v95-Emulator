@@ -153,7 +153,7 @@ namespace MapleLib.WzLib.WzProperties
 
         public override string ToString()
         {
-            return val;
+            return $"WzStringProperty(name='{name}', value='{val}');";
         }
         #endregion
 	}

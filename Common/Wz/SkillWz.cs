@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using log4net;
 using MapleLib.WzLib;
 using MapleLib.WzLib.WzProperties;
+using NineToFive.Constants;
 using NineToFive.Game;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Resources;
@@ -16,45 +14,103 @@ namespace NineToFive.Wz {
         private static readonly ILog Log = LogManager.GetLogger(typeof(SkillWz));
 
         public static int LoadSkills() {
+            if (WzCache.Skills.Count > 0) {
+                WzCache.Skills.Clear();
+                GC.Collect();
+            }
+
             WzFile wz = WzProvider.Load(WzName);
-            var Skills = WzCache.Skills;
-            
-            foreach (WzImage job in wz.WzDirectory.WzImages) {
+
+            var jobs = wz.WzDirectory.WzImages;
+            foreach (var job in jobs) {
                 var name = job.Name.Substring(0, job.Name.LastIndexOf(".", StringComparison.Ordinal));
-                if (!int.TryParse(name, out var jobId)) continue;
+                if (!int.TryParse(name, out _)) continue;
                 foreach (var skill in job.GetFromPath("skill").WzProperties) {
-                    var s = new Skill(int.Parse(skill.Name)) {
-                        MasterLevel = ((WzIntProperty) skill["masterLevel"])?.Value ?? 0,
-                        Weapon = skill["weapon"]?.GetInt() ?? 0,
-                    };
-                    
-                    var common = skill.GetFromPath("common");
-                    if (common != null) {
-                        s.MaxLevel = common["maxLevel"].GetInt();
-                        foreach (var c in common.WzProperties) {
-                            SetSkillValue(c, s, c.WzValue.ToString());
-                        }
-                    } else {
-                        var levels = skill.GetFromPath("level");
-                        s.MaxLevel = levels.WzProperties.Count;
-                        foreach (var level in levels.WzProperties) {
-                            foreach (var p in level.WzProperties) {
-                                if (p is WzStringProperty || p is WzSubProperty) {
-                                    // Console.WriteLine($"Job: {jobId}, Skill {s.Id}, Property: {p.Name} : Can't parse; skipping...");
-                                    continue;
-                                }
-
-                                int nLevel = int.Parse(level.Name) - 1; // index starts at 0 :coolcat:
-                                SetSkillValue(p, s, null, nLevel);
-                            }
-                        }
-                    }
-
-                    Skills.Add(s.Id, s);
+                    ParseSkill(skill);
                 }
             }
 
-            return Skills.Count;
+            return WzCache.Skills.Count;
+        }
+
+        private static void ParseSkill(WzImageProperty skillImg) {
+            var s = new Skill(int.Parse(skillImg.Name)) {
+                MasterLevel = ((WzIntProperty) skillImg["masterLevel"])?.Value ?? 0,
+                Weapon = skillImg["weapon"]?.GetInt() ?? 0,
+                SkillType = (byte) (skillImg["skillType"]?.GetInt() ?? 0),
+            };
+
+            var common = skillImg.GetFromPath("common");
+            if (common != null) {
+                s.MaxLevel = common["maxLevel"].GetInt();
+                foreach (var c in common.WzProperties) {
+                    ParseSkillProperty(c, s, c.WzValue.ToString());
+                }
+            } else {
+                var levels = skillImg.GetFromPath("level");
+                s.MaxLevel = levels.WzProperties.Count;
+                foreach (var level in levels.WzProperties) {
+                    foreach (var p in level.WzProperties) {
+                        if (p is WzStringProperty || p is WzSubProperty) {
+                            // Console.WriteLine($"Job: {jobId}, Skill {s.Id}, Property: {p.Name} : Can't parse; skipping...");
+                            continue;
+                        }
+
+                        int nLevel = int.Parse(level.Name) - 1; // index starts at 0 :coolcat:
+                        ParseSkillProperty(p, s, null, nLevel);
+                    }
+                }
+            }
+
+            if (s.SkillType == 2)
+                s.CTS[SecondaryStat.Booster] = s.X;
+            switch ((Skills) s.Id) {
+                case Skills.FighterPowerGuard:
+                case Skills.PagePowerGuard:
+                    s.CTS[SecondaryStat.PowerGuard] = s.X;
+                    break;
+                case Skills.GameMasterHide:
+                case Skills.SuperGameMasterHide:
+                    s.X = new SkillValue(1, 1);
+                    s.Time = new SkillValue(1, int.MaxValue);
+                    goto case Skills.ThiefDarkSight;
+                case Skills.ThiefDarkSight:
+                case Skills.NightWalkerDarkSight:
+                    s.CTS[SecondaryStat.DarkSight] = s.X;
+                    break;
+                case Skills.MarksmanMapleWarrior:
+                case Skills.MechanicMapleWarrior:
+                case Skills.AranMapleWarrior:
+                case Skills.BishopMapleWarrior:
+                case Skills.BuccaneerMapleWarrior:
+                case Skills.CorsairMapleWarrior:
+                case Skills.EvanMapleWarrior:
+                case Skills.HeroMapleWarrior:
+                case Skills.NightlordMapleWarrior:
+                case Skills.PaladinMapleWarrior:
+                case Skills.ShadowerMapleWarrior:
+                case Skills.BattleMageMapleWarrior:
+                case Skills.BladeMasterMapleWarrior:
+                case Skills.DarkKnightMapleWarrior:
+                case Skills.WildHunterMapleWarrior:
+                case Skills.BowmasterMapleWarrior:
+                case Skills.FirePoisonArchmageMapleWarrior:
+                case Skills.IceLightningArchmageMapleWarrior:
+                    s.CTS[SecondaryStat.BasicStatUp] = s.X;
+                    break;
+                case Skills.PirateDash:
+                    s.CTS[SecondaryStat.DashSpeed] = s.X;
+                    s.CTS[SecondaryStat.DashJump] = s.Y;
+                    break;
+                case Skills.BeginnerEchoOfHero:
+                case Skills.LegendEchoOfHero:
+                case Skills.NoblesseEchoOfHero:
+                    s.CTS[SecondaryStat.PAD] = s.X;
+                    s.CTS[SecondaryStat.MAD] = s.X;
+                    break;
+            }
+
+            WzCache.Skills.Add(s.Id, s);
         }
 
         /// <summary>
@@ -69,87 +125,65 @@ namespace NineToFive.Wz {
         /// <param name="expression">math expression if the value can be scaled with the skill level</param>
         /// <param name="skl">skill level that is being parsed, if expression is not specified</param>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        private static void SetSkillValue(WzImageProperty property, Skill s, string expression, int skl = 0) {
-            if (!Enum.TryParse(typeof(TemporaryStat), property.Name, true, out var stat) || stat == null) {
+        private static void ParseSkillProperty(WzImageProperty property, Skill s, string expression, int skl = 0) {
+            if (!Enum.TryParse(typeof(SecondaryStat), property.Name, true, out var stat) || stat == null) {
                 switch (property.Name) {
+                    default:
+                        // Console.WriteLine($"Unhandled {s}:\r\n\t property {property}");
+                        break;
+                    case "maxLevel":
+                        return;
+                    case "mobCount":
+                        ParseSkillLevel(property, s, s.MobCount, expression, skl);
+                        break;
+                    case "range":
+                        ParseSkillLevel(property, s, s.Range, expression, skl);
+                        break;
+                    case "attackCount":
+                        ParseSkillLevel(property, s, s.AttackCount, expression, skl);
+                        break;
+                    case "x":
+                        ParseSkillLevel(property, s, s.X, expression, skl);
+                        break;
+                    case "y":
+                        ParseSkillLevel(property, s, s.Y, expression, skl);
+                        break;
                     case "damage":
-                        if (expression != null) s.Damage.Eval(s, property.WzValue.ToString());
-                        else s.Damage[skl] = ((WzIntProperty) property).Value;
-
+                        ParseSkillLevel(property, s, s.Damage, expression, skl);
                         break;
                     case "time":
-                        if (expression != null) s.Time.Eval(s, property.WzValue.ToString());
-                        else s.Time[skl] = ((WzIntProperty) property).Value;
-                        
+                        ParseSkillLevel(property, s, s.Time, expression, skl);
                         break;
                     case "cooltime":
-                        if (expression != null) s.CoolTime.Eval(s, property.WzValue.ToString());
-                        else s.CoolTime[skl] = ((WzIntProperty) property).Value;
-
+                        ParseSkillLevel(property, s, s.CoolTime, expression, skl);
                         break;
                     case "mpCon":
-                        if (expression != null) s.MpCon.Eval(s, property.WzValue.ToString());
-                        else s.MpCon[skl] = ((WzIntProperty) property).Value;
+                        ParseSkillLevel(property, s, s.MpCon, expression, skl);
                         break;
-                    case "lt": {
-                        var v = ((WzVectorProperty) property);
-                        s.Lt[skl] = new Vector2(v.X.Value, v.Y.Value);
+                    case "lt":
+                        ParseSkillLevel(property, s, s.Lt, expression, skl);
                         break;
-                    }
-                    case "rb": {
-                        var v = ((WzVectorProperty) property);
-                        s.Rb[skl] = new Vector2(v.X.Value, v.Y.Value);
+                    case "rb":
+                        ParseSkillLevel(property, s, s.Rb, expression, skl);
                         break;
-                    }
                 }
 
                 return;
             }
 
-            s.BitMask |= (TemporaryStat) stat;
-            switch (stat) {
-                case TemporaryStat.PAD:
-                    if (expression == null) s.PAD[skl] = ((WzIntProperty) property).Value;
-                    else s.PAD.Eval(s, expression);
-                    break;
-                case TemporaryStat.PDD:
-                    if (expression == null) s.PDD[skl] = ((WzIntProperty) property).Value;
-                    else s.PDD.Eval(s, expression);
-                    break;
-                case TemporaryStat.MAD:
-                    if (expression == null) s.MAD[skl] = ((WzIntProperty) property).Value;
-                    else s.MAD.Eval(s, expression);
-                    break;
-                case TemporaryStat.MDD:
-                    if (expression == null) s.MDD[skl] = ((WzIntProperty) property).Value;
-                    else s.MDD.Eval(s, expression);
-                    break;
-                case TemporaryStat.Acc:
-                    if (expression == null) s.Acc[skl] = ((WzIntProperty) property).Value;
-                    else s.Acc.Eval(s, expression);
-                    break;
-                case TemporaryStat.Eva:
-                    if (expression == null) s.Eva[skl] = ((WzIntProperty) property).Value;
-                    else s.Eva.Eval(s, expression);
-
-                    break;
-                case TemporaryStat.Hands:
-                    break;
-                case TemporaryStat.Speed:
-                    if (expression == null) s.Speed[skl] = ((WzIntProperty) property).Value;
-                    else s.Speed.Eval(s, expression);
-
-                    break;
-                case TemporaryStat.Jump:
-                    if (expression == null) s.Jump[skl] = ((WzIntProperty) property).Value;
-                    else s.Jump.Eval(s, expression);
-
-                    break;
-                case TemporaryStat.Ghost:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(stat), stat, null);
+            var cts = (SecondaryStat) stat;
+            s.CTS.TryGetValue(cts, out var v);
+            if (v == null) {
+                v = new SkillValue(s.MaxLevel);
+                s.CTS.TryAdd(cts, v);
             }
+            ParseSkillLevel(property, s, v, expression, skl);
+        }
+
+        private static void ParseSkillLevel(WzObject p, Skill s, SkillValue v, string expression, int skl) {
+            if (expression != null) v.Eval(s, expression);
+            if (p is WzVectorProperty vec) v[skl] = new Vector2(vec.X.Value, vec.Y.Value);
+            else v[skl] = p.GetInt();
         }
     }
 }
