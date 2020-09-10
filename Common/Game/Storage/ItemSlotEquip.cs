@@ -56,6 +56,8 @@ namespace NineToFive.Game.Storage {
         public int PrevBonusExpRate { get; set; }
         
         public int TradeAvailable { get; set; }
+        public byte Vicious { get; set; }
+        public byte Upgrades { get; set; }
         
         public override byte Type => 1;
 
@@ -64,7 +66,7 @@ namespace NineToFive.Game.Storage {
             if (autoBagIndex) BagIndex = (short) -ItemConstants.GetBodyPartFromId(TemplateId);
             Durability = -1;
             Title ??= "";
-            CharacterWz.CopyEquipTemplate(this);
+            if(loadStats) CharacterWz.CopyEquipTemplate(this);
         }
 
         public override void Encode(Packet p) {

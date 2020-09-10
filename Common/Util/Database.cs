@@ -52,6 +52,44 @@ namespace NineToFive.Util {
             };
         }
 
+        public static object[] CreateEquipParameters(User user, ItemSlotEquip equip) {
+            return new object[] {
+                "character_id", user.CharacterStat.Id,
+                "bag_index", equip.BagIndex,
+                "hp", equip.MaxHP,
+                "hpr", equip.MaxHPR,
+                "mp", equip.MaxMP,
+                "mpr", equip.MaxMPR,
+                "str",  equip.STR,
+                "dex", equip.DEX,
+                "int", equip.INT,
+                "luk", equip.LUK,
+                "pad", equip.PAD,
+                "mad", equip.MAD,
+                "pdd", equip.PDD,
+                "mdd", equip.MDD,
+                "acc", equip.ACC,
+                "eva", equip.EVA,
+                "craft", equip.Craft,
+                "speed", equip.Speed,
+                "jump", equip.Jump,
+                "title", equip.Title,
+                "level_up_type", equip.LevelUpType,
+                "level", equip.Level,
+                "exp", equip.Exp,
+                "durability", equip.Durability,
+                "grade", equip.Grade,
+                "option_1", equip.Socket1,
+                "option_2", equip.Option2,
+                "option_3", equip.Option3,
+                "socket_1", equip.Socket1,
+                "socket_2", equip.Socket2,
+                "trade_available", equip.TradeAvailable,
+                "vicious", equip.Vicious,
+                "upgrades", equip.Upgrades,
+            };
+        }
+
         public static object[] CreateSkillParameters(User user, KeyValuePair<int, SkillRecord> item) {
             return new object[] {
                 "character_id", user.CharacterStat.Id,

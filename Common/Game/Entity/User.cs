@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using log4net;
@@ -37,6 +38,7 @@ namespace NineToFive.Game.Entity {
             AccountId = reader.GetUInt32("account_id");
             Money = reader.GetUInt32("money");
 
+            var equips = new Dictionary<int, ItemSlotEquip>();
             using (DatabaseQuery q = Database.Table("items")) {
                 using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
                 while (r.Read()) {
@@ -44,16 +46,24 @@ namespace NineToFive.Game.Entity {
                     short bagIndex = r.GetInt16("bag_index");
                     InventoryType type = ItemConstants.GetInventoryType(itemId);
                     ItemSlot itemSlot;
-
+                    
                     if (type == InventoryType.Equip) {
                         if (bagIndex < 0) {
-                            Inventories[InventoryType.Equipped].EquipItem(new ItemSlotEquip(itemId, true, true));
+                            ItemSlotEquip equip = new ItemSlotEquip(itemId) {
+                                GeneratedId = r.GetUInt32("generated_id"), 
+                                CashItemSN = r.GetInt64("cash_sn"), 
+                                DateExpire = r.GetInt64("date_expire"),
+                                BagIndex = bagIndex,
+                            };
+                            equips.TryAdd(equip.BagIndex, equip);
+                            Inventories[InventoryType.Equipped].EquipItem(equip);
                             continue;
                         }
 
-                        itemSlot = new ItemSlotEquip(itemId, false, true);
+                        itemSlot = new ItemSlotEquip(itemId);
+                        equips.TryAdd(itemSlot.BagIndex, (ItemSlotEquip) itemSlot);
                     } else {
-                        itemSlot = new ItemSlotBundle(itemId, r.GetUInt16("quantity"));
+                        itemSlot = new ItemSlotBundle(itemId, r.GetUInt16("quantity")) ;
                     }
 
                     itemSlot.GeneratedId = r.GetUInt32("generated_id");
@@ -63,6 +73,43 @@ namespace NineToFive.Game.Entity {
                     Inventories[itemSlot.InventoryType][itemSlot.BagIndex] = itemSlot;
                 }
             }
+
+            using (DatabaseQuery q = Database.Table("equips")) {
+                using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
+                while (r.Read()) {
+                    if (!equips.TryGetValue(r.GetInt32("bag_index"), out ItemSlotEquip equip)) continue;
+                    equip.MaxHP = r.GetInt16("hp");
+                    equip.MaxHPR = r.GetInt16("hpr");
+                    equip.MaxMP = r.GetInt16("mp");
+                    equip.MaxMPR = r.GetInt16("mpr");
+                    equip.STR = r.GetInt16("str");
+                    equip.DEX = r.GetInt16("dex");
+                    equip.INT = r.GetInt16("int");
+                    equip.LUK = r.GetInt16("luk");
+                    equip.PAD = r.GetInt16("pad");
+                    equip.MAD = r.GetInt16("mad");
+                    equip.PDD = r.GetInt16("pdd");
+                    equip.MDD = r.GetInt16("mdd");
+                    equip.ACC = r.GetInt16("acc");
+                    equip.EVA = r.GetInt16("eva");
+                    equip.Craft = r.GetInt16("craft");
+                    equip.Speed = r.GetInt16("speed");
+                    equip.Jump = r.GetInt16("jump");
+                    equip.Title = r.GetString("title");
+                    equip.Durability = r.GetInt32("durability");
+                    equip.Grade = r.GetByte("grade");
+                    equip.Option1 = r.GetInt16("option_1");
+                    equip.Option2 = r.GetInt16("option_2");
+                    equip.Option3 = r.GetInt16("option_3");
+                    equip.Socket1 = r.GetInt16("socket_1");
+                    equip.Socket2 = r.GetInt16("socket_1");
+                    equip.TradeAvailable = r.GetInt32("trade_available");
+                    equip.Vicious = r.GetByte("vicious");
+                    equip.Upgrades = r.GetByte("upgrades");
+                }
+                equips.Clear();
+            }
+            
 
             using (DatabaseQuery q = Database.Table("skill_records")) {
                 using MySqlDataReader r = q.Select().Where("character_id", "=", CharacterStat.Id).ExecuteReader();
@@ -141,17 +188,27 @@ namespace NineToFive.Game.Entity {
             using DatabaseQuery deleteItems = Database.Table("items");
             count = deleteItems.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} items");
+            
+            using DatabaseQuery deleteEquips = Database.Table("equips");
+            count = deleteEquips.Where("character_id", "=", CharacterStat.Id).Delete().ExecuteNonQuery();
+            Log.Info($"[Save] {CharacterStat.Username} : Cleaned up {count} equips");
 
+            using DatabaseQuery insertEquips = Database.Table("equips");
             using DatabaseQuery insertItems = Database.Table("items");
             foreach (var inventory in Inventories.Values) {
                 foreach (var item in inventory.Items) {
                     insertItems.Insert(Database.CreateItemParameters(this, item));
+                    if (item is ItemSlotEquip equip) {
+                        insertEquips.Insert(Database.CreateEquipParameters(this, equip));
+                    }
                 }
             }
 
             count = insertItems.ExecuteNonQuery();
             Log.Info($"[Save] {CharacterStat.Username} : Saved {count} items");
 
+            count = insertEquips.ExecuteNonQuery();
+            Log.Info($"[Save] {CharacterStat.Username} : Saved {count} equips");
             #endregion
 
             #region skills
