@@ -2,35 +2,24 @@
 using NineToFive.Constants;
 using NineToFive.Game.Storage;
 using NineToFive.Packets;
+using NineToFive.Util;
 
 namespace NineToFive.Game.Entity {
     public class Drop : Life {
         private ItemSlot _item;
-        public long ExpireTime { get; set; }
-        
-        public Drop(int id, int quantity, Life creator) : base(id, EntityType.Drop) {
-            Fh = creator.Fh;
-            Location = creator.Location;
-            Origin = creator.Location;
-            Quantity = quantity;
-        }
-
-        public Drop(ItemSlot item, Life creator) : base(item.TemplateId, EntityType.Drop) {
-            Fh = creator.Fh;
-            Location = creator.Location;
-            Origin = creator.Location;
-            _item = item;
-        }
+        public long ExpireTime { get; }
 
         public Drop(int id, int quantity, Vector2 origin, Vector2 location) : base(id, EntityType.Drop) {
             Location = location;
             Origin = origin;
             Quantity = quantity;
+            ExpireTime = Time.GetFuture(180);
         }
 
         public Drop(ItemSlot item, Vector2 location) : base(item.TemplateId, EntityType.Drop) {
             Location = Origin = location;
             _item = item;
+            ExpireTime = Time.GetFuture(180);
         }
 
         public Vector2 Origin { get; set; }

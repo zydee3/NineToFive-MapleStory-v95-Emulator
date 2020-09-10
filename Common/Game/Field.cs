@@ -62,6 +62,7 @@ namespace NineToFive.Game {
         public Dictionary<EntityType, LifePool<Life>> LifePools { get; }
         public uint FieldLimit { get; set; }
         public int SpawnedMobLimit { get; set; } = 20;
+        private int DropTick { get; set; }
 
         public int SpawnedMobCount {
             get => _spawnedMobCount;
@@ -90,6 +91,16 @@ namespace NineToFive.Game {
         public async Task Update() {
             foreach (var sp in SpawnPoints) {
                 sp.SummonMob().ConfigureAwait(false);
+            }
+
+            if (++DropTick == 30) { // lul imagine looping through all drops every second..
+                DropTick = 0;
+                long currentTime = Time.GetCurrent();
+                foreach (Drop drop in LifePools[EntityType.Drop].Values.Cast<Drop>()) {
+                    if (drop.ExpireTime > currentTime) continue;
+                    BroadcastPacket(drop.LeaveFieldPacket());
+                    RemoveLife(drop);
+                }
             }
 
             //todo remove drops, update reactors and etc

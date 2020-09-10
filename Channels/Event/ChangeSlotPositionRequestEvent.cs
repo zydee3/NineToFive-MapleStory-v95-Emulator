@@ -46,7 +46,7 @@ namespace NineToFive.Event {
             ItemSlot item = inventory.Remove(_oldPos);
             if (item != null) {
                 item.BagIndex = _oldPos;
-                Drop drop = new Drop(item, user);
+                Drop drop = new Drop(item, user.Location);
                 user.Field.SummonLife(drop);
                 Client.Session.Write(CWvsPackets.GetInventoryOperation(new List<InventoryUpdateEntry>{ new InventoryUpdateEntry(ref item, InventoryOperation.Remove)}));
             }
