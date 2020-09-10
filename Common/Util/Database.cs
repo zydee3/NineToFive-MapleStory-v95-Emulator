@@ -79,7 +79,7 @@ namespace NineToFive.Util {
                 "exp", equip.Exp,
                 "durability", equip.Durability,
                 "grade", equip.Grade,
-                "option_1", equip.Socket1,
+                "option_1", equip.Option1,
                 "option_2", equip.Option2,
                 "option_3", equip.Option3,
                 "socket_1", equip.Socket1,
