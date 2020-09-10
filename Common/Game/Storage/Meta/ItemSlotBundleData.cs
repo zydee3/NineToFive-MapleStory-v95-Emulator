@@ -1,10 +1,58 @@
-﻿namespace NineToFive.Game.Storage.Meta {
+﻿using System.Collections.Generic;
+using NineToFive.Game.Entity.Meta;
+
+namespace NineToFive.Game.Storage.Meta {
     public class ItemSlotBundleData {
         public ItemSlotBundleData(int templateId) {
             TemplateId = templateId;
         }
 
+        public List<short> GetBuffValues() {
+            var buffs = new List<short>();
+            if (Pad > 0) {
+                buffs.Add(Pad);
+                BitMask |= TemporaryStat.PAD;
+            }
+            
+            if (Mad > 0) {
+                buffs.Add(Mad);
+                BitMask |= TemporaryStat.MAD;
+            }
+            
+            if (Pdd > 0) {
+                buffs.Add(Pdd);
+                BitMask |= TemporaryStat.PDD;
+            }
+
+            if (Mdd > 0) {
+                buffs.Add(Mdd);
+                BitMask |= TemporaryStat.MDD;
+            }
+
+            if (Acc > 0) {
+                buffs.Add(Acc);
+                BitMask |= TemporaryStat.Acc;
+            }
+
+            if (Eva > 0) {
+                buffs.Add(Eva);
+                BitMask |= TemporaryStat.Eva;
+            }
+
+            if (Speed > 0) {
+                buffs.Add(Speed);
+                BitMask |= TemporaryStat.Speed;
+            }
+
+            if (Jump > 0) {
+                buffs.Add(Jump);
+                BitMask |= TemporaryStat.Jump;
+            }
+            return buffs;
+        }
+
         public int TemplateId { get; }
+        public TemporaryStat BitMask { get; set; }
 
         public int SlotMax { get; set; }
         public int Price { get; set; }

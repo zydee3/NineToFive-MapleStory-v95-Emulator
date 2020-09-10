@@ -19,11 +19,11 @@ namespace NineToFive.Event {
             p.ReadInt(); // get_update_time
             _skillId = p.ReadInt();
             _skillLevel = p.ReadByte();
+            
             // if ( is_antirepeat_buff_skill )
             //     _origin = new Vector2(p.ReadShort(), p.ReadShort());
             if (_skillId == (int) Skills.NightlordShadowStars) {
-                // Shadow Stars
-                p.ReadInt();
+                p.ReadInt(); // Shadow Stars
             }
 
             Client.User.Skills.TryGetValue(_skillId, out _playerskill);

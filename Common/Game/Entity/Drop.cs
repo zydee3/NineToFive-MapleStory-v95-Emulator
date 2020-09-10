@@ -6,7 +6,7 @@ using NineToFive.Packets;
 namespace NineToFive.Game.Entity {
     public class Drop : Life {
         private ItemSlot _item;
-        
+        public long ExpireTime { get; set; }
         
         public Drop(int id, int quantity, Life creator) : base(id, EntityType.Drop) {
             Fh = creator.Fh;

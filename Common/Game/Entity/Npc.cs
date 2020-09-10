@@ -1,7 +1,7 @@
 ﻿using NineToFive.Constants;
 using NineToFive.Game.Entity.Meta;
 using NineToFive.Game.Storage;
-using NineToFive.Packets;
+using static NineToFive.Packets.NpcScriptPackets;
 
 namespace NineToFive.Game.Entity {
     public class Npc : Life {
