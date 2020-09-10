@@ -395,7 +395,7 @@ namespace NineToFive.Game.Entity {
     public class CharacterStat : IPacketSerializer {
         private readonly User _user;
         private readonly short[] _skillPoints;
-        private int _hp = 50, _mp = 5;
+        private int _hp = 50, _mp = 5, _maxHP = 50, _maxMP = 5;
         private uint _exp;
 
         public CharacterStat(ref User user, MySqlDataReader r = null) {
@@ -410,10 +410,10 @@ namespace NineToFive.Game.Entity {
             Dex = r.GetInt16("dex");
             Int = r.GetInt16("int");
             Luk = r.GetInt16("luk");
-            HP = r.GetInt32("hp");
             MaxHP = r.GetInt32("max_hp");
-            MP = r.GetInt32("mp");
+            HP = r.GetInt32("hp");
             MaxMP = r.GetInt32("max_mp");
+            MP = r.GetInt32("mp");
             AP = r.GetInt16("ability_points");
             Exp = r.GetUInt32("exp");
             Popularity = r.GetInt16("popularity");
@@ -430,16 +430,24 @@ namespace NineToFive.Game.Entity {
         public short Int { get; set; } = 4;
         public short Luk { get; set; } = 4;
 
-        public int MaxHP { get; set; } = 50;
 
-        public int MP {
-            get => _mp;
-            set => _mp = Math.Min(Math.Max(value, 0), MaxMP);
+        public int MaxHP {
+            get => _maxHP;
+            set => _maxHP = Math.Min(Math.Max(value, 50), 99999);
         }
 
         public int HP {
             get => _hp;
             set => _hp = Math.Min(Math.Max(value, 0), MaxHP);
+        }
+
+        public int MaxMP {
+            get => _maxMP;
+            set => _maxMP = Math.Min(Math.Max(value, 5), 99999);
+        }
+        public int MP {
+            get => _mp;
+            set => _mp = Math.Min(Math.Max(value, 0), MaxMP);
         }
 
         public float Exp {
@@ -460,8 +468,7 @@ namespace NineToFive.Game.Entity {
                 }
             }
         }
-
-        public int MaxMP { get; set; } = 5;
+        
         public short AP { get; set; }
 
         public short SP {
