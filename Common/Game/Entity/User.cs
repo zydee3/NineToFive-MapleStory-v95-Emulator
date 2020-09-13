@@ -48,29 +48,22 @@ namespace NineToFive.Game.Entity {
                     ItemSlot itemSlot;
                     
                     if (type == InventoryType.Equip) {
-                        if (bagIndex < 0) {
-                            ItemSlotEquip equip = new ItemSlotEquip(itemId) {
-                                GeneratedId = r.GetUInt32("generated_id"), 
-                                CashItemSN = r.GetInt64("cash_sn"), 
-                                DateExpire = r.GetInt64("date_expire"),
-                                BagIndex = bagIndex,
-                            };
-                            equips.TryAdd(equip.BagIndex, equip);
-                            Inventories[InventoryType.Equipped].EquipItem(equip);
-                            continue;
-                        }
-
                         itemSlot = new ItemSlotEquip(itemId);
-                        equips.TryAdd(itemSlot.BagIndex, (ItemSlotEquip) itemSlot);
+                        equips.TryAdd(bagIndex, (ItemSlotEquip) itemSlot);
                     } else {
-                        itemSlot = new ItemSlotBundle(itemId, r.GetUInt16("quantity")) ;
+                        itemSlot = new ItemSlotBundle(itemId, r.GetUInt16("quantity"));
                     }
 
-                    itemSlot.GeneratedId = r.GetUInt32("generated_id");
-                    itemSlot.BagIndex = bagIndex;
+                    itemSlot.GeneratedId = r.GetUInt32("generated_id"); 
                     itemSlot.CashItemSN = r.GetInt64("cash_sn");
                     itemSlot.DateExpire = r.GetInt64("date_expire");
-                    Inventories[itemSlot.InventoryType][itemSlot.BagIndex] = itemSlot;
+                    itemSlot.BagIndex = bagIndex;
+                    
+                    if (bagIndex < 0) {
+                        Inventories[InventoryType.Equipped].EquipItem((ItemSlotEquip) itemSlot);
+                    } else {
+                        Inventories[itemSlot.InventoryType][itemSlot.BagIndex] = itemSlot;    
+                    }
                 }
             }
 

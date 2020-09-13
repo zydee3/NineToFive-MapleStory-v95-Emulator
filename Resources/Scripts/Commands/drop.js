@@ -17,6 +17,6 @@ async function run() {
         return user.SendMessage(`'${ctx.Args[1]}' is not a valid number.`)
     }
 
-    let drop = new Drop(ctx.ArgAsInt(0), quantity, user);
+    let drop = new Drop(ctx.ArgAsInt(0), quantity, user.Location, user.Location);
     user.Field.SummonLife(drop);
 }
