@@ -14,7 +14,7 @@ namespace NineToFive.Game.Storage {
         
         public ushort Quantity { get; set; }
         public int SlotMax { get; }
-        protected virtual byte Type => 2;
+        public virtual byte Type => 2;
         public InventoryType InventoryType { get; set; }
         
         protected ItemSlot(int templateId, int quantity = 1, int slotMax = 1) {
