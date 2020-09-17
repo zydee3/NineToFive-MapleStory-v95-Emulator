@@ -54,10 +54,10 @@ namespace NineToFive.Game.Entity.Meta {
                 case UserAbility.Hair:       return user.AvatarLook.Hair;
                 case UserAbility.Level:      return user.CharacterStat.Level;
                 case UserAbility.Job:        return user.CharacterStat.Job;
-                case UserAbility.Str:        return user.CharacterStat.Str;
-                case UserAbility.Dex:        return user.CharacterStat.Dex;
-                case UserAbility.Int:        return user.CharacterStat.Int;
-                case UserAbility.Luk:        return user.CharacterStat.Luk;
+                case UserAbility.Str:        return user.CharacterStat.STR;
+                case UserAbility.Dex:        return user.CharacterStat.DEX;
+                case UserAbility.Int:        return user.CharacterStat.INT;
+                case UserAbility.Luk:        return user.CharacterStat.LUK;
                 case UserAbility.HP:         return user.CharacterStat.HP;
                 case UserAbility.MaxHP:      return user.CharacterStat.MaxHP;
                 case UserAbility.MP:         return user.CharacterStat.MP;

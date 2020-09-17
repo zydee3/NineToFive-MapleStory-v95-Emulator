@@ -29,29 +29,30 @@ namespace NineToFive.Event {
             switch (ability) {
                 default: return;
                 case UserAbility.Str:
-                    stat.Str += 1;
+                    stat.STR += 1;
                     break;
                 case UserAbility.Dex:
-                    stat.Dex += 1;
+                    stat.DEX += 1;
                     break;
                 case UserAbility.Int:
-                    stat.Int += 1;
+                    stat.INT += 1;
                     break;
                 case UserAbility.Luk:
-                    stat.Luk += 1;
+                    stat.LUK += 1;
                     break;
                 case UserAbility.MaxHP:
                     stat.MaxHP += Randomizer.GetInt(8, 13);
                     break;
                 case UserAbility.MaxMP: {
                     int advancement = (int) ((Math.Floor(stat.Job % 100d / 10d) + 1) * 10);
-                    stat.MaxMP += (advancement) + (stat.Int / 10);
+                    stat.MaxMP += (advancement) + (stat.INT / 10);
                     break;
                 }
             }
 
             stat.AP -= 1;
-
+            
+            user.CharacterStat.UpdateIncStats(false);
             user.CharacterStat.SendUpdate(_dwcharFlag | (uint) UserAbility.AP);
         }
     }

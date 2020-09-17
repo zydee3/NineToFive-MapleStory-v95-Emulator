@@ -62,6 +62,7 @@ namespace NineToFive.Event {
             user.SetField(user.CharacterStat.FieldId);
             Client.Session.Write(UserPackets.GetKeyMappedInit(user.KeyMap));
             Client.Session.Write(CWvsPackets.GetStatChanged(user, 0));
+            user.CharacterStat.UpdateIncStats();
         }
     }
 }

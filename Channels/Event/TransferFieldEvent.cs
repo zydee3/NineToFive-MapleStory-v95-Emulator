@@ -45,7 +45,7 @@ namespace NineToFive.Event {
 
             if (user.CharacterStat.HP < 1) {
                 // user revive
-                user.CharacterStat.HP = Math.Max(1, user.CharacterStat.MaxHP / 10);
+                user.CharacterStat.HP = Math.Max(1, user.CharacterStat.TotalMaxHP / 10);
                 user.SetField(user.Field.ReturnMap, null, false);
                 return;
             }

@@ -238,7 +238,7 @@ namespace NineToFive.Game.Storage {
                 _items.TryGetValue(bagIndex, out ItemSlot item);
                 return item;
             }
-            set => _items.Add(bagIndex, value);
+            set => _items.TryAdd(bagIndex, value);
         }
     }
 }

@@ -32,9 +32,15 @@ namespace NineToFive.Event {
 
             if (_oldPos < 0) { // un-equipping
                 if(_newPos == 0) DropFromInventory(ref inventory, ref user);
-                else Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.UnequipItem(user.Inventories[InventoryType.Equip], _oldPos, _newPos)));
+                else {
+                    var updates = inventory.UnequipItem(user.Inventories[InventoryType.Equip], _oldPos, _newPos);
+                    if(updates.Count > 0) user.CharacterStat.UpdateIncStats();
+                    Client.Session.Write(CWvsPackets.GetInventoryOperation(updates));
+                }
             } else if (_newPos < 0) { // equipping 
-                Client.Session.Write(CWvsPackets.GetInventoryOperation(inventory.EquipItem(user.Inventories[InventoryType.Equipped], _oldPos, _newPos)));
+                var updates = inventory.EquipItem(user.Inventories[InventoryType.Equipped], _oldPos, _newPos);
+                if(updates.Count > 0) user.CharacterStat.UpdateIncStats();
+                Client.Session.Write(CWvsPackets.GetInventoryOperation(updates));
             } else if (_newPos == 0) { // dropping item
                 DropFromInventory(ref inventory, ref user);
             } else {
@@ -48,7 +54,8 @@ namespace NineToFive.Event {
                 item.BagIndex = _oldPos;
                 Drop drop = new Drop(item, user.Location);
                 user.Field.SummonLife(drop);
-                Client.Session.Write(CWvsPackets.GetInventoryOperation(new List<InventoryUpdateEntry>{ new InventoryUpdateEntry(ref item, InventoryOperation.Remove)}));
+                if(inventory.Type == InventoryType.Equipped) user.CharacterStat.UpdateIncStats();
+                Client.Session.Write(CWvsPackets.GetInventoryOperation(new List<InventoryUpdateEntry> {new InventoryUpdateEntry(ref item, InventoryOperation.Remove)}));
             }
         }
     }

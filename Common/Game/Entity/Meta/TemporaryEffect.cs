@@ -61,22 +61,22 @@ namespace NineToFive.Game.Entity.Meta {
         
         private async Task DoPrimaryStatChange(CharacterStat stats, int strength, int dexterity, int intelligence, int luck) {
             if (strength > 0) {
-                stats.Str += (short) strength;
+                stats.STR += (short) strength;
                 statFlag |= (uint) UserAbility.Str;
             }
 
             if (dexterity > 0) {
-                stats.Dex += (short) dexterity;
+                stats.DEX += (short) dexterity;
                 statFlag |= (uint) UserAbility.Dex;
             }
 
             if (intelligence > 0) {
-                stats.Int += (short) intelligence;
+                stats.INT += (short) intelligence;
                 statFlag |= (uint) UserAbility.Int;
             }
 
             if (luck > 0) {
-                stats.Luk += (short) luck;
+                stats.LUK += (short) luck;
                 statFlag |= (uint) UserAbility.Luk;
             }
         }

@@ -66,5 +66,8 @@
             if (level >= 200) return int.MaxValue; // uint.MaxValue
             return ExpTable[level];
         }
+
+        public static short MaxStat = 32000;
+        public static int MaxHPMP = 99999;
     }
 }
